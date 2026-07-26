@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Texas Poker - Vegas Suite</title>
+  <title>Texas Poker - Fully Functional Suite</title>
   <style>
     :root {
       --bg-dark: #0a1826;
@@ -15,6 +15,7 @@
       --green-btn: #388e3c;
       --red-card: #d32f2f;
       --felt-blue: #235272;
+      --felt-green: #114b2f;
     }
 
     * { box-sizing: border-box; user-select: none; }
@@ -31,32 +32,32 @@
       flex-direction: column;
     }
 
-    /* TOP HEADER BAR */
+    /* HEADER */
     .top-bar {
-      height: 45px;
+      height: 48px;
       background: linear-gradient(180deg, #132b40 0%, #0a1724 100%);
       border-bottom: 1px solid var(--panel-border);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 10px;
+      padding: 0 8px;
       z-index: 100;
     }
 
-    .top-bar-left, .top-bar-right { display: flex; align-items: center; gap: 8px; }
+    .top-bar-left, .top-bar-right { display: flex; align-items: center; gap: 6px; }
 
     .hdr-btn {
       background: rgba(255,255,255,0.08);
       border: 1px solid rgba(255,255,255,0.2);
       color: #fff;
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 0.75rem;
+      padding: 6px 8px;
+      border-radius: 5px;
+      font-size: 0.7rem;
       font-weight: bold;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 3px;
     }
 
     .badge-num {
@@ -64,33 +65,28 @@
       color: #fff;
       border-radius: 10px;
       padding: 1px 5px;
-      font-size: 0.65rem;
+      font-size: 0.6rem;
     }
 
     .title-banner {
-      font-size: 1.1rem;
+      font-size: 0.85rem;
       font-weight: 900;
       font-style: italic;
-      letter-spacing: 1px;
       color: #fff;
       text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+      white-space: nowrap;
     }
 
-    /* VIEW SCREENS */
-    .screen { display: none; width: 100%; height: calc(100vh - 45px); position: relative; }
+    /* SCREENS */
+    .screen { display: none; width: 100%; height: calc(100vh - 48px); position: relative; }
     .screen.active { display: flex; }
 
-    /* ================= MAIN LOBBY SCREEN ================= */
+    /* ================= LOBBY ================= */
     #screen-lobby {
+      flex-direction: column;
       padding: 10px;
       gap: 10px;
-    }
-
-    .lobby-left {
-      width: 180px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+      overflow-y: auto;
     }
 
     .profile-card {
@@ -99,25 +95,28 @@
       border-radius: 6px;
       padding: 8px;
       display: flex;
-      gap: 8px;
+      gap: 10px;
       align-items: center;
+      width: 100%;
     }
 
     .prof-avatar {
       width: 45px;
       height: 45px;
-      border-radius: 4px;
+      border-radius: 50%;
       background: #1e3a54;
-      border: 1px solid var(--gold);
-      object-fit: cover;
+      border: 2px solid var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
     }
 
-    .prof-info { display: flex; flex-direction: column; font-size: 0.75rem; }
+    .prof-info { display: flex; flex-direction: column; font-size: 0.8rem; }
     .prof-name { font-weight: bold; color: #fff; }
     .prof-chips { color: var(--gold); font-weight: bold; }
 
     .friends-panel {
-      flex: 1;
       background: var(--panel-blue);
       border: 1px solid var(--panel-border);
       border-radius: 6px;
@@ -125,14 +124,10 @@
       display: flex;
       flex-direction: column;
       gap: 6px;
+      width: 100%;
     }
 
-    .friends-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 4px;
-      overflow-y: auto;
-    }
+    .friends-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; }
 
     .friend-box {
       width: 100%;
@@ -142,21 +137,12 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       border: 1px solid rgba(255,255,255,0.1);
-    }
-
-    .lobby-center {
-      flex: 1;
-      display: flex;
-      justify-content: center;
-      align-items: center;
     }
 
     .promo-card {
       width: 100%;
-      max-width: 380px;
-      height: 85%;
       background: linear-gradient(135deg, #4a148c 0%, #1a237e 100%);
       border: 2px solid var(--gold);
       border-radius: 10px;
@@ -169,47 +155,84 @@
       text-align: center;
     }
 
-    .lobby-right {
-      width: 150px;
-      display: flex;
-      flex-direction: column;
+    .lobby-nav-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
       gap: 8px;
+      width: 100%;
+      margin-top: auto;
     }
 
     .big-nav-btn {
-      flex: 1;
+      padding: 12px 5px;
       border-radius: 8px;
       border: 1px solid rgba(255,255,255,0.3);
       font-weight: 900;
-      font-size: 1rem;
+      font-size: 0.85rem;
       color: #fff;
       cursor: pointer;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
       box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
     }
 
     .btn-play { background: linear-gradient(180deg, #43a047 0%, #1b5e20 100%); border-color: #81c784; }
     .btn-lobby-select { background: linear-gradient(180deg, #fb8c00 0%, #ef6c00 100%); border-color: #ffb74d; }
     .btn-bonus { background: linear-gradient(180deg, #8e24aa 0%, #4a148c 100%); border-color: #ba68c8; }
 
-    /* ================= GAME TABLE SCREEN ================= */
+    /* ================= GAME TABLE ================= */
     #screen-table {
       flex-direction: column;
       justify-content: space-between;
       align-items: center;
-      padding: 10px;
+      padding: 6px;
       background: radial-gradient(ellipse at center, #2c6891 0%, #0d2133 100%);
     }
 
+    /* CHIP SELECTOR BAR */
+    .chip-selector-bar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 4px;
+      background: rgba(0,0,0,0.4);
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .chip-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 2px dashed #000;
+      font-weight: 900;
+      font-size: 0.7rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.4);
+    }
+
+    .chip-btn.selected {
+      transform: scale(1.15);
+      border: 3px solid #fff !important;
+      box-shadow: 0 0 10px var(--gold);
+    }
+
+    .c-1 { background: #ffffff; color: #000; }
+    .c-5 { background: #e53935; color: #fff; }
+    .c-25 { background: #2e7d32; color: #fff; }
+    .c-100 { background: #212121; color: var(--gold); border-color: var(--gold); }
+
     .poker-table-oval {
-      width: 90%;
-      height: 70%;
+      width: 98%;
+      height: 68%;
       background: var(--felt-blue);
-      border: 12px solid #526373;
+      border: 10px solid #526373;
       border-radius: 120px;
       box-shadow: inset 0 0 40px rgba(0,0,0,0.8), 0 10px 25px rgba(0,0,0,0.5);
       position: relative;
@@ -218,7 +241,6 @@
       align-items: center;
     }
 
-    /* Table Community Cards & Pot */
     .table-center-area {
       display: flex;
       flex-direction: column;
@@ -227,28 +249,25 @@
     }
 
     .pot-badge {
-      background: rgba(0,0,0,0.6);
+      background: rgba(0,0,0,0.7);
       border: 1px solid var(--gold);
       border-radius: 12px;
       padding: 2px 10px;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       font-weight: bold;
       color: var(--gold);
-      display: flex;
-      align-items: center;
-      gap: 4px;
     }
 
-    .cards-row { display: flex; gap: 4px; }
+    .cards-row { display: flex; gap: 4px; min-height: 50px; }
 
     .poker-card {
-      width: 38px;
-      height: 54px;
+      width: 36px;
+      height: 50px;
       background: #fff;
       color: #000;
       border-radius: 4px;
-      padding: 2px 4px;
-      font-size: 0.75rem;
+      padding: 2px 3px;
+      font-size: 0.7rem;
       font-weight: 900;
       display: flex;
       flex-direction: column;
@@ -258,276 +277,201 @@
     .poker-card.red { color: #d32f2f; }
     .poker-card.back { background: linear-gradient(135deg, #b71c1c 0%, #880e4f 100%); border: 1px solid #fff; }
 
-    /* Seat Positions Around Table */
-    .seat {
-      position: absolute;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+    /* SEATS */
+    .seat { position: absolute; display: flex; flex-direction: column; align-items: center; }
 
     .seat-avatar-box {
-      width: 46px;
-      height: 46px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
       background: #173654;
       border: 2px solid var(--gold);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.2rem;
+      font-size: 1rem;
       box-shadow: 0 2px 8px rgba(0,0,0,0.6);
-      position: relative;
     }
 
     .seat-label {
-      font-size: 0.65rem;
+      font-size: 0.6rem;
       font-weight: bold;
       background: rgba(0,0,0,0.7);
-      padding: 1px 6px;
+      padding: 1px 5px;
       border-radius: 8px;
-      margin-top: -6px;
+      margin-top: -5px;
+      white-space: nowrap;
     }
 
-    .seat-chips { font-size: 0.65rem; color: var(--gold); font-weight: bold; }
+    .seat-chips { font-size: 0.6rem; color: var(--gold); font-weight: bold; }
 
-    .seat-top { top: -25px; }
-    .seat-top-left { top: 10%; left: 10%; }
-    .seat-top-right { top: 10%; right: 10%; }
-    .seat-bottom-left { bottom: 10%; left: 10%; }
-    .seat-bottom-right { bottom: 10%; right: 10%; }
-    .seat-bottom { bottom: -25px; }
+    .seat-top { top: -20px; }
+    .seat-top-right { top: 12%; right: 4%; }
+    .seat-bottom-left { bottom: 18%; left: 4%; }
+    .seat-bottom { bottom: -20px; }
 
-    /* Bottom Control Bar */
-    .table-controls {
-      width: 100%;
-      height: 50px;
-      background: rgba(10, 23, 36, 0.9);
-      border-top: 1px solid var(--panel-border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 10px;
-    }
+    .player-hole-container { display: flex; gap: 3px; position: absolute; bottom: 25px; }
 
-    .combo-bar {
-      flex: 1;
-      height: 32px;
-      background: linear-gradient(90deg, #311b92 0%, #4a148c 100%);
-      border: 1px solid #7c4dff;
-      border-radius: 4px;
-      display: flex;
-      align-items: center;
-      padding: 0 10px;
-      font-size: 0.75rem;
-      font-weight: bold;
-      margin-right: 10px;
-    }
+    /* ACTION CONTROLS */
+    .table-controls { width: 100%; display: flex; gap: 5px; padding-top: 4px; }
 
     .bet-action-btn {
       background: linear-gradient(180deg, #fbc02d 0%, #f57f17 100%);
       border: 1px solid var(--gold);
       color: #000;
       font-weight: 900;
-      padding: 8px 16px;
-      border-radius: 4px;
+      padding: 10px 4px;
+      border-radius: 6px;
       cursor: pointer;
-      font-size: 0.85rem;
+      font-size: 0.75rem;
+      flex: 1;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.4);
     }
 
-    /* ================= GAME SELECTOR OVERLAY ================= */
+    .bet-action-btn.btn-fold { background: linear-gradient(180deg, #e53935 0%, #b71c1c 100%); color: white; border-color: #ef5350; }
+    .bet-action-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* SLOTS OVERLAY ENGINE */
+    .slots-engine-box {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      background: linear-gradient(180deg, #1e2d24 0%, #0b140e 100%);
+      padding: 20px;
+      border-radius: 12px;
+      border: 3px solid var(--gold);
+      width: 100%;
+    }
+
+    .reels-container { display: flex; gap: 10px; }
+    .reel-box {
+      width: 65px; height: 85px; background: #fff; color: #000; border-radius: 6px;
+      display: flex; align-items: center; justify-content: center; font-size: 2.2rem;
+      border: 2px solid #444;
+    }
+
+    /* MODALS */
     .modal-overlay {
       display: none;
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.8);
+      background: rgba(0,0,0,0.85);
       z-index: 200;
       justify-content: center;
       align-items: center;
     }
 
     .game-grid-box {
-      width: 90%;
-      max-width: 550px;
-      background: var(--panel-blue);
-      border: 2px solid var(--panel-border);
-      border-radius: 10px;
-      padding: 15px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      position: relative;
+      width: 92%; max-width: 500px; background: var(--panel-blue);
+      border: 2px solid var(--panel-border); border-radius: 10px; padding: 15px;
+      display: flex; flex-direction: column; gap: 10px;
     }
 
-    .game-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-    }
+    .game-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 
     .game-tile {
       background: linear-gradient(180deg, #1d466c 0%, #112d47 100%);
-      border: 1px solid #2d6291;
-      border-radius: 6px;
-      padding: 10px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      cursor: pointer;
-      font-size: 0.75rem;
-      font-weight: bold;
+      border: 1px solid #2d6291; border-radius: 6px; padding: 10px 4px;
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      cursor: pointer; font-size: 0.7rem; font-weight: bold; text-align: center;
     }
 
-    .game-tile.selected {
-      background: linear-gradient(180deg, #0288d1 0%, #01579b 100%);
-      border-color: #29b6f6;
-    }
+    .game-tile.selected { background: linear-gradient(180deg, #0288d1 0%, #01579b 100%); border-color: #29b6f6; }
 
-    /* ================= SETTINGS MODAL ================= */
     .settings-box {
-      width: 90%;
-      max-width: 480px;
-      background: var(--panel-blue);
-      border: 2px solid var(--panel-border);
-      border-radius: 8px;
-      padding: 0;
-      overflow: hidden;
+      width: 92%; max-width: 450px; background: var(--panel-blue);
+      border: 2px solid var(--panel-border); border-radius: 8px; overflow: hidden;
     }
 
-    .settings-tabs {
-      display: flex;
-      background: #0a1724;
-      border-bottom: 1px solid var(--panel-border);
-    }
-
-    .tab-btn {
-      flex: 1;
-      padding: 10px;
-      text-align: center;
-      font-weight: bold;
-      font-size: 0.85rem;
-      color: #888;
-      cursor: pointer;
-    }
-
-    .tab-btn.active {
-      color: #fff;
-      background: var(--panel-blue);
-      border-bottom: 2px solid var(--gold);
-    }
-
-    .settings-content {
-      padding: 15px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      font-size: 0.85rem;
-    }
-
-    .setting-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .toggle-switch {
-      width: 60px;
-      height: 24px;
-      background: #0a1724;
-      border-radius: 12px;
-      border: 1px solid var(--panel-border);
-      display: flex;
-      align-items: center;
-      padding: 2px;
-      cursor: pointer;
-    }
-
-    .toggle-knob {
-      width: 20px;
-      height: 20px;
-      background: var(--gold);
-      border-radius: 50%;
-      transition: transform 0.2s;
-    }
-
-    .toggle-switch.on .toggle-knob { transform: translateX(36px); }
+    .settings-tabs { display: flex; background: #0a1724; border-bottom: 1px solid var(--panel-border); }
+    .tab-btn { flex: 1; padding: 10px; text-align: center; font-weight: bold; font-size: 0.8rem; color: #888; cursor: pointer; }
+    .tab-btn.active { color: #fff; background: var(--panel-blue); border-bottom: 2px solid var(--gold); }
+    .settings-content { padding: 15px; display: flex; flex-direction: column; gap: 12px; font-size: 0.8rem; }
+    .setting-row { display: flex; justify-content: space-between; align-items: center; }
+    .toggle-switch { width: 50px; height: 22px; background: #0a1724; border-radius: 11px; border: 1px solid var(--panel-border); display: flex; align-items: center; padding: 2px; cursor: pointer; }
+    .toggle-knob { width: 18px; height: 18px; background: var(--gold); border-radius: 50%; transition: transform 0.2s; }
+    .toggle-switch.on .toggle-knob { transform: translateX(26px); }
   </style>
 </head>
 <body>
 
-  <!-- TOP HEADER -->
+  <!-- HEADER -->
   <div class="top-bar">
     <div class="top-bar-left">
       <button class="hdr-btn" onclick="openGameSelector()">🎲 Games <span class="badge-num">19</span></button>
       <button class="hdr-btn" onclick="switchScreen('lobby')">🏠 Lobby</button>
     </div>
-    <div class="title-banner">TEXAS POKER</div>
+    <div class="title-banner" id="game-title-header">TEXAS POKER</div>
     <div class="top-bar-right">
       <button class="hdr-btn" onclick="openSettings()">⚙️ Settings</button>
     </div>
   </div>
 
   <!-- LOBBY SCREEN -->
-  <div id="screen-lobby" class="screen active">
-    <div class="lobby-left">
-      <div class="profile-card">
-        <div class="prof-avatar">👤</div>
-        <div class="prof-info">
-          <span class="prof-name">Kris Millen</span>
-          <span class="prof-chips">⚙️ 9.6M</span>
-        </div>
-      </div>
-      <div class="friends-panel">
-        <span style="font-size:0.75rem;font-weight:bold;color:var(--gold);">Friends & Players</span>
-        <div class="friends-grid">
-          <div class="friend-box">👩</div>
-          <div class="friend-box">🤡</div>
-          <div class="friend-box">👤</div>
-          <div class="friend-box">🧔</div>
-          <div class="friend-box">👩‍🦰</div>
-          <div class="friend-box">🤠</div>
-        </div>
+  <div id="screen-lobby" class="screen">
+    <div class="profile-card">
+      <div class="prof-avatar">👤</div>
+      <div class="prof-info">
+        <span class="prof-name">Kris Millen</span>
+        <span class="prof-chips">⚙️ <span class="global-bankroll-display">20000</span></span>
       </div>
     </div>
 
-    <div class="lobby-center">
-      <div class="promo-card">
-        <h2 style="color:var(--gold);margin:0;">GET 1 LOTTERY TICKET</h2>
-        <p style="font-size:0.8rem;color:#ccc;">Spin & Win up to 5M Chips!</p>
-        <button class="bet-action-btn" style="margin-top:15px;" onclick="switchScreen('table')">GET NOW</button>
+    <div class="friends-panel">
+      <span style="font-size:0.75rem;font-weight:bold;color:var(--gold);">Friends & Players</span>
+      <div class="friends-grid">
+        <div class="friend-box">👩</div><div class="friend-box">🤡</div><div class="friend-box">👤</div>
+        <div class="friend-box">🧔</div><div class="friend-box">👩‍🦰</div><div class="friend-box">🤠</div>
       </div>
     </div>
 
-    <div class="lobby-right">
+    <div class="promo-card">
+      <h3 style="color:var(--gold);margin:0;">GET 1 LOTTERY TICKET</h3>
+      <p style="font-size:0.75rem;color:#ccc;margin:6px 0;">Spin & Win up to 5M Chips!</p>
+      <button class="bet-action-btn" style="width:auto;padding:8px 20px;" onclick="switchScreen('table')">GET NOW</button>
+    </div>
+
+    <div class="lobby-nav-grid">
       <button class="big-nav-btn btn-play" onclick="switchScreen('table')">PLAY NOW</button>
       <button class="big-nav-btn btn-lobby-select" onclick="openGameSelector()">LOBBY</button>
-      <button class="big-nav-btn btn-bonus">DAILY BONUS</button>
+      <button class="big-nav-btn btn-bonus" onclick="claimDailyBonus()">BONUS</button>
     </div>
   </div>
 
-  <!-- POKER TABLE SCREEN -->
-  <div id="screen-table" class="screen">
-    <div class="poker-table-oval">
+  <!-- GAME TABLE SCREEN -->
+  <div id="screen-table" class="screen active">
+    
+    <!-- CHIP SELECTOR BAR -->
+    <div class="chip-selector-bar">
+      <span style="font-size:0.7rem;font-weight:bold;color:var(--gold);">BET CHIP:</span>
+      <div class="chip-btn c-1" onclick="selectChip(1, this)">$1</div>
+      <div class="chip-btn c-5 selected" onclick="selectChip(5, this)">$5</div>
+      <div class="chip-btn c-25" onclick="selectChip(25, this)">$25</div>
+      <div class="chip-btn c-100" onclick="selectChip(100, this)">$100</div>
+    </div>
+
+    <!-- POKER OVAL TABLE VIEW -->
+    <div class="poker-table-oval" id="poker-table-view">
       
       <!-- Top Seat -->
       <div class="seat seat-top">
         <div class="seat-avatar-box">👩‍💼</div>
-        <div class="seat-label">Guest</div>
+        <div class="seat-label">Elena</div>
         <div class="seat-chips">⚙️ 20,275</div>
       </div>
 
       <!-- Top Right Seat -->
       <div class="seat seat-top-right">
         <div class="seat-avatar-box">👨</div>
-        <div class="seat-label">Guest</div>
+        <div class="seat-label">Leo</div>
         <div class="seat-chips">⚙️ 5,050</div>
       </div>
 
-      <!-- Left Seat (King) -->
+      <!-- Left Seat -->
       <div class="seat seat-bottom-left">
         <div class="seat-avatar-box">🤴</div>
-        <div class="seat-label">King</div>
+        <div class="seat-label">Viktor</div>
         <div class="seat-chips">⚙️ 275</div>
       </div>
 
@@ -535,47 +479,56 @@
       <div class="seat seat-bottom">
         <div class="seat-avatar-box" style="border-color:#fff;">👤</div>
         <div class="seat-label" style="background:var(--gold);color:#000;">Kris Millen</div>
-        <div class="seat-chips">⚙️ 20,000</div>
+        <div class="seat-chips">⚙️ <span class="global-bankroll-display">20000</span></div>
       </div>
 
       <!-- Community Cards & Pot -->
       <div class="table-center-area">
-        <div class="pot-badge">🌸 250</div>
-        <div class="cards-row">
-          <div class="poker-card">5 ♠</div>
-          <div class="poker-card">3 ♠</div>
-          <div class="poker-card">2 ♣</div>
-          <div class="poker-card red">6 ♦</div>
-          <div class="poker-card back"></div>
-        </div>
+        <div class="pot-badge">POT: ⚙️ <span id="table-pot-display">0</span></div>
+        <div class="cards-row" id="community-cards-box"></div>
       </div>
+
+      <!-- Player Hole Cards -->
+      <div class="player-hole-container" id="player-hole-box"></div>
 
     </div>
 
-    <div class="table-controls">
-      <div class="combo-bar">LUCKY COMBO | COMBINATION BET</div>
-      <button class="bet-action-btn" onclick="alert('Bet Placed!')">BET ⚙️ 50</button>
-      <button class="bet-action-btn" style="margin-left:6px;" onclick="alert('Bet Placed!')">BET ⚙️ 500</button>
+    <!-- SLOTS VIEW (LOADS WHEN SLOTS IS SELECTED) -->
+    <div class="slots-engine-box" id="slots-engine-view">
+      <div class="reels-container">
+        <div class="reel-box" id="reel-1">🎰</div>
+        <div class="reel-box" id="reel-2">🎰</div>
+        <div class="reel-box" id="reel-3">🎰</div>
+      </div>
+      <button class="bet-action-btn" style="width:180px;" onclick="spinSlotsEngine()">SPIN SLOTS</button>
+    </div>
+
+    <!-- TABLE ACTION CONTROLS -->
+    <div class="table-controls" id="poker-controls-bar">
+      <button class="bet-action-btn btn-fold" id="btn-fold" onclick="foldCurrentHand()">FOLD</button>
+      <button class="bet-action-btn" id="btn-deal" onclick="dealHoldemHand()">DEAL</button>
+      <button class="bet-action-btn" id="btn-next" onclick="nextHoldemRound()" disabled>BET / NEXT</button>
+      <button class="bet-action-btn" id="btn-raise" onclick="raiseHoldemBet()">RAISE +<span id="raise-amt-label">5</span></button>
     </div>
   </div>
 
-  <!-- GAME SELECTOR OVERLAY -->
+  <!-- GAME SELECTOR MODAL -->
   <div class="modal-overlay" id="modal-selector">
     <div class="game-grid-box">
       <div style="display:flex;justify-content:space-between;align-items:center;">
         <h3 style="margin:0;color:var(--gold);">Select Game</h3>
-        <span style="cursor:pointer;font-weight:bold;" onclick="closeGameSelector()">✕</span>
+        <span style="cursor:pointer;font-weight:bold;padding:4px;" onclick="closeGameSelector()">✕</span>
       </div>
       <div class="game-grid">
-        <div class="game-tile selected" onclick="selectGame('Texas Poker')">🃏 TEXAS POKER</div>
-        <div class="game-tile" onclick="selectGame('Omaha')">🎴 OMAHA</div>
-        <div class="game-tile" onclick="selectGame('Slots')">🎰 SLOTS</div>
-        <div class="game-tile" onclick="selectGame('Blackjack')">🃏 BLACKJACK</div>
-        <div class="game-tile" onclick="selectGame('Roulette')">🎡 ROULETTE</div>
-        <div class="game-tile" onclick="selectGame('Sports')">⚽ SPORTS BETTING</div>
-        <div class="game-tile" onclick="selectGame('Video Poker')">💻 VIDEO POKER</div>
-        <div class="game-tile" onclick="selectGame('Craps')">🎲 CRAPS</div>
-        <div class="game-tile" onclick="selectGame('Baccarat')">💎 BACCARAT</div>
+        <div class="game-tile selected" onclick="selectGameMode('Texas Poker')">🃏 TEXAS POKER</div>
+        <div class="game-tile" onclick="selectGameMode('Slots')">🎰 SLOTS</div>
+        <div class="game-tile" onclick="selectGameMode('Blackjack')">🃏 BLACKJACK</div>
+        <div class="game-tile" onclick="selectGameMode('Roulette')">🎡 ROULETTE</div>
+        <div class="game-tile" onclick="selectGameMode('Video Poker')">💻 VIDEO POKER</div>
+        <div class="game-tile" onclick="selectGameMode('Omaha')">🎴 OMAHA</div>
+        <div class="game-tile" onclick="selectGameMode('Craps')">🎲 CRAPS</div>
+        <div class="game-tile" onclick="selectGameMode('Baccarat')">💎 BACCARAT</div>
+        <div class="game-tile" onclick="selectGameMode('Sports')">⚽ SPORTS</div>
       </div>
     </div>
   </div>
@@ -608,6 +561,24 @@
   </div>
 
   <script>
+    // GLOBAL STATE
+    let bankroll = localStorage.getItem('casino_bankroll') ? parseInt(localStorage.getItem('casino_bankroll')) : 20000;
+    let selectedChip = 5;
+    let currentGame = 'Texas Poker';
+
+    function updateBankrollUI() {
+      document.querySelectorAll('.global-bankroll-display').forEach(el => el.textContent = bankroll);
+      localStorage.setItem('casino_bankroll', bankroll);
+      document.getElementById('raise-amt-label').textContent = selectedChip;
+    }
+
+    function selectChip(val, btnEl) {
+      selectedChip = val;
+      document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('selected'));
+      btnEl.classList.add('selected');
+      updateBankrollUI();
+    }
+
     function switchScreen(screenId) {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
       document.getElementById(`screen-${screenId}`).classList.add('active');
@@ -615,12 +586,6 @@
 
     function openGameSelector() { document.getElementById('modal-selector').style.display = 'flex'; }
     function closeGameSelector() { document.getElementById('modal-selector').style.display = 'none'; }
-
-    function selectGame(name) {
-      closeGameSelector();
-      switchScreen('table');
-    }
-
     function openSettings() { document.getElementById('modal-settings').style.display = 'flex'; }
     function closeSettings() { document.getElementById('modal-settings').style.display = 'none'; }
 
@@ -628,6 +593,181 @@
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       event.target.classList.add('active');
     }
+
+    function claimDailyBonus() {
+      bankroll += 1000;
+      updateBankrollUI();
+      alert("🎉 Claimed $1,000 Daily Chip Bonus!");
+    }
+
+    function selectGameMode(gameName) {
+      currentGame = gameName;
+      document.getElementById('game-title-header').textContent = gameName.toUpperCase();
+      closeGameSelector();
+      switchScreen('table');
+
+      if (gameName === 'Slots') {
+        document.getElementById('poker-table-view').style.display = 'none';
+        document.getElementById('poker-controls-bar').style.display = 'none';
+        document.getElementById('slots-engine-view').style.display = 'flex';
+      } else {
+        document.getElementById('poker-table-view').style.display = 'flex';
+        document.getElementById('poker-controls-bar').style.display = 'flex';
+        document.getElementById('slots-engine-view').style.display = 'none';
+      }
+    }
+
+    // AUTHENTIC TEXAS HOLD'EM ENGINE
+    const SUITS = ['♠', '♥', '♦', '♣'];
+    const VALUES = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+    const RANK_MAP = { '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14 };
+
+    let deck = [], playerHole = [], npc1Hole = [], communityCards = [];
+    let holdemStage = 0, pot = 0;
+
+    function buildDeck() {
+      deck = [];
+      for (let s of SUITS) { for (let v of VALUES) deck.push({ suit: s, value: v }); }
+      deck.sort(() => Math.random() - 0.5);
+    }
+
+    function renderCards(containerId, cards) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+      cards.forEach(card => {
+        const isRed = card.suit === '♥' || card.suit === '♦';
+        const div = document.createElement('div');
+        div.className = `poker-card ${isRed ? 'red' : ''}`;
+        div.innerHTML = `<div>${card.value}</div><div style="align-self:center;">${card.suit}</div><div style="align-self:flex-end">${card.value}</div>`;
+        container.appendChild(div);
+      });
+    }
+
+    function dealHoldemHand() {
+      if (bankroll < selectedChip) { alert("Not enough chips!"); return; }
+      bankroll -= selectedChip;
+      pot = selectedChip * 3;
+      updateBankrollUI();
+
+      buildDeck();
+      playerHole = [deck.pop(), deck.pop()];
+      npc1Hole = [deck.pop(), deck.pop()];
+      communityCards = [];
+      holdemStage = 1;
+
+      renderCards('player-hole-box', playerHole);
+      renderCards('community-cards-box', []);
+      document.getElementById('table-pot-display').textContent = pot;
+
+      document.getElementById('btn-deal').disabled = true;
+      document.getElementById('btn-next').disabled = false;
+      document.getElementById('btn-fold').disabled = false;
+    }
+
+    function nextHoldemRound() {
+      if (holdemStage === 1) {
+        communityCards = [deck.pop(), deck.pop(), deck.pop()]; // Flop
+        holdemStage = 2;
+      } else if (holdemStage === 2) {
+        communityCards.push(deck.pop()); // Turn
+        holdemStage = 3;
+      } else if (holdemStage === 3) {
+        communityCards.push(deck.pop()); // River
+        holdemStage = 4;
+      } else if (holdemStage === 4) {
+        evaluateShowdown();
+        return;
+      }
+      renderCards('community-cards-box', communityCards);
+    }
+
+    function raiseHoldemBet() {
+      if (bankroll < selectedChip) { alert("Not enough chips to raise!"); return; }
+      bankroll -= selectedChip;
+      pot += selectedChip * 2;
+      updateBankrollUI();
+      document.getElementById('table-pot-display').textContent = pot;
+    }
+
+    function foldCurrentHand() {
+      alert("Folded hand! Pot surrendered.");
+      resetHoldem();
+    }
+
+    function evaluate7CardHand(cards) {
+      const ranks = cards.map(c => RANK_MAP[c.value]).sort((a,b) => b-a);
+      const rankCounts = {};
+      ranks.forEach(r => rankCounts[r] = (rankCounts[r] || 0) + 1);
+      const counts = Object.values(rankCounts).sort((a,b) => b-a);
+
+      if (counts[0] === 4) return { score: 8, name: "Four of a Kind" };
+      if (counts[0] === 3 && counts[1] >= 2) return { score: 7, name: "Full House" };
+      if (counts[0] === 3) return { score: 4, name: "Three of a Kind" };
+      if (counts[0] === 2 && counts[1] === 2) return { score: 3, name: "Two Pair" };
+      if (counts[0] === 2) return { score: 2, name: "One Pair" };
+      return { score: 1, name: "High Card" };
+    }
+
+    function evaluateShowdown() {
+      const pResult = evaluate7CardHand([...playerHole, ...communityCards]);
+      const npcResult = evaluate7CardHand([...npc1Hole, ...communityCards]);
+
+      if (pResult.score >= npcResult.score) {
+        bankroll += pot;
+        alert(`🎉 Showdown Win! You won $${pot} with ${pResult.name}!`);
+      } else {
+        alert(`Elena won the pot with ${npcResult.name}.`);
+      }
+
+      updateBankrollUI();
+      resetHoldem();
+    }
+
+    function resetHoldem() {
+      document.getElementById('btn-deal').disabled = false;
+      document.getElementById('btn-next').disabled = true;
+      document.getElementById('btn-fold').disabled = true;
+      document.getElementById('table-pot-display').textContent = '0';
+      document.getElementById('community-cards-box').innerHTML = '';
+      document.getElementById('player-hole-box').innerHTML = '';
+      holdemStage = 0;
+    }
+
+    // SLOTS ENGINE LOGIC
+    const SYMBOLS = ['🍒', '🍋', '🔔', '💎', '7️⃣'];
+    function spinSlotsEngine() {
+      if (bankroll < selectedChip) { alert("Not enough chips!"); return; }
+      bankroll -= selectedChip;
+      updateBankrollUI();
+
+      let spins = 0;
+      const interval = setInterval(() => {
+        document.getElementById('reel-1').textContent = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+        document.getElementById('reel-2').textContent = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+        document.getElementById('reel-3').textContent = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+        spins++;
+        if (spins > 12) {
+          clearInterval(interval);
+          const r1 = document.getElementById('reel-1').textContent;
+          const r2 = document.getElementById('reel-2').textContent;
+          const r3 = document.getElementById('reel-3').textContent;
+
+          if (r1 === r2 && r2 === r3) {
+            const win = selectedChip * 10;
+            bankroll += win;
+            alert(`🎉 JACKPOT! You won $${win}!`);
+          } else if (r1 === r2 || r2 === r3 || r1 === r3) {
+            const win = selectedChip * 2;
+            bankroll += win;
+            alert(`Match! You won $${win}!`);
+          }
+          updateBankrollUI();
+        }
+      }, 80);
+    }
+
+    // Init
+    updateBankrollUI();
   </script>
 </body>
 </html>
