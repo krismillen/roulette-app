@@ -3,764 +3,631 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Vegas Casino Suite - Authentic Texas Hold'em</title>
+  <title>Texas Poker - Vegas Suite</title>
   <style>
     :root {
-      --bg-color: #0b140e;
-      --felt-green: #114b2f;
-      --felt-border: #1a6b44;
-      --gold: #dfb235;
-      --red: #d32f2f;
-      --black: #1a1a1a;
-      --card-bg: #ffffff;
+      --bg-dark: #0a1826;
+      --panel-blue: #0f2c48;
+      --panel-border: #21517a;
+      --active-blue: #165b93;
+      --gold: #f3ad22;
+      --gold-dark: #b87e09;
+      --green-btn: #388e3c;
+      --red-card: #d32f2f;
+      --felt-blue: #235272;
     }
+
+    * { box-sizing: border-box; user-select: none; }
 
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: var(--bg-color);
+      background: radial-gradient(circle, #133352 0%, #08121c 100%);
       color: white;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      margin: 0;
-      padding: 8px;
-      box-sizing: border-box;
     }
 
-    .nav-bar {
+    /* TOP HEADER BAR */
+    .top-bar {
+      height: 45px;
+      background: linear-gradient(180deg, #132b40 0%, #0a1724 100%);
+      border-bottom: 1px solid var(--panel-border);
       display: flex;
-      gap: 4px;
-      width: 100%;
-      max-width: 500px;
-      margin-bottom: 8px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 10px;
+      z-index: 100;
     }
 
-    .nav-btn {
-      flex: 1;
-      background: #1e2d24;
-      color: #aaa;
-      border: 1px solid #2e4537;
-      padding: 8px 2px;
-      border-radius: 6px;
+    .top-bar-left, .top-bar-right { display: flex; align-items: center; gap: 8px; }
+
+    .hdr-btn {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
       font-weight: bold;
       cursor: pointer;
-      font-size: 0.7rem;
-      text-transform: uppercase;
-    }
-
-    .nav-btn.active {
-      background: linear-gradient(180deg, #dfb235 0%, #aa820a 100%);
-      color: #000;
-      border-color: var(--gold);
-    }
-
-    .container {
-      width: 100%;
-      max-width: 500px;
       display: flex;
-      flex-direction: column;
       align-items: center;
+      gap: 4px;
+    }
+
+    .badge-num {
+      background: #d32f2f;
+      color: #fff;
+      border-radius: 10px;
+      padding: 1px 5px;
+      font-size: 0.65rem;
+    }
+
+    .title-banner {
+      font-size: 1.1rem;
+      font-weight: 900;
+      font-style: italic;
+      letter-spacing: 1px;
+      color: #fff;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+    }
+
+    /* VIEW SCREENS */
+    .screen { display: none; width: 100%; height: calc(100vh - 45px); position: relative; }
+    .screen.active { display: flex; }
+
+    /* ================= MAIN LOBBY SCREEN ================= */
+    #screen-lobby {
+      padding: 10px;
       gap: 10px;
     }
 
-    /* Dashboard & XP Bar */
-    .dashboard {
+    .lobby-left {
+      width: 180px;
       display: flex;
       flex-direction: column;
-      gap: 4px;
-      width: 100%;
-      background: rgba(0, 0, 0, 0.6);
-      padding: 8px 12px;
-      border-radius: 8px;
+      gap: 10px;
+    }
+
+    .profile-card {
+      background: var(--panel-blue);
+      border: 1px solid var(--panel-border);
+      border-radius: 6px;
+      padding: 8px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .prof-avatar {
+      width: 45px;
+      height: 45px;
+      border-radius: 4px;
+      background: #1e3a54;
       border: 1px solid var(--gold);
-      box-sizing: border-box;
+      object-fit: cover;
+    }
+
+    .prof-info { display: flex; flex-direction: column; font-size: 0.75rem; }
+    .prof-name { font-weight: bold; color: #fff; }
+    .prof-chips { color: var(--gold); font-weight: bold; }
+
+    .friends-panel {
+      flex: 1;
+      background: var(--panel-blue);
+      border: 1px solid var(--panel-border);
+      border-radius: 6px;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .friends-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px;
+      overflow-y: auto;
+    }
+
+    .friend-box {
+      width: 100%;
+      aspect-ratio: 1;
+      background: #173654;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .lobby-center {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .promo-card {
+      width: 100%;
+      max-width: 380px;
+      height: 85%;
+      background: linear-gradient(135deg, #4a148c 0%, #1a237e 100%);
+      border: 2px solid var(--gold);
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.6);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 15px;
       text-align: center;
     }
 
-    .stats-row {
+    .lobby-right {
+      width: 150px;
       display: flex;
-      justify-content: space-between;
-      font-size: 0.95rem;
-      font-weight: bold;
-    }
-
-    .xp-bar-bg {
-      width: 100%;
-      height: 6px;
-      background: #222;
-      border-radius: 3px;
-      overflow: hidden;
-      margin-top: 2px;
-    }
-
-    .xp-bar-fill {
-      height: 100%;
-      width: 0%;
-      background: var(--gold);
-      transition: width 0.3s;
-    }
-
-    .status-msg {
-      font-size: 0.8rem;
-      color: var(--gold);
-      font-weight: bold;
-      min-height: 1.2em;
-    }
-
-    /* Chip Selector */
-    .chip-selector {
-      display: flex;
+      flex-direction: column;
       gap: 8px;
-      justify-content: center;
-      width: 100%;
     }
 
-    .chip-btn {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      border: 2px dashed #000;
-      font-weight: 900;
-      font-size: 0.75rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      box-shadow: 0 3px 6px rgba(0,0,0,0.4);
-    }
-
-    .chip-btn.selected {
-      transform: scale(1.15);
-      border: 3px solid #fff !important;
-      box-shadow: 0 0 10px var(--gold);
-    }
-
-    .c-1 { background: #ffffff; color: #000; border-color: #888; }
-    .c-5 { background: #e53935; color: #fff; }
-    .c-25 { background: #2e7d32; color: #fff; }
-    .c-100 { background: #212121; color: var(--gold); border-color: var(--gold); }
-
-    /* Views */
-    .game-view {
-      display: none;
-      width: 100%;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .game-view.active { display: flex; }
-
-    /* Tables & Dynamic NPCs */
-    .table-area {
-      width: 100%;
-      background: var(--felt-green);
-      border: 3px solid var(--felt-border);
-      border-radius: 10px;
-      padding: 10px;
-      box-sizing: border-box;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      position: relative;
-    }
-
-    .npc-row {
-      display: flex;
-      justify-content: space-around;
-      width: 100%;
-      border-bottom: 1px dashed rgba(255,255,255,0.2);
-      padding-bottom: 6px;
-    }
-
-    .npc-seat {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      position: relative;
-      cursor: pointer;
-    }
-
-    .npc-avatar {
-      font-size: 1.5rem;
-      background: rgba(0,0,0,0.4);
-      border-radius: 50%;
-      width: 38px;
-      height: 38px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 2px solid var(--gold);
-      position: relative;
-    }
-
-    .received-item {
-      position: absolute;
-      bottom: -4px;
-      right: -4px;
-      font-size: 0.9rem;
-    }
-
-    .npc-name { font-size: 0.65rem; font-weight: bold; color: #fff; margin-top: 2px; }
-    .npc-rel { font-size: 0.55rem; color: var(--gold); font-weight: bold; }
-
-    .npc-bubble {
-      position: absolute;
-      top: -22px;
-      background: #fff;
-      color: #000;
-      font-size: 0.6rem;
-      font-weight: bold;
-      padding: 2px 5px;
+    .big-nav-btn {
+      flex: 1;
       border-radius: 8px;
-      white-space: nowrap;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-      display: none;
-      z-index: 10;
-    }
-
-    .npc-hand { display: flex; gap: 2px; margin-top: 3px; }
-
-    .mini-card {
-      width: 18px;
-      height: 26px;
-      background: #fff;
-      color: #000;
-      border-radius: 3px;
-      font-size: 0.55rem;
-      font-weight: bold;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .hand-container {
+      border: 1px solid rgba(255,255,255,0.3);
+      font-weight: 900;
+      font-size: 1rem;
+      color: #fff;
+      cursor: pointer;
       display: flex;
       flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+    }
+
+    .btn-play { background: linear-gradient(180deg, #43a047 0%, #1b5e20 100%); border-color: #81c784; }
+    .btn-lobby-select { background: linear-gradient(180deg, #fb8c00 0%, #ef6c00 100%); border-color: #ffb74d; }
+    .btn-bonus { background: linear-gradient(180deg, #8e24aa 0%, #4a148c 100%); border-color: #ba68c8; }
+
+    /* ================= GAME TABLE SCREEN ================= */
+    #screen-table {
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      background: radial-gradient(ellipse at center, #2c6891 0%, #0d2133 100%);
+    }
+
+    .poker-table-oval {
+      width: 90%;
+      height: 70%;
+      background: var(--felt-blue);
+      border: 12px solid #526373;
+      border-radius: 120px;
+      box-shadow: inset 0 0 40px rgba(0,0,0,0.8), 0 10px 25px rgba(0,0,0,0.5);
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Table Community Cards & Pot */
+    .table-center-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pot-badge {
+      background: rgba(0,0,0,0.6);
+      border: 1px solid var(--gold);
+      border-radius: 12px;
+      padding: 2px 10px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      color: var(--gold);
+      display: flex;
       align-items: center;
       gap: 4px;
     }
 
-    .hand-label { font-weight: bold; color: var(--gold); font-size: 0.8rem; }
+    .cards-row { display: flex; gap: 4px; }
 
-    .cards { display: flex; gap: 5px; min-height: 58px; }
-
-    .card {
-      width: 40px;
-      height: 58px;
-      background: var(--card-bg);
+    .poker-card {
+      width: 38px;
+      height: 54px;
+      background: #fff;
       color: #000;
-      border-radius: 5px;
+      border-radius: 4px;
+      padding: 2px 4px;
+      font-size: 0.75rem;
+      font-weight: 900;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 3px;
-      box-sizing: border-box;
-      font-weight: bold;
-      font-size: 0.75rem;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+    }
+    .poker-card.red { color: #d32f2f; }
+    .poker-card.back { background: linear-gradient(135deg, #b71c1c 0%, #880e4f 100%); border: 1px solid #fff; }
+
+    /* Seat Positions Around Table */
+    .seat {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .seat-avatar-box {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: #173654;
+      border: 2px solid var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.6);
       position: relative;
     }
 
-    .card.red-card { color: var(--red); }
-    .card.hidden { background: linear-gradient(135deg, #1a237e 25%, #283593 100%); color: transparent; }
-
-    .controls { display: flex; gap: 6px; width: 100%; justify-content: center; }
-
-    button.btn-main {
-      background: linear-gradient(180deg, #dfb235 0%, #aa820a 100%);
-      border: none;
-      padding: 10px 8px;
-      font-size: 0.85rem;
+    .seat-label {
+      font-size: 0.65rem;
       font-weight: bold;
-      color: #000;
-      border-radius: 6px;
-      cursor: pointer;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-      flex: 1;
+      background: rgba(0,0,0,0.7);
+      padding: 1px 6px;
+      border-radius: 8px;
+      margin-top: -6px;
     }
 
-    button.btn-sec { background: #e53935; color: white; }
-    button:disabled { opacity: 0.4; cursor: not-allowed; }
+    .seat-chips { font-size: 0.65rem; color: var(--gold); font-weight: bold; }
 
-    /* Modals & Gift Grid */
-    .modal {
+    .seat-top { top: -25px; }
+    .seat-top-left { top: 10%; left: 10%; }
+    .seat-top-right { top: 10%; right: 10%; }
+    .seat-bottom-left { bottom: 10%; left: 10%; }
+    .seat-bottom-right { bottom: 10%; right: 10%; }
+    .seat-bottom { bottom: -25px; }
+
+    /* Bottom Control Bar */
+    .table-controls {
+      width: 100%;
+      height: 50px;
+      background: rgba(10, 23, 36, 0.9);
+      border-top: 1px solid var(--panel-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 10px;
+    }
+
+    .combo-bar {
+      flex: 1;
+      height: 32px;
+      background: linear-gradient(90deg, #311b92 0%, #4a148c 100%);
+      border: 1px solid #7c4dff;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      padding: 0 10px;
+      font-size: 0.75rem;
+      font-weight: bold;
+      margin-right: 10px;
+    }
+
+    .bet-action-btn {
+      background: linear-gradient(180deg, #fbc02d 0%, #f57f17 100%);
+      border: 1px solid var(--gold);
+      color: #000;
+      font-weight: 900;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+
+    /* ================= GAME SELECTOR OVERLAY ================= */
+    .modal-overlay {
       display: none;
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.85);
-      z-index: 999;
+      background: rgba(0,0,0,0.8);
+      z-index: 200;
       justify-content: center;
       align-items: center;
-      flex-direction: column;
     }
 
-    .modal-box {
-      background: #1e2d24;
-      border: 2px solid var(--gold);
-      padding: 15px;
-      border-radius: 12px;
-      text-align: center;
-      color: white;
-      max-width: 340px;
+    .game-grid-box {
       width: 90%;
-      max-height: 80vh;
-      overflow-y: auto;
+      max-width: 550px;
+      background: var(--panel-blue);
+      border: 2px solid var(--panel-border);
+      border-radius: 10px;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
     }
 
-    .gift-grid {
+    .game-grid {
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 6px;
-      margin: 10px 0;
-      max-height: 180px;
-      overflow-y: auto;
-      padding: 5px;
-      background: rgba(0,0,0,0.4);
-      border-radius: 6px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
     }
 
-    .gift-item {
-      font-size: 1.3rem;
-      background: rgba(255,255,255,0.1);
-      border-radius: 5px;
-      padding: 4px;
+    .game-tile {
+      background: linear-gradient(180deg, #1d466c 0%, #112d47 100%);
+      border: 1px solid #2d6291;
+      border-radius: 6px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      font-size: 0.75rem;
+      font-weight: bold;
+    }
+
+    .game-tile.selected {
+      background: linear-gradient(180deg, #0288d1 0%, #01579b 100%);
+      border-color: #29b6f6;
+    }
+
+    /* ================= SETTINGS MODAL ================= */
+    .settings-box {
+      width: 90%;
+      max-width: 480px;
+      background: var(--panel-blue);
+      border: 2px solid var(--panel-border);
+      border-radius: 8px;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .settings-tabs {
+      display: flex;
+      background: #0a1724;
+      border-bottom: 1px solid var(--panel-border);
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 10px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 0.85rem;
+      color: #888;
       cursor: pointer;
     }
 
-    .gift-item:hover { background: var(--gold); }
+    .tab-btn.active {
+      color: #fff;
+      background: var(--panel-blue);
+      border-bottom: 2px solid var(--gold);
+    }
+
+    .settings-content {
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      font-size: 0.85rem;
+    }
+
+    .setting-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .toggle-switch {
+      width: 60px;
+      height: 24px;
+      background: #0a1724;
+      border-radius: 12px;
+      border: 1px solid var(--panel-border);
+      display: flex;
+      align-items: center;
+      padding: 2px;
+      cursor: pointer;
+    }
+
+    .toggle-knob {
+      width: 20px;
+      height: 20px;
+      background: var(--gold);
+      border-radius: 50%;
+      transition: transform 0.2s;
+    }
+
+    .toggle-switch.on .toggle-knob { transform: translateX(36px); }
   </style>
 </head>
 <body>
 
-  <!-- Modal for NPC & Gifts -->
-  <div class="modal" id="npc-modal">
-    <div class="modal-box">
-      <h2 id="modal-npc-name" style="color:var(--gold);margin:0;">NPC</h2>
-      <p id="modal-npc-bio" style="font-size:0.75rem;color:#ccc;margin:4px 0;">Bio...</p>
-      <p id="modal-npc-status" style="font-size:0.8rem;font-weight:bold;color:var(--gold);margin:4px 0;">Stranger</p>
-      
-      <p style="font-size:0.75rem;font-weight:bold;margin-top:10px;color:var(--gold);">Send Gift / Item ($15):</p>
-      <div class="gift-grid" id="gift-catalog"></div>
+  <!-- TOP HEADER -->
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <button class="hdr-btn" onclick="openGameSelector()">🎲 Games <span class="badge-num">19</span></button>
+      <button class="hdr-btn" onclick="switchScreen('lobby')">🏠 Lobby</button>
+    </div>
+    <div class="title-banner">TEXAS POKER</div>
+    <div class="top-bar-right">
+      <button class="hdr-btn" onclick="openSettings()">⚙️ Settings</button>
+    </div>
+  </div>
 
-      <div style="display:flex;flex-direction:column;gap:6px;margin-top:10px;">
-        <button class="btn-main" onclick="chatWithNpc()">Chat</button>
-        <button class="btn-main" id="friend-req-btn" onclick="addNpcFriend()">Add Friend</button>
-        <button class="btn-main btn-sec" onclick="closeModal()">Close</button>
+  <!-- LOBBY SCREEN -->
+  <div id="screen-lobby" class="screen active">
+    <div class="lobby-left">
+      <div class="profile-card">
+        <div class="prof-avatar">👤</div>
+        <div class="prof-info">
+          <span class="prof-name">Kris Millen</span>
+          <span class="prof-chips">⚙️ 9.6M</span>
+        </div>
+      </div>
+      <div class="friends-panel">
+        <span style="font-size:0.75rem;font-weight:bold;color:var(--gold);">Friends & Players</span>
+        <div class="friends-grid">
+          <div class="friend-box">👩</div>
+          <div class="friend-box">🤡</div>
+          <div class="friend-box">👤</div>
+          <div class="friend-box">🧔</div>
+          <div class="friend-box">👩‍🦰</div>
+          <div class="friend-box">🤠</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lobby-center">
+      <div class="promo-card">
+        <h2 style="color:var(--gold);margin:0;">GET 1 LOTTERY TICKET</h2>
+        <p style="font-size:0.8rem;color:#ccc;">Spin & Win up to 5M Chips!</p>
+        <button class="bet-action-btn" style="margin-top:15px;" onclick="switchScreen('table')">GET NOW</button>
+      </div>
+    </div>
+
+    <div class="lobby-right">
+      <button class="big-nav-btn btn-play" onclick="switchScreen('table')">PLAY NOW</button>
+      <button class="big-nav-btn btn-lobby-select" onclick="openGameSelector()">LOBBY</button>
+      <button class="big-nav-btn btn-bonus">DAILY BONUS</button>
+    </div>
+  </div>
+
+  <!-- POKER TABLE SCREEN -->
+  <div id="screen-table" class="screen">
+    <div class="poker-table-oval">
+      
+      <!-- Top Seat -->
+      <div class="seat seat-top">
+        <div class="seat-avatar-box">👩‍💼</div>
+        <div class="seat-label">Guest</div>
+        <div class="seat-chips">⚙️ 20,275</div>
+      </div>
+
+      <!-- Top Right Seat -->
+      <div class="seat seat-top-right">
+        <div class="seat-avatar-box">👨</div>
+        <div class="seat-label">Guest</div>
+        <div class="seat-chips">⚙️ 5,050</div>
+      </div>
+
+      <!-- Left Seat (King) -->
+      <div class="seat seat-bottom-left">
+        <div class="seat-avatar-box">🤴</div>
+        <div class="seat-label">King</div>
+        <div class="seat-chips">⚙️ 275</div>
+      </div>
+
+      <!-- Bottom Player (Kris Millen) -->
+      <div class="seat seat-bottom">
+        <div class="seat-avatar-box" style="border-color:#fff;">👤</div>
+        <div class="seat-label" style="background:var(--gold);color:#000;">Kris Millen</div>
+        <div class="seat-chips">⚙️ 20,000</div>
+      </div>
+
+      <!-- Community Cards & Pot -->
+      <div class="table-center-area">
+        <div class="pot-badge">🌸 250</div>
+        <div class="cards-row">
+          <div class="poker-card">5 ♠</div>
+          <div class="poker-card">3 ♠</div>
+          <div class="poker-card">2 ♣</div>
+          <div class="poker-card red">6 ♦</div>
+          <div class="poker-card back"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="table-controls">
+      <div class="combo-bar">LUCKY COMBO | COMBINATION BET</div>
+      <button class="bet-action-btn" onclick="alert('Bet Placed!')">BET ⚙️ 50</button>
+      <button class="bet-action-btn" style="margin-left:6px;" onclick="alert('Bet Placed!')">BET ⚙️ 500</button>
+    </div>
+  </div>
+
+  <!-- GAME SELECTOR OVERLAY -->
+  <div class="modal-overlay" id="modal-selector">
+    <div class="game-grid-box">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <h3 style="margin:0;color:var(--gold);">Select Game</h3>
+        <span style="cursor:pointer;font-weight:bold;" onclick="closeGameSelector()">✕</span>
+      </div>
+      <div class="game-grid">
+        <div class="game-tile selected" onclick="selectGame('Texas Poker')">🃏 TEXAS POKER</div>
+        <div class="game-tile" onclick="selectGame('Omaha')">🎴 OMAHA</div>
+        <div class="game-tile" onclick="selectGame('Slots')">🎰 SLOTS</div>
+        <div class="game-tile" onclick="selectGame('Blackjack')">🃏 BLACKJACK</div>
+        <div class="game-tile" onclick="selectGame('Roulette')">🎡 ROULETTE</div>
+        <div class="game-tile" onclick="selectGame('Sports')">⚽ SPORTS BETTING</div>
+        <div class="game-tile" onclick="selectGame('Video Poker')">💻 VIDEO POKER</div>
+        <div class="game-tile" onclick="selectGame('Craps')">🎲 CRAPS</div>
+        <div class="game-tile" onclick="selectGame('Baccarat')">💎 BACCARAT</div>
       </div>
     </div>
   </div>
 
-  <!-- Profile & Friends List Modal -->
-  <div class="modal" id="profile-modal">
-    <div class="modal-box">
-      <h2 style="color:var(--gold);margin:0;">👤 Player Profile</h2>
-      <p id="prof-level" style="font-size:1rem;font-weight:bold;margin:5px 0;">Level 1 - Rookie</p>
-      <p id="prof-xp" style="font-size:0.8rem;color:#aaa;">XP: 0 / 100</p>
-      
-      <h3 style="color:var(--gold);margin-top:15px;margin-bottom:5px;font-size:0.9rem;">❤️ Friends List</h3>
-      <div id="friends-list-container" style="font-size:0.8rem;color:#ccc;min-height:40px;">No friends added yet!</div>
-
-      <button class="btn-main btn-sec" onclick="closeProfileModal()" style="margin-top:15px;width:100%;">Close</button>
-    </div>
-  </div>
-
-  <!-- Navigation -->
-  <div class="nav-bar">
-    <button class="nav-btn active" onclick="switchTab('holdem')">Hold'em</button>
-    <button class="nav-btn" onclick="switchTab('slots')">Slots</button>
-    <button class="nav-btn" onclick="openProfileModal()" style="background:#283593;color:#fff;">Profile</button>
-  </div>
-
-  <div class="container">
-
-    <!-- Dashboard -->
-    <div class="dashboard">
-      <div class="stats-row">
-        <div>Bankroll: $<span id="balance">1000</span></div>
-        <div id="level-display">Lvl 1 (0 XP)</div>
+  <!-- SETTINGS MODAL -->
+  <div class="modal-overlay" id="modal-settings">
+    <div class="settings-box">
+      <div class="settings-tabs">
+        <div class="tab-btn active" onclick="switchSettingsTab('gen')">General</div>
+        <div class="tab-btn" onclick="switchSettingsTab('notif')">Notifications</div>
       </div>
-      <div class="xp-bar-bg"><div class="xp-bar-fill" id="xp-fill"></div></div>
-      <div class="status-msg" id="status">Welcome to Texas Hold'em!</div>
-    </div>
-
-    <!-- Chip Selector -->
-    <div class="chip-selector">
-      <div class="chip-btn c-1" onclick="selectChip(1)">$1</div>
-      <div class="chip-btn c-5 selected" onclick="selectChip(5)">$5</div>
-      <div class="chip-btn c-25" onclick="selectChip(25)">$25</div>
-      <div class="chip-btn c-100" onclick="selectChip(100)">$100</div>
-    </div>
-
-    <!-- TEXAS HOLD'EM VIEW -->
-    <div id="view-holdem" class="game-view active">
-      
-      <!-- Table Selector Dropdown -->
-      <div style="display:flex;gap:5px;width:100%;align-items:center;">
-        <span style="font-size:0.75rem;font-weight:bold;color:var(--gold);">Select Table:</span>
-        <select id="table-select" onchange="changeTable(this.value)" style="flex:1;background:#1e2d24;color:#fff;border:1px solid var(--gold);padding:4px;border-radius:4px;font-weight:bold;">
-          <option value="neon">Neon Lounge (Casual)</option>
-          <option value="vip">VIP High Rollers</option>
-          <option value="backyard">Backyard Felt</option>
-        </select>
-      </div>
-
-      <div class="table-area">
-        <div class="npc-row">
-          <div class="npc-seat" onclick="openNpcMenu(0)">
-            <div class="npc-bubble" id="bubble-h-1">...</div>
-            <div class="npc-avatar" id="avatar-h-1">👤<span class="received-item" id="item-h-1"></span></div>
-            <div class="npc-name" id="name-h-1">Stranger</div>
-            <div class="npc-rel" id="rel-h-1">Stranger</div>
-            <div class="npc-hand" id="hand-h-1"></div>
-          </div>
-          <div class="npc-seat" onclick="openNpcMenu(1)">
-            <div class="npc-bubble" id="bubble-h-2">...</div>
-            <div class="npc-avatar" id="avatar-h-2">👤<span class="received-item" id="item-h-2"></span></div>
-            <div class="npc-name" id="name-h-2">Stranger</div>
-            <div class="npc-rel" id="rel-h-2">Stranger</div>
-            <div class="npc-hand" id="hand-h-2"></div>
-          </div>
+      <div class="settings-content" id="set-gen">
+        <div class="setting-row">
+          <span>Do not allow friend requests</span>
+          <div class="toggle-switch" onclick="this.classList.toggle('on')"><div class="toggle-knob"></div></div>
         </div>
-
-        <!-- Community Cards -->
-        <div class="hand-container">
-          <div class="hand-label">Community Cards (Pot: $<span id="pot-display">0</span>)</div>
-          <div class="cards" id="community-cards"></div>
+        <div class="setting-row">
+          <span>Avatar animation</span>
+          <span style="color:var(--gold);font-weight:bold;">AUTO</span>
         </div>
-
-        <!-- Player Hole Cards -->
-        <div class="hand-container">
-          <div class="hand-label">Your Hole Cards</div>
-          <div class="cards" id="player-holdem-cards"></div>
+        <div class="setting-row">
+          <span>Show hints</span>
+          <div class="toggle-switch on" onclick="this.classList.toggle('on')"><div class="toggle-knob"></div></div>
         </div>
       </div>
-
-      <div class="controls">
-        <button class="btn-main" id="h-deal-btn" onclick="startHoldem()">DEAL PRE-FLOP</button>
-        <button class="btn-main" id="h-next-btn" onclick="nextHoldemStage()" disabled>BET / NEXT</button>
-        <button class="btn-main btn-sec" id="h-fold-btn" onclick="foldHoldem()" disabled>FOLD</button>
+      <div style="padding:10px;text-align:right;background:#0a1724;">
+        <button class="hdr-btn" onclick="closeSettings()">Close</button>
       </div>
     </div>
-
-    <!-- SLOTS VIEW -->
-    <div id="view-slots" class="game-view">
-      <div class="slots-machine">
-        <div class="reel" id="reel-1">🎰</div>
-        <div class="reel" id="reel-2">🎰</div>
-        <div class="reel" id="reel-3">🎰</div>
-      </div>
-      <div class="controls"><button class="btn-main" onclick="spinSlots()">SPIN</button></div>
-    </div>
-
   </div>
 
   <script>
-    // 100+ GIFT CATALOG
-    const GIFT_CATALOG = [
-      '🥤','☕','🍺','🍷','🍸','🍹','🍾','🥃','🧃','🧉','🍼','🍿','🍕','🍔','🍟','🌭','🌮','🌯','🍩','🍪',
-      '🍰','🍫','🍬','🍭','🍇','🍉','🍊','🍋','🍌','🍍','🍎','🍏','🍐','🍑','🍒','🍓','🫐','🥝','🥑','🥦',
-      '🚬','🕯️','🪵','🛋️','🪑','👑','💍','💎','🕶️','🎩','🧢','👟','👠','👝','💼','🎒','⌚','📱','🎧','🎸',
-      '🎷','🎺','🎻','🎰','🎲','🎯','🎳','🪀','🪁','🔮','🧸','🎨','🧵','🧶','🌹','🌺','🌸','🌼','🌻','🌴',
-      '🎈','🎉','🎁','🏆','🥇','🎖️','⚽','🏀','🏈','⚾','🎾','🏐','🎱','🧿','🪬','💈','🧸','🔑','🚗','🏎️'
-    ];
-
-    const NPC_POOL = [
-      { id: 'viktor', name: 'Viktor', avatar: '👴', bio: 'Retired captain who plays patient, calm hands.', rp: 0, friend: false, item: '' },
-      { id: 'maya', name: 'Maya', avatar: '🎨', bio: 'Wild painter who loves chasing big rivers.', rp: 0, friend: false, item: '' },
-      { id: 'leo', name: 'Leo', avatar: '🏎️', bio: 'Rally racer who bets big and aggressive.', rp: 0, friend: false, item: '' },
-      { id: 'sofia', name: 'Sofia', avatar: '🍸', bio: 'Socialite who loves sending drinks and toasts.', rp: 0, friend: false, item: '' }
-    ];
-
-    let currentTableNpcs = [NPC_POOL[0], NPC_POOL[1]];
-    let selectedNpcIndex = null;
-    let bankroll = localStorage.getItem('casino_bankroll') ? parseInt(localStorage.getItem('casino_bankroll')) : 1000;
-    let xp = localStorage.getItem('casino_xp') ? parseInt(localStorage.getItem('casino_xp')) : 0;
-    let selectedChip = 5;
-    let activeTab = 'holdem';
-
-    function addXP(amount) {
-      xp += amount;
-      localStorage.setItem('casino_xp', xp);
-      updateDashboard();
+    function switchScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(`screen-${screenId}`).classList.add('active');
     }
 
-    function getLevelInfo() {
-      const level = Math.floor(xp / 100) + 1;
-      const progress = xp % 100;
-      return { level, progress };
+    function openGameSelector() { document.getElementById('modal-selector').style.display = 'flex'; }
+    function closeGameSelector() { document.getElementById('modal-selector').style.display = 'none'; }
+
+    function selectGame(name) {
+      closeGameSelector();
+      switchScreen('table');
     }
 
-    function updateDashboard(msg) {
-      document.getElementById('balance').textContent = bankroll;
-      const info = getLevelInfo();
-      document.getElementById('level-display').textContent = `Lvl ${info.level} (${info.progress} XP)`;
-      document.getElementById('xp-fill').style.width = `${info.progress}%`;
-      localStorage.setItem('casino_bankroll', bankroll);
-      if (msg) document.getElementById('status').textContent = msg;
-    }
+    function openSettings() { document.getElementById('modal-settings').style.display = 'flex'; }
+    function closeSettings() { document.getElementById('modal-settings').style.display = 'none'; }
 
-    function renderGiftCatalog() {
-      const cat = document.getElementById('gift-catalog');
-      cat.innerHTML = '';
-      GIFT_CATALOG.forEach(item => {
-        const div = document.createElement('div');
-        div.className = 'gift-item';
-        div.textContent = item;
-        div.onclick = () => sendGift(item);
-        cat.appendChild(div);
-      });
-    }
-
-    function sendGift(item) {
-      if (bankroll < 15) { alert("Sending a gift costs $15!"); return; }
-      bankroll -= 15;
-      const npc = currentTableNpcs[selectedNpcIndex];
-      npc.item = item;
-      npc.rp = Math.min(100, npc.rp + 20);
-      localStorage.setItem(`npc_rp_${npc.id}`, npc.rp);
-      
-      updateDashboard(`Sent ${item} to ${npc.name} (+20 RP)!`);
-      renderTableNpcs();
-      closeModal();
-    }
-
-    function renderTableNpcs() {
-      const n1 = currentTableNpcs[0];
-      document.getElementById('avatar-h-1').textContent = n1.avatar;
-      document.getElementById('item-h-1').textContent = n1.item;
-      document.getElementById('name-h-1').textContent = n1.name;
-      document.getElementById('rel-h-1').textContent = getRelTitle(n1);
-
-      const n2 = currentTableNpcs[1];
-      document.getElementById('avatar-h-2').textContent = n2.avatar;
-      document.getElementById('item-h-2').textContent = n2.item;
-      document.getElementById('name-h-2').textContent = n2.name;
-      document.getElementById('rel-h-2').textContent = getRelTitle(n2);
-    }
-
-    function getRelTitle(npc) {
-      if (npc.friend) return '❤️ Friend';
-      if (npc.rp >= 50) return '⭐ Buddy';
-      return 'Stranger';
-    }
-
-    function openNpcMenu(idx) {
-      selectedNpcIndex = idx;
-      const npc = currentTableNpcs[idx];
-      document.getElementById('modal-npc-name').textContent = `${npc.avatar} ${npc.name}`;
-      document.getElementById('modal-npc-bio').textContent = npc.bio;
-      document.getElementById('modal-npc-status').textContent = `${getRelTitle(npc)} (${npc.rp}/100 RP)`;
-      renderGiftCatalog();
-      document.getElementById('npc-modal').style.display = 'flex';
-    }
-
-    function closeModal() { document.getElementById('npc-modal').style.display = 'none'; }
-
-    function openProfileModal() {
-      const info = getLevelInfo();
-      document.getElementById('prof-level').textContent = `Level ${info.level} - Casino Player`;
-      document.getElementById('prof-xp').textContent = `Total XP: ${xp}`;
-
-      const fContainer = document.getElementById('friends-list-container');
-      const friends = NPC_POOL.filter(n => n.friend);
-      if (friends.length === 0) {
-        fContainer.textContent = "No friends added yet!";
-      } else {
-        fContainer.innerHTML = friends.map(f => `<div>${f.avatar} <b>${f.name}</b> (RP: ${f.rp})</div>`).join('');
-      }
-
-      document.getElementById('profile-modal').style.display = 'flex';
-    }
-
-    function closeProfileModal() { document.getElementById('profile-modal').style.display = 'none'; }
-
-    function changeTable(val) {
-      currentTableNpcs = [...NPC_POOL].sort(() => Math.random() - 0.5).slice(0, 2);
-      renderTableNpcs();
-      updateDashboard(`Joined ${val.toUpperCase()} Table!`);
-    }
-
-    function selectChip(val) {
-      selectedChip = val;
-      document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('selected'));
-      event.target.classList.add('selected');
-      updateDashboard();
-    }
-
-    function switchTab(tab) {
-      activeTab = tab;
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    function switchSettingsTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       event.target.classList.add('active');
-      document.querySelectorAll('.game-view').forEach(v => v.classList.remove('active'));
-      document.getElementById(`view-${tab}`).classList.add('active');
     }
-
-    // AUTHENTIC TEXAS HOLD'EM ENGINE
-    const SUITS = ['♠', '♥', '♦', '♣'];
-    const VALUES = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
-    const RANK_MAP = { '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14 };
-
-    let deck = [], playerHole = [], npc1Hole = [], npc2Hole = [], communityCards = [];
-    let holdemStage = 0, pot = 0;
-
-    function buildDeck() {
-      deck = [];
-      for (let s of SUITS) { for (let v of VALUES) deck.push({ suit: s, value: v }); }
-      deck.sort(() => Math.random() - 0.5);
-    }
-
-    function renderCards(containerId, cards, hide = false) {
-      const c = document.getElementById(containerId);
-      c.innerHTML = '';
-      cards.forEach(card => {
-        const div = document.createElement('div');
-        if (hide) {
-          div.className = 'card hidden';
-        } else {
-          const isRed = card.suit === '♥' || card.suit === '♦';
-          div.className = `card ${isRed ? 'red-card' : ''}`;
-          div.innerHTML = `<div>${card.value}</div><div style="align-self:center;">${card.suit}</div><div style="align-self:flex-end">${card.value}</div>`;
-        }
-        c.appendChild(div);
-      });
-    }
-
-    function renderNpcMiniHand(containerId, count) {
-      const c = document.getElementById(containerId);
-      c.innerHTML = '';
-      for(let i=0; i<count; i++) {
-        const div = document.createElement('div');
-        div.className = 'mini-card';
-        div.textContent = '🂠';
-        c.appendChild(div);
-      }
-    }
-
-    function startHoldem() {
-      if (bankroll < selectedChip) { alert("Not enough chips!"); return; }
-      bankroll -= selectedChip;
-      pot = selectedChip * 3; // Blind bets
-      buildDeck();
-
-      playerHole = [deck.pop(), deck.pop()];
-      npc1Hole = [deck.pop(), deck.pop()];
-      npc2Hole = [deck.pop(), deck.pop()];
-      communityCards = [];
-      holdemStage = 1;
-
-      renderCards('player-holdem-cards', playerHole);
-      renderCards('community-cards', []);
-      renderNpcMiniHand('hand-h-1', 2);
-      renderNpcMiniHand('hand-h-2', 2);
-
-      document.getElementById('pot-display').textContent = pot;
-      document.getElementById('h-deal-btn').disabled = true;
-      document.getElementById('h-next-btn').disabled = false;
-      document.getElementById('h-fold-btn').disabled = false;
-
-      addXP(15);
-      updateDashboard("Pre-Flop: Small & Big Blinds posted. Press BET / NEXT!");
-    }
-
-    function foldHoldem() {
-      updateDashboard("You folded your hand. Pot lost!");
-      resetHoldem();
-    }
-
-    function nextHoldemStage() {
-      if (holdemStage === 1) {
-        // Flop (3 cards)
-        communityCards = [deck.pop(), deck.pop(), deck.pop()];
-        holdemStage = 2;
-        pot += selectedChip * 3;
-        updateDashboard("The Flop is dealt! Additional bets placed.");
-      } else if (holdemStage === 2) {
-        // Turn (1 card)
-        communityCards.push(deck.pop());
-        holdemStage = 3;
-        pot += selectedChip * 3;
-        updateDashboard("The Turn is dealt! Final round of betting.");
-      } else if (holdemStage === 3) {
-        // River (1 card)
-        communityCards.push(deck.pop());
-        holdemStage = 4;
-        pot += selectedChip * 3;
-        updateDashboard("The River is dealt! Showdown time!");
-      } else if (holdemStage === 4) {
-        // Showdown
-        evaluateShowdown();
-        return;
-      }
-      document.getElementById('pot-display').textContent = pot;
-      renderCards('community-cards', communityCards);
-    }
-
-    function resetHoldem() {
-      document.getElementById('h-deal-btn').disabled = false;
-      document.getElementById('h-next-btn').disabled = true;
-      document.getElementById('h-fold-btn').disabled = true;
-      holdemStage = 0;
-    }
-
-    // 5-CARD HAND EVALUATION ALGORITHM
-    function evaluate7CardHand(cards) {
-      // Get all rank values
-      const ranks = cards.map(c => RANK_MAP[c.value]).sort((a,b) => b-a);
-      const suits = cards.map(c => c.suit);
-
-      const rankCounts = {};
-      ranks.forEach(r => rankCounts[r] = (rankCounts[r] || 0) + 1);
-
-      const suitCounts = {};
-      suits.forEach(s => suitCounts[s] = (suitCounts[s] || 0) + 1);
-
-      const isFlush = Object.values(suitCounts).some(count => count >= 5);
-      const counts = Object.values(rankCounts).sort((a,b) => b-a);
-
-      // Check Straight
-      const uniqueRanks = [...new Set(ranks)];
-      let isStraight = false;
-      for(let i=0; i<=uniqueRanks.length - 5; i++) {
-        if(uniqueRanks[i] - uniqueRanks[i+4] === 4) { isStraight = true; break; }
-      }
-
-      if (isFlush && isStraight) return { score: 9, name: "Straight Flush" };
-      if (counts[0] === 4) return { score: 8, name: "Four of a Kind" };
-      if (counts[0] === 3 && counts[1] >= 2) return { score: 7, name: "Full House" };
-      if (isFlush) return { score: 6, name: "Flush" };
-      if (isStraight) return { score: 5, name: "Straight" };
-      if (counts[0] === 3) return { score: 4, name: "Three of a Kind" };
-      if (counts[0] === 2 && counts[1] === 2) return { score: 3, name: "Two Pair" };
-      if (counts[0] === 2) return { score: 2, name: "One Pair" };
-      return { score: 1, name: `High Card (${VALUES[ranks[0]-2]})` };
-    }
-
-    function evaluateShowdown() {
-      const pHand = evaluate7CardHand([...playerHole, ...communityCards]);
-      const n1Hand = evaluate7CardHand([...npc1Hole, ...communityCards]);
-      const n2Hand = evaluate7CardHand([...npc2Hole, ...communityCards]);
-
-      // Reveal NPC Hole Cards
-      renderCards('hand-h-1', npc1Hole);
-      renderCards('hand-h-2', npc2Hole);
-
-      let msg = `Your Hand: ${pHand.name}. `;
-
-      if (pHand.score >= n1Hand.score && pHand.score >= n2Hand.score) {
-        bankroll += pot;
-        addXP(40);
-        msg += `You WIN the $${pot} Pot! 🎉`;
-      } else {
-        const winner = n1Hand.score > n2Hand.score ? currentTableNpcs[0].name : currentTableNpcs[1].name;
-        msg += `${winner} won with ${n1Hand.score > n2Hand.score ? n1Hand.name : n2Hand.name}.`;
-      }
-
-      updateDashboard(msg);
-      resetHoldem();
-    }
-
-    renderTableNpcs();
   </script>
 </body>
 </html>
