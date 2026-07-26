@@ -879,9 +879,10 @@
         return;
       }
       renderCards('community-box', communityCards);
-      document.getElementById('hand-strength-box').textContent = evaluateHand(playerHole, communityCards).name;
+      document.getElementById('hand-strength-badge').textContent = evaluateHand(playerHole, communityCards).name;
     }
 
+    // ACTIVE NPC RAISE & CALL ENGINE
     function executeCustomBet() {
       const amt = currentCustomBet;
       if (bankroll < amt) { showBanner("⚠️ NOT ENOUGH CHIPS!"); return; }
@@ -910,13 +911,28 @@
             const handInfo = evaluateHand(n.hole, communityCards);
             let action = 'call';
 
-            if (amt >= 1000 && n.style === 'Rock' && handInfo.score < 2000) action = 'fold';
-            else if (amt >= 5000 && handInfo.score < 3000) action = 'fold';
+            // DYNAMIC NPC DECISION (RAISE, CALL, OR FOLD)
+            if (n.style === 'Rock') {
+              if (amt >= 1000 && handInfo.score < 2000) action = 'fold';
+              else if (handInfo.score >= 3000 && Math.random() < 0.6) action = 'raise';
+            } else if (n.style === 'Maniac') {
+              if (Math.random() < 0.45) action = 'raise'; // Maniac loves to raise back!
+              else if (amt >= 5000 && handInfo.score < 1000) action = 'fold';
+            } else {
+              if (amt >= 2000 && handInfo.score < 1500) action = 'fold';
+            }
 
             if (action === 'fold') {
               n.active = false;
               seatEl.classList.add('folded');
               showNpcBubble(n.id, "Fold ❌");
+            } else if (action === 'raise') {
+              const raiseAmt = Math.min(amt * 2, n.chips);
+              n.chips -= raiseAmt;
+              pot += raiseAmt;
+              remainingActive++;
+              showNpcBubble(n.id, `Raise €${raiseAmt} 🚀`);
+              showBanner(`🔥 ${n.name.toUpperCase()} RAISES TO €${raiseAmt}!`);
             } else {
               const actualBet = Math.min(amt, n.chips);
               n.chips -= actualBet;
