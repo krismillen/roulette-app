@@ -326,6 +326,31 @@
 
     .act-btn:disabled { opacity: 0.4; cursor: not-allowed; filter: grayscale(1); }
 
+    /* NATIVE IN-GAME BANNER NOTIFICATION */
+    .toast-banner {
+      display: none;
+      position: fixed;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(180deg, #fbc02d 0%, #b87e09 100%);
+      color: #000;
+      font-weight: 900;
+      padding: 12px 24px;
+      border-radius: 30px;
+      border: 2px solid #fff;
+      box-shadow: 0 0 20px rgba(243, 173, 34, 0.8);
+      z-index: 300;
+      text-align: center;
+      font-size: 0.9rem;
+      animation: popIn 0.3s ease-out;
+    }
+
+    @keyframes popIn {
+      0% { transform: translate(-50%, -20px) scale(0.8); opacity: 0; }
+      100% { transform: translate(-50%, 0) scale(1); opacity: 1; }
+    }
+
     /* MODALS */
     .modal-overlay {
       display: none;
@@ -371,6 +396,11 @@
   </style>
 </head>
 <body>
+
+  <!-- IN-GAME WIN TOAST BANNER -->
+  <div class="toast-banner" id="toast-banner" onclick="this.style.display='none'">
+    <span id="toast-msg">🎉 YOU WIN!</span>
+  </div>
 
   <!-- HEADER -->
   <div class="top-bar">
@@ -425,7 +455,7 @@
         <div class="seat seat-bottom">
           <div class="seat-avatar" style="border-color:#fff;">👤</div>
           <div class="seat-label" style="background:var(--gold);color:#000;">Kris Millen</div>
-          <div class="seat-chips">€ <span class="bankroll-val">102424</span></div>
+          <div class="seat-chips">€ <span class="bankroll-val">103424</span></div>
         </div>
 
         <!-- COMMUNITY CARDS & POT -->
@@ -470,7 +500,7 @@
     <div style="background:var(--panel-blue);border:1px solid var(--panel-border);padding:15px;border-radius:8px;text-align:center;">
       <h2 style="margin:0;color:var(--gold);">CASINO MILLEN</h2>
       <p style="font-weight:bold;margin:8px 0;">Kris Millen</p>
-      <p style="color:var(--gold);margin:0;">Chips: € <span class="bankroll-val">102424</span></p>
+      <p style="color:var(--gold);margin:0;">Chips: € <span class="bankroll-val">103424</span></p>
       <button class="act-btn" style="margin-top:15px;width:160px;" onclick="claimBonus()">Claim Daily Bonus</button>
     </div>
   </div>
@@ -506,7 +536,7 @@
 
   <script>
     // GAME & NPC STATE
-    let bankroll = localStorage.getItem('casino_bankroll') ? parseInt(localStorage.getItem('casino_bankroll')) : 102424;
+    let bankroll = localStorage.getItem('casino_bankroll') ? parseInt(localStorage.getItem('casino_bankroll')) : 103424;
     let npcs = [
       { id: 0, name: 'Elena', chips: 20000, active: true },
       { id: 1, name: 'Leo', chips: 20000, active: true },
@@ -520,6 +550,13 @@
     const SUITS = ['♠', '♥', '♦', '♣'];
     const VALUES = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
     let deck = [], playerHole = [], communityCards = [];
+
+    function showBanner(msg) {
+      const banner = document.getElementById('toast-banner');
+      document.getElementById('toast-msg').textContent = msg;
+      banner.style.display = 'block';
+      setTimeout(() => { banner.style.display = 'none'; }, 3000);
+    }
 
     function updateBankrollUI() {
       // Auto-rebuy low stacked NPCs back up to €20,000
@@ -572,7 +609,7 @@
     function claimBonus() {
       bankroll += 1000;
       updateBankrollUI();
-      alert("🎉 Claimed €1,000 Bonus!");
+      showBanner("🎉 CLAIMED €1,000 DAILY BONUS!");
     }
 
     // POKER ENGINE
@@ -599,7 +636,7 @@
     }
 
     function startNewHand() {
-      if (bankroll < selectedStake) { alert("Not enough chips!"); return; }
+      if (bankroll < selectedStake) { showBanner("⚠️ NOT ENOUGH CHIPS!"); return; }
       
       // Deduct from Player
       bankroll -= selectedStake;
@@ -642,14 +679,14 @@
         gameStage = 4;
       } else if (gameStage === 4) {
         // Showdown Logic
-        const playerWins = Math.random() > 0.3; // Realistic equity logic
+        const playerWins = Math.random() > 0.3;
         if (playerWins) {
           bankroll += pot;
-          alert(`🎉 Showdown Complete! You won the €${pot} pot!`);
+          showBanner(`🎉 SHOWDOWN WIN! YOU WON €${pot}!`);
         } else {
           const winningNpc = npcs[Math.floor(Math.random() * npcs.length)];
           winningNpc.chips += pot;
-          alert(`${winningNpc.name} had a higher hand and won the €${pot} pot!`);
+          showBanner(`${winningNpc.name.toUpperCase()} WONS €${pot} POT`);
         }
         resetHand();
         updateBankrollUI();
@@ -659,7 +696,7 @@
     }
 
     function quickBet(amt) {
-      if (bankroll < amt) { alert("Not enough chips!"); return; }
+      if (bankroll < amt) { showBanner("⚠️ NOT ENOUGH CHIPS!"); return; }
       
       bankroll -= amt;
       pot += amt;
@@ -679,7 +716,7 @@
     function foldHand() {
       let winningNpc = npcs[0];
       winningNpc.chips += pot;
-      alert(`Folded hand! ${winningNpc.name} wins the €${pot} pot.`);
+      showBanner(`FOLDED HAND! ${winningNpc.name.toUpperCase()} WINS €${pot}`);
       resetHand();
     }
 
@@ -724,7 +761,7 @@
     }
 
     function spinSlots() {
-      if (bankroll < selectedStake) { alert("Not enough chips!"); return; }
+      if (bankroll < selectedStake) { showBanner("⚠️ NOT ENOUGH CHIPS!"); return; }
       bankroll -= selectedStake;
       updateBankrollUI();
 
@@ -758,11 +795,13 @@
           if (allMatch) {
             const win = selectedStake * (config.reels === 5 ? 25 : 10);
             bankroll += win;
-            alert(`🎉 JACKPOT! All symbols matched! You won €${win}!`);
+            showBanner(`🎉 JACKPOT! YOU WON €${win}!`);
           } else if (someMatch) {
             const win = selectedStake * 2;
             bankroll += win;
-            alert(`Match found! You won €${win}!`);
+            showBanner(`✨ MATCH FOUND! YOU WON €${win}!`);
+          } else {
+            showBanner("NO MATCH! TRY AGAIN.");
           }
           updateBankrollUI();
         }
