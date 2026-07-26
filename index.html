@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Pokerist - Multi-Game Suite</title>
+  <title>Pokerist - Multi-Slot & Poker Suite</title>
   <style>
     :root {
       --bg-dark: #07131e;
@@ -72,7 +72,7 @@
     .screen { display: none; width: 100%; flex-direction: column; padding: 8px; gap: 10px; }
     .screen.active { display: flex; }
 
-    /* POKER TABLE OVAL (POKERIST STYLE) */
+    /* POKER TABLE OVAL */
     .poker-table-wrapper {
       width: 100%;
       max-width: 800px;
@@ -181,36 +181,80 @@
       gap: 3px;
     }
 
-    /* SLOT MACHINE CONTAINER */
+    /* SLOT MACHINES SECTION */
     .slots-wrapper {
       display: none;
       flex-direction: column;
       align-items: center;
-      gap: 15px;
+      gap: 12px;
       background: var(--panel-blue);
       border: 3px solid var(--gold);
       border-radius: 12px;
-      padding: 20px;
-      margin: 20px 0;
+      padding: 15px;
+      margin: 15px 0;
       width: 100%;
-      max-width: 320px;
+      max-width: 400px;
       box-shadow: 0 8px 25px rgba(0,0,0,0.7);
     }
 
-    .reels-row { display: flex; gap: 10px; }
+    .slot-select-tabs {
+      display: flex;
+      gap: 5px;
+      width: 100%;
+    }
+
+    .tab-btn {
+      flex: 1;
+      background: #122b42;
+      border: 1px solid var(--panel-border);
+      color: #aaa;
+      padding: 6px;
+      font-size: 0.68rem;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .tab-btn.active {
+      background: var(--gold);
+      color: #000;
+      border-color: #fff;
+    }
+
+    .reels-row {
+      display: flex;
+      gap: 8px;
+      padding: 10px;
+      background: #07131e;
+      border-radius: 8px;
+      border: 1px solid var(--panel-border);
+      overflow: hidden;
+    }
 
     .reel {
-      width: 70px;
-      height: 90px;
+      width: 55px;
+      height: 75px;
       background: #ffffff;
       color: #000;
       border-radius: 6px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2.5rem;
+      font-size: 2rem;
       border: 2px solid #444;
       box-shadow: inset 0 0 8px rgba(0,0,0,0.4);
+      transition: transform 0.1s ease-in-out;
+    }
+
+    .reel.spinning {
+      animation: blurSpin 0.15s infinite linear;
+    }
+
+    @keyframes blurSpin {
+      0% { filter: blur(0px); transform: translateY(-3px); }
+      50% { filter: blur(3px); transform: translateY(3px); }
+      100% { filter: blur(0px); transform: translateY(-3px); }
     }
 
     /* CHIP SELECTOR BAR */
@@ -355,25 +399,25 @@
       <!-- GAME VIEW 1: OVAL POKER TABLE -->
       <div class="poker-table-oval" id="poker-table-view">
         
-        <!-- SEAT 1: DEALER TOP -->
+        <!-- SEAT 1: TOP DEALER -->
         <div class="seat seat-top">
           <div class="seat-avatar">👩‍💼</div>
           <div class="seat-label">Elena</div>
-          <div class="seat-chips">€ 20,275</div>
+          <div class="seat-chips">€ <span id="npc-0-chips">20275</span></div>
         </div>
 
         <!-- SEAT 2: TOP RIGHT -->
         <div class="seat seat-top-right">
           <div class="seat-avatar">👨</div>
           <div class="seat-label">Leo</div>
-          <div class="seat-chips">€ 5,050</div>
+          <div class="seat-chips">€ <span id="npc-1-chips">5050</span></div>
         </div>
 
         <!-- SEAT 3: BOTTOM LEFT -->
         <div class="seat seat-bottom-left">
           <div class="seat-avatar">🤴</div>
           <div class="seat-label">Viktor</div>
-          <div class="seat-chips">€ 275</div>
+          <div class="seat-chips">€ <span id="npc-2-chips">275</span></div>
         </div>
 
         <!-- SEAT 4: PLAYER (KRIS MILLEN) -->
@@ -394,13 +438,19 @@
 
       </div>
 
-      <!-- GAME VIEW 2: SLOT MACHINE -->
+      <!-- GAME VIEW 2: MULTI-SLOT MACHINE -->
       <div class="slots-wrapper" id="slots-view">
-        <div class="reels-row">
-          <div class="reel" id="reel-1">🎰</div>
-          <div class="reel" id="reel-2">🎰</div>
-          <div class="reel" id="reel-3">🎰</div>
+        
+        <div class="slot-select-tabs">
+          <div class="tab-btn active" id="tab-classic" onclick="switchSlotMachine('classic')">Classic 777 (3x)</div>
+          <div class="tab-btn" id="tab-neon" onclick="switchSlotMachine('neon')">Neon Vegas (5x)</div>
+          <div class="tab-btn" id="tab-pirate" onclick="switchSlotMachine('pirate')">Pirate Bay (5x)</div>
         </div>
+
+        <div class="reels-row" id="reels-container">
+          <!-- Dynamically populated reels -->
+        </div>
+
         <button class="act-btn" style="width:100%;" id="slot-spin-btn" onclick="spinSlots()">SPIN REELS</button>
       </div>
 
@@ -456,7 +506,14 @@
   </div>
 
   <script>
+    // GAME & NPC STATE
     let bankroll = localStorage.getItem('casino_bankroll') ? parseInt(localStorage.getItem('casino_bankroll')) : 20000;
+    let npcs = [
+      { id: 0, name: 'Elena', chips: 20275, active: true },
+      { id: 1, name: 'Leo', chips: 5050, active: true },
+      { id: 2, name: 'Viktor', chips: 275, active: true }
+    ];
+
     let selectedStake = 5;
     let pot = 0;
     let gameStage = 0; // 0: Idle, 1: Pre-Flop, 2: Flop, 3: Turn, 4: River
@@ -468,6 +525,10 @@
     function updateBankrollUI() {
       document.querySelectorAll('.bankroll-val').forEach(el => el.textContent = bankroll);
       localStorage.setItem('casino_bankroll', bankroll);
+      npcs.forEach(n => {
+        const el = document.getElementById(`npc-${n.id}-chips`);
+        if (el) el.textContent = n.chips;
+      });
     }
 
     function selectStake(val, btn) {
@@ -488,7 +549,6 @@
     function switchGameMode(mode) {
       closeModal('modal-games');
       switchScreen('screen-table');
-      
       document.querySelectorAll('.game-tile').forEach(t => t.classList.remove('selected'));
 
       if (mode === 'slots') {
@@ -497,6 +557,7 @@
         document.getElementById('poker-controls').style.display = 'none';
         document.getElementById('slots-view').style.display = 'flex';
         document.getElementById('gt-slots').classList.add('selected');
+        switchSlotMachine('classic');
       } else {
         document.getElementById('game-title').textContent = "TEXAS HOLD'EM";
         document.getElementById('poker-table-view').style.display = 'flex';
@@ -512,7 +573,7 @@
       alert("🎉 Claimed €1,000 Bonus!");
     }
 
-    // POKER ENGINE
+    // POKER LOGIC + FIXED NPC MONEY DEDUCTION BUG
     function buildDeck() {
       deck = [];
       for (let s of SUITS) {
@@ -537,8 +598,22 @@
 
     function startNewHand() {
       if (bankroll < selectedStake) { alert("Not enough chips!"); return; }
+      
+      // Deduct from Player
       bankroll -= selectedStake;
-      pot = selectedStake * 4;
+      pot = selectedStake;
+
+      // Deduct equal blinds from active NPCs
+      npcs.forEach(n => {
+        if (n.chips >= selectedStake) {
+          n.chips -= selectedStake;
+          pot += selectedStake;
+          n.active = true;
+        } else {
+          n.active = false;
+        }
+      });
+
       updateBankrollUI();
 
       buildDeck();
@@ -568,6 +643,7 @@
         communityCards.push(deck.pop()); // River
         gameStage = 4;
       } else if (gameStage === 4) {
+        // Showdown: Winner takes pot
         bankroll += pot;
         alert(`🎉 Showdown Complete! You won the €${pot} pot!`);
         resetHand();
@@ -579,14 +655,35 @@
 
     function quickBet(amt) {
       if (bankroll < amt) { alert("Not enough chips!"); return; }
+      
       bankroll -= amt;
-      pot += amt * 2;
+      pot += amt;
+
+      // Make NPCs match the raise or fold
+      npcs.forEach(n => {
+        if (n.active) {
+          if (n.chips >= amt) {
+            n.chips -= amt;
+            pot += amt;
+          } else {
+            n.active = false; // NPC folds if short stacked
+          }
+        }
+      });
+
       updateBankrollUI();
       document.getElementById('pot-val').textContent = pot;
     }
 
     function foldHand() {
-      alert("Folded hand! Pot surrendered.");
+      // If player folds, active NPC with highest stack wins pot
+      let activeNpcs = npcs.filter(n => n.active);
+      if (activeNpcs.length > 0) {
+        activeNpcs[0].chips += pot;
+        alert(`Folded hand! ${activeNpcs[0].name} wins the €${pot} pot.`);
+      } else {
+        alert("Folded hand! Pot surrendered.");
+      }
       resetHand();
     }
 
@@ -600,41 +697,77 @@
       document.getElementById('pot-val').textContent = '0';
       document.getElementById('community-box').innerHTML = '';
       document.getElementById('hole-box').innerHTML = '';
+      updateBankrollUI();
     }
 
-    // SLOTS ENGINE
-    const SLOT_SYMBOLS = ['🍒', '🍋', '🔔', '💎', '7️⃣'];
+    // MULTI-SLOT ENGINE WITH ANIMATIONS
+    const SLOT_THEMES = {
+      classic: { reels: 3, symbols: ['🍒', '🍋', '🔔', '💎', '7️⃣'] },
+      neon: { reels: 5, symbols: ['⚡', '💎', '🎰', '7️⃣', '🔥', '👑'] },
+      pirate: { reels: 5, symbols: ['🏴‍☠️', '⚔️', '🪙', '🦜', '💣', '⚓'] }
+    };
+
+    let currentSlotTheme = 'classic';
+
+    function switchSlotMachine(themeKey) {
+      currentSlotTheme = themeKey;
+      document.querySelectorAll('.slot-select-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(`tab-${themeKey}`).classList.add('active');
+
+      const config = SLOT_THEMES[themeKey];
+      const container = document.getElementById('reels-container');
+      container.innerHTML = '';
+
+      for (let i = 1; i <= config.reels; i++) {
+        const div = document.createElement('div');
+        div.className = 'reel';
+        div.id = `reel-${i}`;
+        div.textContent = config.symbols[0];
+        container.appendChild(div);
+      }
+    }
 
     function spinSlots() {
       if (bankroll < selectedStake) { alert("Not enough chips!"); return; }
       bankroll -= selectedStake;
       updateBankrollUI();
 
-      document.getElementById('slot-spin-btn').disabled = true;
+      const btn = document.getElementById('slot-spin-btn');
+      btn.disabled = true;
 
-      let spins = 0;
+      const config = SLOT_THEMES[currentSlotTheme];
+      const reels = [];
+      for (let i = 1; i <= config.reels; i++) {
+        const r = document.getElementById(`reel-${i}`);
+        r.classList.add('spinning');
+        reels.push(r);
+      }
+
+      let spinCount = 0;
       const interval = setInterval(() => {
-        document.getElementById('reel-1').textContent = SLOT_SYMBOLS[Math.floor(Math.random() * SLOT_SYMBOLS.length)];
-        document.getElementById('reel-2').textContent = SLOT_SYMBOLS[Math.floor(Math.random() * SLOT_SYMBOLS.length)];
-        document.getElementById('reel-3').textContent = SLOT_SYMBOLS[Math.floor(Math.random() * SLOT_SYMBOLS.length)];
-        spins++;
+        reels.forEach(r => {
+          r.textContent = config.symbols[Math.floor(Math.random() * config.symbols.length)];
+        });
+        spinCount++;
 
-        if (spins > 12) {
+        if (spinCount > 12) {
           clearInterval(interval);
-          document.getElementById('slot-spin-btn').disabled = false;
+          reels.forEach(r => r.classList.remove('spinning'));
+          btn.disabled = false;
 
-          const r1 = document.getElementById('reel-1').textContent;
-          const r2 = document.getElementById('reel-2').textContent;
-          const r3 = document.getElementById('reel-3').textContent;
+          // Check Win Condition
+          const results = reels.map(r => r.textContent);
+          const allMatch = results.every(v => v === results[0]);
+          const someMatch = results.some((val, idx) => results.indexOf(val) !== idx);
 
-          if (r1 === r2 && r2 === r3) {
-            const win = selectedStake * 15;
+          if (allMatch) {
+            const win = selectedStake * (config.reels === 5 ? 25 : 10);
             bankroll += win;
-            alert(`🎉 JACKPOT! You won €${win}!`);
-          } else if (r1 === r2 || r2 === r3 || r1 === r3) {
+            alert(`🎉 JACKPOT! All symbols matched! You won €${win}!`);
+          } else if (someMatch) {
             const win = selectedStake * 2;
             bankroll += win;
-            alert(`Match! You won €${win}!`);
+            alert(`Match found! You won €${win}!`);
           }
           updateBankrollUI();
         }
