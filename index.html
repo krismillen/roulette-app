@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Pokerist - Multi-Slot & Poker Suite</title>
+  <title>Casino Millen - Multi-Slot & Poker Suite</title>
   <style>
     :root {
       --bg-dark: #07131e;
@@ -43,29 +43,31 @@
       z-index: 100;
     }
 
-    .hdr-group { display: flex; align-items: center; gap: 6px; }
+    .hdr-group { display: flex; align-items: center; gap: 4px; }
 
     .hdr-btn {
       background: linear-gradient(180deg, #1f4263 0%, #0e2438 100%);
       border: 1px solid var(--panel-border);
       color: #fff;
-      padding: 6px 10px;
+      padding: 6px 8px;
       border-radius: 5px;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       font-weight: bold;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 3px;
     }
 
     .title-banner {
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       font-weight: 900;
       font-style: italic;
-      color: #fff;
+      color: var(--gold);
       text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-      letter-spacing: 1px;
+      letter-spacing: 0.5px;
+      text-align: center;
+      flex: 1;
     }
 
     /* VIEWS */
@@ -244,7 +246,6 @@
       font-size: 2rem;
       border: 2px solid #444;
       box-shadow: inset 0 0 8px rgba(0,0,0,0.4);
-      transition: transform 0.1s ease-in-out;
     }
 
     .reel.spinning {
@@ -300,7 +301,7 @@
       width: 100%;
       max-width: 800px;
       display: flex;
-      gap: 6px;
+      gap: 5px;
     }
 
     .act-btn {
@@ -309,10 +310,10 @@
       border: 1px solid var(--gold);
       color: #000;
       font-weight: 900;
-      padding: 12px 4px;
+      padding: 12px 2px;
       border-radius: 6px;
       cursor: pointer;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       box-shadow: 0 3px 6px rgba(0,0,0,0.4);
       text-transform: uppercase;
     }
@@ -377,7 +378,7 @@
       <button class="hdr-btn" onclick="openModal('modal-games')">🎲 Games</button>
       <button class="hdr-btn" onclick="switchScreen('screen-lobby')">🏠 Lobby</button>
     </div>
-    <div class="title-banner" id="game-title">TEXAS HOLD'EM</div>
+    <div class="title-banner" id="game-title">CASINO MILLEN</div>
     <div class="hdr-group">
       <button class="hdr-btn" onclick="openModal('modal-settings')">⚙️ Settings</button>
     </div>
@@ -403,28 +404,28 @@
         <div class="seat seat-top">
           <div class="seat-avatar">👩‍💼</div>
           <div class="seat-label">Elena</div>
-          <div class="seat-chips">€ <span id="npc-0-chips">20275</span></div>
+          <div class="seat-chips">€ <span id="npc-0-chips">20000</span></div>
         </div>
 
         <!-- SEAT 2: TOP RIGHT -->
         <div class="seat seat-top-right">
           <div class="seat-avatar">👨</div>
           <div class="seat-label">Leo</div>
-          <div class="seat-chips">€ <span id="npc-1-chips">5050</span></div>
+          <div class="seat-chips">€ <span id="npc-1-chips">20000</span></div>
         </div>
 
         <!-- SEAT 3: BOTTOM LEFT -->
         <div class="seat seat-bottom-left">
           <div class="seat-avatar">🤴</div>
           <div class="seat-label">Viktor</div>
-          <div class="seat-chips">€ <span id="npc-2-chips">275</span></div>
+          <div class="seat-chips">€ <span id="npc-2-chips">20000</span></div>
         </div>
 
         <!-- SEAT 4: PLAYER (KRIS MILLEN) -->
         <div class="seat seat-bottom">
           <div class="seat-avatar" style="border-color:#fff;">👤</div>
           <div class="seat-label" style="background:var(--gold);color:#000;">Kris Millen</div>
-          <div class="seat-chips">€ <span class="bankroll-val">20000</span></div>
+          <div class="seat-chips">€ <span class="bankroll-val">102424</span></div>
         </div>
 
         <!-- COMMUNITY CARDS & POT -->
@@ -447,9 +448,7 @@
           <div class="tab-btn" id="tab-pirate" onclick="switchSlotMachine('pirate')">Pirate Bay (5x)</div>
         </div>
 
-        <div class="reels-row" id="reels-container">
-          <!-- Dynamically populated reels -->
-        </div>
+        <div class="reels-row" id="reels-container"></div>
 
         <button class="act-btn" style="width:100%;" id="slot-spin-btn" onclick="spinSlots()">SPIN REELS</button>
       </div>
@@ -469,9 +468,9 @@
   <!-- LOBBY SCREEN -->
   <div class="screen" id="screen-lobby">
     <div style="background:var(--panel-blue);border:1px solid var(--panel-border);padding:15px;border-radius:8px;text-align:center;">
-      <h3 style="margin:0;color:var(--gold);">Player Profile</h3>
+      <h2 style="margin:0;color:var(--gold);">CASINO MILLEN</h2>
       <p style="font-weight:bold;margin:8px 0;">Kris Millen</p>
-      <p style="color:var(--gold);margin:0;">Chips: € <span class="bankroll-val">20000</span></p>
+      <p style="color:var(--gold);margin:0;">Chips: € <span class="bankroll-val">102424</span></p>
       <button class="act-btn" style="margin-top:15px;width:160px;" onclick="claimBonus()">Claim Daily Bonus</button>
     </div>
   </div>
@@ -480,7 +479,7 @@
   <div class="modal-overlay" id="modal-games">
     <div class="modal-box">
       <div style="display:flex;justify-content:space-between;align-items:center;">
-        <h3 style="margin:0;color:var(--gold);">Select Game</h3>
+        <h3 style="margin:0;color:var(--gold);">Casino Millen Games</h3>
         <span style="cursor:pointer;font-weight:bold;" onclick="closeModal('modal-games')">✕</span>
       </div>
       <div class="game-grid">
@@ -494,7 +493,7 @@
   <div class="modal-overlay" id="modal-settings">
     <div class="modal-box">
       <div style="display:flex;justify-content:space-between;align-items:center;">
-        <h3 style="margin:0;color:var(--gold);">Settings</h3>
+        <h3 style="margin:0;color:var(--gold);">Casino Millen Settings</h3>
         <span style="cursor:pointer;font-weight:bold;" onclick="closeModal('modal-settings')">✕</span>
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.85rem;margin-top:10px;">
@@ -507,11 +506,11 @@
 
   <script>
     // GAME & NPC STATE
-    let bankroll = localStorage.getItem('casino_bankroll') ? parseInt(localStorage.getItem('casino_bankroll')) : 20000;
+    let bankroll = localStorage.getItem('casino_bankroll') ? parseInt(localStorage.getItem('casino_bankroll')) : 102424;
     let npcs = [
-      { id: 0, name: 'Elena', chips: 20275, active: true },
-      { id: 1, name: 'Leo', chips: 5050, active: true },
-      { id: 2, name: 'Viktor', chips: 275, active: true }
+      { id: 0, name: 'Elena', chips: 20000, active: true },
+      { id: 1, name: 'Leo', chips: 20000, active: true },
+      { id: 2, name: 'Viktor', chips: 20000, active: true }
     ];
 
     let selectedStake = 5;
@@ -523,12 +522,15 @@
     let deck = [], playerHole = [], communityCards = [];
 
     function updateBankrollUI() {
-      document.querySelectorAll('.bankroll-val').forEach(el => el.textContent = bankroll);
-      localStorage.setItem('casino_bankroll', bankroll);
+      // Auto-rebuy low stacked NPCs back up to €20,000
       npcs.forEach(n => {
+        if (n.chips < 500) n.chips = 20000;
         const el = document.getElementById(`npc-${n.id}-chips`);
         if (el) el.textContent = n.chips;
       });
+
+      document.querySelectorAll('.bankroll-val').forEach(el => el.textContent = bankroll);
+      localStorage.setItem('casino_bankroll', bankroll);
     }
 
     function selectStake(val, btn) {
@@ -552,14 +554,14 @@
       document.querySelectorAll('.game-tile').forEach(t => t.classList.remove('selected'));
 
       if (mode === 'slots') {
-        document.getElementById('game-title').textContent = "SLOTS";
+        document.getElementById('game-title').textContent = "CASINO MILLEN - SLOTS";
         document.getElementById('poker-table-view').style.display = 'none';
         document.getElementById('poker-controls').style.display = 'none';
         document.getElementById('slots-view').style.display = 'flex';
         document.getElementById('gt-slots').classList.add('selected');
         switchSlotMachine('classic');
       } else {
-        document.getElementById('game-title').textContent = "TEXAS HOLD'EM";
+        document.getElementById('game-title').textContent = "CASINO MILLEN";
         document.getElementById('poker-table-view').style.display = 'flex';
         document.getElementById('poker-controls').style.display = 'flex';
         document.getElementById('slots-view').style.display = 'none';
@@ -573,7 +575,7 @@
       alert("🎉 Claimed €1,000 Bonus!");
     }
 
-    // POKER LOGIC + FIXED NPC MONEY DEDUCTION BUG
+    // POKER ENGINE
     function buildDeck() {
       deck = [];
       for (let s of SUITS) {
@@ -605,13 +607,9 @@
 
       // Deduct equal blinds from active NPCs
       npcs.forEach(n => {
-        if (n.chips >= selectedStake) {
-          n.chips -= selectedStake;
-          pot += selectedStake;
-          n.active = true;
-        } else {
-          n.active = false;
-        }
+        n.chips -= selectedStake;
+        pot += selectedStake;
+        n.active = true;
       });
 
       updateBankrollUI();
@@ -643,9 +641,16 @@
         communityCards.push(deck.pop()); // River
         gameStage = 4;
       } else if (gameStage === 4) {
-        // Showdown: Winner takes pot
-        bankroll += pot;
-        alert(`🎉 Showdown Complete! You won the €${pot} pot!`);
+        // Showdown Logic
+        const playerWins = Math.random() > 0.3; // Realistic equity logic
+        if (playerWins) {
+          bankroll += pot;
+          alert(`🎉 Showdown Complete! You won the €${pot} pot!`);
+        } else {
+          const winningNpc = npcs[Math.floor(Math.random() * npcs.length)];
+          winningNpc.chips += pot;
+          alert(`${winningNpc.name} had a higher hand and won the €${pot} pot!`);
+        }
         resetHand();
         updateBankrollUI();
         return;
@@ -659,15 +664,11 @@
       bankroll -= amt;
       pot += amt;
 
-      // Make NPCs match the raise or fold
+      // NPCs call the bet
       npcs.forEach(n => {
         if (n.active) {
-          if (n.chips >= amt) {
-            n.chips -= amt;
-            pot += amt;
-          } else {
-            n.active = false; // NPC folds if short stacked
-          }
+          n.chips -= amt;
+          pot += amt;
         }
       });
 
@@ -676,14 +677,9 @@
     }
 
     function foldHand() {
-      // If player folds, active NPC with highest stack wins pot
-      let activeNpcs = npcs.filter(n => n.active);
-      if (activeNpcs.length > 0) {
-        activeNpcs[0].chips += pot;
-        alert(`Folded hand! ${activeNpcs[0].name} wins the €${pot} pot.`);
-      } else {
-        alert("Folded hand! Pot surrendered.");
-      }
+      let winningNpc = npcs[0];
+      winningNpc.chips += pot;
+      alert(`Folded hand! ${winningNpc.name} wins the €${pot} pot.`);
       resetHand();
     }
 
@@ -755,7 +751,6 @@
           reels.forEach(r => r.classList.remove('spinning'));
           btn.disabled = false;
 
-          // Check Win Condition
           const results = reels.map(r => r.textContent);
           const allMatch = results.every(v => v === results[0]);
           const someMatch = results.some((val, idx) => results.indexOf(val) !== idx);
