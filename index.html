@@ -168,7 +168,7 @@
       margin-top: 4px;
     }
 
-    /* SEAT AVATARS & DEALER BUTTON */
+    /* SEAT AVATARS & ISOLATED DEALER BUTTON */
     .seat {
       position: absolute;
       display: flex;
@@ -203,20 +203,20 @@
 
     .dealer-btn {
       position: absolute;
-      bottom: -4px;
+      top: 25px;
       right: -8px;
-      width: 16px;
-      height: 16px;
+      width: 18px;
+      height: 18px;
       background: #ffffff;
       color: #000;
-      border: 1px solid #000;
+      border: 2px solid #f3ad22;
       border-radius: 50%;
-      font-size: 0.5rem;
+      font-size: 0.55rem;
       font-weight: 900;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.8);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.8);
       display: none;
       z-index: 15;
     }
@@ -258,7 +258,7 @@
       background: rgba(0,0,0,0.85);
       padding: 1px 5px;
       border-radius: 8px;
-      margin-top: -4px;
+      margin-top: 4px;
       white-space: nowrap;
       position: relative;
     }
@@ -471,8 +471,8 @@
         <!-- SEAT 1 -->
         <div class="seat seat-top" id="seat-npc-0">
           <div class="speech-bubble" id="bubble-npc-0">Check</div>
-          <div class="seat-avatar" id="avatar-npc-0">👩‍💼</div>
-          <div class="seat-label" id="label-npc-0">Elena<div class="dealer-btn" id="db-npc-0">Ⓓ</div></div>
+          <div class="seat-avatar" id="avatar-npc-0">👩‍💼<div class="dealer-btn" id="db-npc-0">Ⓓ</div></div>
+          <div class="seat-label" id="label-npc-0">Elena</div>
           <div class="seat-chips">€ <span id="npc-0-chips">15000</span></div>
           <div class="npc-hole-cards" id="cards-npc-0"></div>
         </div>
@@ -480,8 +480,8 @@
         <!-- SEAT 2 -->
         <div class="seat seat-top-right" id="seat-npc-1">
           <div class="speech-bubble" id="bubble-npc-1">Check</div>
-          <div class="seat-avatar" id="avatar-npc-1">👨</div>
-          <div class="seat-label" id="label-npc-1">Leo<div class="dealer-btn" id="db-npc-1">Ⓓ</div></div>
+          <div class="seat-avatar" id="avatar-npc-1">👨<div class="dealer-btn" id="db-npc-1">Ⓓ</div></div>
+          <div class="seat-label" id="label-npc-1">Leo</div>
           <div class="seat-chips">€ <span id="npc-1-chips">15000</span></div>
           <div class="npc-hole-cards" id="cards-npc-1"></div>
         </div>
@@ -489,16 +489,16 @@
         <!-- SEAT 3 -->
         <div class="seat seat-bottom-left" id="seat-npc-2">
           <div class="speech-bubble" id="bubble-npc-2">Check</div>
-          <div class="seat-avatar" id="avatar-npc-2">🤴</div>
-          <div class="seat-label" id="label-npc-2">Viktor<div class="dealer-btn" id="db-npc-2">Ⓓ</div></div>
+          <div class="seat-avatar" id="avatar-npc-2">🤴<div class="dealer-btn" id="db-npc-2">Ⓓ</div></div>
+          <div class="seat-label" id="label-npc-2">Viktor</div>
           <div class="seat-chips">€ <span id="npc-2-chips">15000</span></div>
           <div class="npc-hole-cards" id="cards-npc-2"></div>
         </div>
 
         <!-- SEAT 4: PLAYER -->
         <div class="seat seat-bottom" id="seat-player-3">
-          <div class="seat-avatar" style="border-color:#fff;">👤</div>
-          <div class="seat-label" style="background:var(--gold);color:#000;">Kris Millen<div class="dealer-btn" id="db-player-3">Ⓓ</div></div>
+          <div class="seat-avatar" style="border-color:#fff;">👤<div class="dealer-btn" id="db-player-3">Ⓓ</div></div>
+          <div class="seat-label" style="background:var(--gold);color:#000;">Kris Millen</div>
           <div class="seat-chips">€ <span class="bankroll-val">103424</span></div>
         </div>
 
@@ -826,9 +826,8 @@
         const seatEl = document.getElementById(`seat-npc-${n.id}`);
 
         if (el) el.textContent = n.chips;
-        if (labelEl) labelEl.childNodes[0].nodeValue = `${n.name} (${n.style})`;
-        if (avatarEl) avatarEl.textContent = n.defaultAvatar;
-
+        if (labelEl) labelEl.textContent = `${n.name}`;
+        
         if (n.chips <= 0) { n.active = false; seatEl.classList.add('bust'); } 
         else { seatEl.classList.remove('bust'); }
       });
@@ -1023,7 +1022,7 @@
         communityCards.push(deck.pop());
         gameStage = 4;
       } else if (gameStage === 4) {
-        // SHOWDOWN
+        
         const pHand = evaluateHand(playerHole, communityCards);
         document.getElementById('hand-strength-box').textContent = pHand.name;
 
@@ -1107,14 +1106,23 @@
       processNPCTurns(amt);
     }
 
-    // CORE NPC TURN LOGIC
+    // CORE NPC TURN LOGIC WITH ALL-IN BYPASS FIX
     function processNPCTurns(playerBetAmt) {
-      let remainingActive = 0;
+      let actors = npcs.filter(n => n.active && n.chips > 0);
+      
+      // If everyone else is all-in or folded, skip directly to resolving the hand!
+      if (actors.length === 0) {
+         setTimeout(() => {
+           if (gameStage > 0 && gameStage < 4) advanceRound();
+           if (gameStage > 0 && gameStage < 4) lockActionButtons(false); 
+         }, 800);
+         return;
+      }
+
+      let completed = 0;
       let delayAcc = 0;
 
-      npcs.forEach((n, idx) => {
-        if (!n.active || n.chips <= 0) return;
-
+      actors.forEach((n, idx) => {
         const thinkTime = 600 + Math.random() * 500;
         delayAcc += 300;
 
@@ -1146,7 +1154,6 @@
               raiseAmt = Math.min(raiseAmt, n.chips);
               n.chips -= raiseAmt;
               pot += raiseAmt;
-              remainingActive++;
               showNpcBubble(n.id, `Raise €${raiseAmt} 🚀`);
               showFloatingText(`seat-npc-${n.id}`, `-€${raiseAmt}`, '#ef5350');
               showBanner(`🔥 ${n.name.toUpperCase()} RAISES TO €${raiseAmt}!`);
@@ -1163,30 +1170,34 @@
               } else {
                   showNpcBubble(n.id, `Check ✊`);
               }
-              remainingActive++;
             }
 
             updateBankrollUI();
             document.getElementById('pot-val').textContent = pot;
+            completed++;
 
-            if (idx === npcs.length - 1 && remainingActive === 0) {
-              bankroll += pot;
-              playSound('win');
-              showFloatingText('seat-player-3', `+€${pot}`, '#f3ad22');
-              showBanner(`EVERYONE FOLDED! YOU WIN €${pot}!`);
-              unlockAchievement('all_fold');
-              resetHand();
+            // Wait until the final capable NPC has acted
+            if (completed === actors.length) {
+              let stillActive = npcs.filter(x => x.active);
+              if (stillActive.length === 0) {
+                bankroll += pot;
+                playSound('win');
+                showFloatingText('seat-player-3', `+€${pot}`, '#f3ad22');
+                showBanner(`EVERYONE FOLDED! YOU WIN €${pot}!`);
+                unlockAchievement('all_fold');
+                resetHand();
+              } else {
+                setTimeout(() => {
+                  if (gameStage > 0 && gameStage < 4) {
+                    advanceRound();
+                    if (gameStage > 0 && gameStage < 4) { lockActionButtons(false); }
+                  }
+                }, 800);
+              }
             }
           }, thinkTime);
         }, delayAcc);
       });
-
-      setTimeout(() => {
-        if (gameStage > 0 && remainingActive > 0) {
-          advanceRound();
-          if (gameStage > 0) { lockActionButtons(false); }
-        }
-      }, delayAcc + 1000);
     }
 
     function foldHand() {
@@ -1200,6 +1211,7 @@
       resetHand();
     }
 
+    // FORCEFULLY CLEAN THE UI ON HAND RESET
     function resetHand() {
       gameStage = 0;
       document.getElementById('btn-deal').disabled = false;
@@ -1207,9 +1219,12 @@
       document.getElementById('btn-raise').disabled = true;
       document.getElementById('btn-fold').disabled = true;
       document.getElementById('pot-val').textContent = '0';
+      
       npcs.forEach(n => {
         if(n.chips > 0) document.getElementById(`seat-npc-${n.id}`).classList.remove('folded', 'thinking');
+        document.getElementById(`cards-npc-${n.id}`).innerHTML = ''; // Wipe old showdown cards!
       });
+      
       updateBankrollUI();
     }
 
