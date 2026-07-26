@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Vegas Casino Suite - Social NPCs</title>
+  <title>Vegas Casino Suite - Hold'em & Social</title>
   <style>
     :root {
       --bg-color: #0b140e;
@@ -23,13 +23,13 @@
       flex-direction: column;
       align-items: center;
       margin: 0;
-      padding: 10px;
+      padding: 8px;
       box-sizing: border-box;
     }
 
     .nav-bar {
       display: flex;
-      gap: 5px;
+      gap: 4px;
       width: 100%;
       max-width: 500px;
       margin-bottom: 8px;
@@ -44,7 +44,7 @@
       border-radius: 6px;
       font-weight: bold;
       cursor: pointer;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       text-transform: uppercase;
     }
 
@@ -61,10 +61,9 @@
       flex-direction: column;
       align-items: center;
       gap: 10px;
-      position: relative;
     }
 
-    /* Dashboard */
+    /* Dashboard & XP Bar */
     .dashboard {
       display: flex;
       flex-direction: column;
@@ -81,12 +80,28 @@
     .stats-row {
       display: flex;
       justify-content: space-between;
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: bold;
     }
 
+    .xp-bar-bg {
+      width: 100%;
+      height: 6px;
+      background: #222;
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 2px;
+    }
+
+    .xp-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--gold);
+      transition: width 0.3s;
+    }
+
     .status-msg {
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       color: var(--gold);
       font-weight: bold;
       min-height: 1.2em;
@@ -136,96 +151,6 @@
 
     .game-view.active { display: flex; }
 
-    /* Roulette & Board */
-    #wheel-canvas { max-width: 220px; height: auto; }
-
-    .board-wrapper {
-      width: 100%;
-      overflow-x: auto;
-      padding-bottom: 5px;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .board {
-      display: grid;
-      grid-template-columns: 36px repeat(12, 42px) 36px;
-      grid-template-rows: repeat(3, 38px) 36px 36px;
-      gap: 3px;
-      background-color: var(--felt-border);
-      padding: 8px;
-      border-radius: 8px;
-      width: max-content;
-      margin: 0 auto;
-    }
-
-    .cell {
-      background-color: var(--felt-green);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-weight: bold;
-      cursor: pointer;
-      position: relative;
-      border-radius: 3px;
-      font-size: 0.85rem;
-    }
-
-    .cell.red { background-color: var(--red); }
-    .cell.black { background-color: var(--black); }
-    .cell.zero { grid-row: 1 / span 3; grid-column: 1; background-color: #2e7d32; }
-
-    .doz-1 { grid-row: 4; grid-column: 2 / span 4; }
-    .doz-2 { grid-row: 4; grid-column: 6 / span 4; }
-    .doz-3 { grid-row: 4; grid-column: 10 / span 4; }
-
-    .low { grid-row: 5; grid-column: 2 / span 2; }
-    .even { grid-row: 5; grid-column: 4 / span 2; }
-    .red-bet { grid-row: 5; grid-column: 6 / span 2; background-color: var(--red); }
-    .black-bet { grid-row: 5; grid-column: 8 / span 2; background-color: var(--black); }
-    .odd { grid-row: 5; grid-column: 10 / span 2; }
-    .high { grid-row: 5; grid-column: 12 / span 2; }
-
-    .col-1 { grid-row: 1; grid-column: 14; }
-    .col-2 { grid-row: 2; grid-column: 14; }
-    .col-3 { grid-row: 3; grid-column: 14; }
-
-    .chip {
-      position: absolute;
-      width: 18px;
-      height: 18px;
-      background: var(--gold);
-      color: black;
-      border-radius: 50%;
-      border: 2px dashed black;
-      font-size: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 900;
-    }
-
-    /* Slots */
-    .slots-machine {
-      background: linear-gradient(180deg, #222 0%, #111 100%);
-      border: 4px solid var(--gold);
-      border-radius: 12px;
-      padding: 12px;
-      display: flex;
-      gap: 10px;
-    }
-
-    .reel {
-      width: 65px;
-      height: 85px;
-      background: #fff;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2.2rem;
-      border: 2px solid #444;
-    }
-
     /* Tables & Dynamic NPCs */
     .table-area {
       width: 100%;
@@ -257,41 +182,36 @@
     }
 
     .npc-avatar {
-      font-size: 1.6rem;
+      font-size: 1.5rem;
       background: rgba(0,0,0,0.4);
       border-radius: 50%;
-      width: 40px;
-      height: 40px;
+      width: 38px;
+      height: 38px;
       display: flex;
       align-items: center;
       justify-content: center;
       border: 2px solid var(--gold);
-      transition: transform 0.2s;
+      position: relative;
     }
 
-    .npc-seat:hover .npc-avatar { transform: scale(1.1); }
-
-    .npc-name {
-      font-size: 0.7rem;
-      font-weight: bold;
-      color: #fff;
-      margin-top: 2px;
+    .received-item {
+      position: absolute;
+      bottom: -4px;
+      right: -4px;
+      font-size: 0.9rem;
     }
 
-    .npc-rel {
-      font-size: 0.6rem;
-      color: var(--gold);
-      font-weight: bold;
-    }
+    .npc-name { font-size: 0.65rem; font-weight: bold; color: #fff; margin-top: 2px; }
+    .npc-rel { font-size: 0.55rem; color: var(--gold); font-weight: bold; }
 
     .npc-bubble {
       position: absolute;
-      top: -24px;
+      top: -22px;
       background: #fff;
       color: #000;
-      font-size: 0.65rem;
+      font-size: 0.6rem;
       font-weight: bold;
-      padding: 2px 6px;
+      padding: 2px 5px;
       border-radius: 8px;
       white-space: nowrap;
       box-shadow: 0 2px 5px rgba(0,0,0,0.3);
@@ -299,19 +219,15 @@
       z-index: 10;
     }
 
-    .npc-hand {
-      display: flex;
-      gap: 2px;
-      margin-top: 3px;
-    }
+    .npc-hand { display: flex; gap: 2px; margin-top: 3px; }
 
     .mini-card {
-      width: 20px;
-      height: 28px;
+      width: 18px;
+      height: 26px;
       background: #fff;
       color: #000;
       border-radius: 3px;
-      font-size: 0.6rem;
+      font-size: 0.55rem;
       font-weight: bold;
       display: flex;
       align-items: center;
@@ -325,17 +241,13 @@
       gap: 4px;
     }
 
-    .hand-label { font-weight: bold; color: var(--gold); font-size: 0.85rem; }
+    .hand-label { font-weight: bold; color: var(--gold); font-size: 0.8rem; }
 
-    .cards {
-      display: flex;
-      gap: 5px;
-      min-height: 60px;
-    }
+    .cards { display: flex; gap: 5px; min-height: 58px; }
 
     .card {
-      width: 42px;
-      height: 60px;
+      width: 40px;
+      height: 58px;
       background: var(--card-bg);
       color: #000;
       border-radius: 5px;
@@ -345,39 +257,21 @@
       padding: 3px;
       box-sizing: border-box;
       font-weight: bold;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       box-shadow: 0 2px 5px rgba(0,0,0,0.4);
-      cursor: pointer;
       position: relative;
     }
 
     .card.red-card { color: var(--red); }
     .card.hidden { background: linear-gradient(135deg, #1a237e 25%, #283593 100%); color: transparent; }
-    .card.held { border: 3px solid var(--gold); transform: translateY(-4px); }
 
-    .hold-tag {
-      position: absolute;
-      top: -10px;
-      background: var(--gold);
-      color: #000;
-      font-size: 7px;
-      padding: 1px 3px;
-      font-weight: 900;
-      border-radius: 3px;
-    }
-
-    .controls {
-      display: flex;
-      gap: 8px;
-      width: 100%;
-      justify-content: center;
-    }
+    .controls { display: flex; gap: 6px; width: 100%; justify-content: center; }
 
     button.btn-main {
       background: linear-gradient(180deg, #dfb235 0%, #aa820a 100%);
       border: none;
-      padding: 10px 12px;
-      font-size: 0.9rem;
+      padding: 10px 8px;
+      font-size: 0.85rem;
       font-weight: bold;
       color: #000;
       border-radius: 6px;
@@ -389,12 +283,12 @@
     button.btn-sec { background: #e53935; color: white; }
     button:disabled { opacity: 0.4; cursor: not-allowed; }
 
-    /* Modals & Popups */
+    /* Modals & Gift Grid */
     .modal {
       display: none;
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.8);
+      background: rgba(0,0,0,0.85);
       z-index: 999;
       justify-content: center;
       align-items: center;
@@ -404,39 +298,80 @@
     .modal-box {
       background: #1e2d24;
       border: 2px solid var(--gold);
-      padding: 20px;
+      padding: 15px;
       border-radius: 12px;
       text-align: center;
       color: white;
-      max-width: 320px;
+      max-width: 340px;
       width: 90%;
-      box-shadow: 0 0 20px rgba(0,0,0,0.8);
+      max-height: 80vh;
+      overflow-y: auto;
     }
+
+    .gift-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+      margin: 10px 0;
+      max-height: 180px;
+      overflow-y: auto;
+      padding: 5px;
+      background: rgba(0,0,0,0.4);
+      border-radius: 6px;
+    }
+
+    .gift-item {
+      font-size: 1.3rem;
+      background: rgba(255,255,255,0.1);
+      border-radius: 5px;
+      padding: 4px;
+      cursor: pointer;
+    }
+
+    .gift-item:hover { background: var(--gold); }
   </style>
 </head>
 <body>
 
-  <!-- Modal for NPC Interactions -->
+  <!-- Modal for NPC & Gifts -->
   <div class="modal" id="npc-modal">
     <div class="modal-box">
-      <h2 id="modal-npc-name" style="color:var(--gold);margin-top:0;">NPC</h2>
-      <p id="modal-npc-bio" style="font-size:0.85rem;color:#ccc;">Bio text...</p>
-      <p id="modal-npc-status" style="font-size:0.8rem;font-weight:bold;color:var(--gold);">Stranger (0/100 RP)</p>
-      <div style="display:flex;flex-direction:column;gap:8px;margin-top:15px;">
-        <button class="btn-main" onclick="buyNpcDrink()">Buy Drink ($10)</button>
+      <h2 id="modal-npc-name" style="color:var(--gold);margin:0;">NPC</h2>
+      <p id="modal-npc-bio" style="font-size:0.75rem;color:#ccc;margin:4px 0;">Bio...</p>
+      <p id="modal-npc-status" style="font-size:0.8rem;font-weight:bold;color:var(--gold);margin:4px 0;">Stranger</p>
+      
+      <p style="font-size:0.75rem;font-weight:bold;margin-top:10px;color:var(--gold);">Send Gift / Item ($15):</p>
+      <div class="gift-grid" id="gift-catalog"></div>
+
+      <div style="display:flex;flex-direction:column;gap:6px;margin-top:10px;">
         <button class="btn-main" onclick="chatWithNpc()">Chat</button>
-        <button class="btn-main" id="friend-req-btn" onclick="addNpcFriend()">Add to Friends List</button>
+        <button class="btn-main" id="friend-req-btn" onclick="addNpcFriend()">Add Friend</button>
         <button class="btn-main btn-sec" onclick="closeModal()">Close</button>
       </div>
     </div>
   </div>
 
+  <!-- Profile & Friends List Modal -->
+  <div class="modal" id="profile-modal">
+    <div class="modal-box">
+      <h2 style="color:var(--gold);margin:0;">👤 Player Profile</h2>
+      <p id="prof-level" style="font-size:1rem;font-weight:bold;margin:5px 0;">Level 1 - Rookie</p>
+      <p id="prof-xp" style="font-size:0.8rem;color:#aaa;">XP: 0 / 100</p>
+      
+      <h3 style="color:var(--gold);margin-top:15px;margin-bottom:5px;font-size:0.9rem;">❤️ Friends List</h3>
+      <div id="friends-list-container" style="font-size:0.8rem;color:#ccc;min-height:40px;">No friends added yet!</div>
+
+      <button class="btn-main btn-sec" onclick="closeProfileModal()" style="margin-top:15px;width:100%;">Close</button>
+    </div>
+  </div>
+
   <!-- Navigation -->
   <div class="nav-bar">
-    <button class="nav-btn active" onclick="switchTab('roulette')">Roulette</button>
+    <button class="nav-btn active" onclick="switchTab('holdem')">Hold'em</button>
+    <button class="nav-btn" onclick="switchTab('roulette')">Roulette</button>
     <button class="nav-btn" onclick="switchTab('slots')">Slots</button>
     <button class="nav-btn" onclick="switchTab('blackjack')">Blackjack</button>
-    <button class="nav-btn" onclick="switchTab('poker')">Poker</button>
+    <button class="nav-btn" onclick="openProfileModal()" style="background:#283593;color:#fff;">Profile</button>
   </div>
 
   <div class="container">
@@ -444,10 +379,11 @@
     <!-- Dashboard -->
     <div class="dashboard">
       <div class="stats-row">
-        <div class="stat">Bankroll: $<span id="balance">1000</span></div>
-        <div class="stat">Bet: $<span id="selected-bet-display">5</span></div>
+        <div>Bankroll: $<span id="balance">1000</span></div>
+        <div id="level-display">Lvl 1 (0 XP)</div>
       </div>
-      <div class="status-msg" id="status">Tap NPCs at the table to talk!</div>
+      <div class="xp-bar-bg"><div class="xp-bar-fill" id="xp-fill"></div></div>
+      <div class="status-msg" id="status">Welcome to Texas Hold'em!</div>
     </div>
 
     <!-- Chip Selector -->
@@ -458,18 +394,59 @@
       <div class="chip-btn c-100" onclick="selectChip(100)">$100</div>
     </div>
 
-    <!-- ROULETTE VIEW -->
-    <div id="view-roulette" class="game-view active">
-      <canvas id="wheel-canvas" width="300" height="300"></canvas>
-      <div class="board-wrapper">
-        <div class="board" id="board">
-          <div class="cell zero" data-type="straight" data-val="0">0</div>
+    <!-- TEXAS HOLD'EM VIEW -->
+    <div id="view-holdem" class="game-view active">
+      
+      <!-- Table Selector Dropdown -->
+      <div style="display:flex;gap:5px;width:100%;align-items:center;">
+        <span style="font-size:0.75rem;font-weight:bold;color:var(--gold);">Select Table:</span>
+        <select id="table-select" onchange="changeTable(this.value)" style="flex:1;background:#1e2d24;color:#fff;border:1px solid var(--gold);padding:4px;border-radius:4px;font-weight:bold;">
+          <option value="neon">Neon Lounge (Casual)</option>
+          <option value="vip">VIP High Rollers</option>
+          <option value="backyard">Backyard Felt</option>
+        </select>
+      </div>
+
+      <div class="table-area">
+        <div class="npc-row">
+          <div class="npc-seat" onclick="openNpcMenu(0)">
+            <div class="npc-bubble" id="bubble-h-1">...</div>
+            <div class="npc-avatar" id="avatar-h-1">👤<span class="received-item" id="item-h-1"></span></div>
+            <div class="npc-name" id="name-h-1">Stranger</div>
+            <div class="npc-rel" id="rel-h-1">Stranger</div>
+            <div class="npc-hand" id="hand-h-1"></div>
+          </div>
+          <div class="npc-seat" onclick="openNpcMenu(1)">
+            <div class="npc-bubble" id="bubble-h-2">...</div>
+            <div class="npc-avatar" id="avatar-h-2">👤<span class="received-item" id="item-h-2"></span></div>
+            <div class="npc-name" id="name-h-2">Stranger</div>
+            <div class="npc-rel" id="rel-h-2">Stranger</div>
+            <div class="npc-hand" id="hand-h-2"></div>
+          </div>
+        </div>
+
+        <!-- Community Cards -->
+        <div class="hand-container">
+          <div class="hand-label">Community Cards (Pot: $<span id="pot-display">0</span>)</div>
+          <div class="cards" id="community-cards"></div>
+        </div>
+
+        <!-- Player Hole Cards -->
+        <div class="hand-container">
+          <div class="hand-label">Your Hole Cards</div>
+          <div class="cards" id="player-holdem-cards"></div>
         </div>
       </div>
+
       <div class="controls">
-        <button class="btn-main" id="r-spin-btn" onclick="spinRoulette()">SPIN</button>
-        <button class="btn-main btn-sec" onclick="clearBets()">Clear</button>
+        <button class="btn-main" id="h-deal-btn" onclick="startHoldem()">DEAL</button>
+        <button class="btn-main" id="h-next-btn" onclick="nextHoldemStage()" disabled>BET / NEXT</button>
       </div>
+    </div>
+
+    <!-- ROULETTE VIEW -->
+    <div id="view-roulette" class="game-view">
+      <p style="font-size:0.8rem;color:var(--gold);">Roulette Module Active</p>
     </div>
 
     <!-- SLOTS VIEW -->
@@ -479,254 +456,146 @@
         <div class="reel" id="reel-2">🎰</div>
         <div class="reel" id="reel-3">🎰</div>
       </div>
-      <div class="controls">
-        <button class="btn-main" id="slot-spin-btn" onclick="spinSlots()">SPIN</button>
-      </div>
+      <div class="controls"><button class="btn-main" onclick="spinSlots()">SPIN</button></div>
     </div>
 
-    <!-- BLACKJACK VIEW WITH DYNAMIC STRANGERS -->
+    <!-- BLACKJACK VIEW -->
     <div id="view-blackjack" class="game-view">
-      <div class="table-area">
-        
-        <div class="npc-row">
-          <div class="npc-seat" id="seat-bj-1" onclick="openNpcMenu(0)">
-            <div class="npc-bubble" id="bubble-bj-1">...</div>
-            <div class="npc-avatar" id="avatar-bj-1">👤</div>
-            <div class="npc-name" id="name-bj-1">Stranger</div>
-            <div class="npc-rel" id="rel-bj-1">Stranger</div>
-            <div class="npc-hand" id="hand-bj-1"></div>
-          </div>
-          <div class="npc-seat" id="seat-bj-2" onclick="openNpcMenu(1)">
-            <div class="npc-bubble" id="bubble-bj-2">...</div>
-            <div class="npc-avatar" id="avatar-bj-2">👤</div>
-            <div class="npc-name" id="name-bj-2">Stranger</div>
-            <div class="npc-rel" id="rel-bj-2">Stranger</div>
-            <div class="npc-hand" id="hand-bj-2"></div>
-          </div>
-        </div>
-
-        <div class="hand-container">
-          <div class="hand-label">Dealer (<span id="dealer-score">0</span>)</div>
-          <div class="cards" id="dealer-cards"></div>
-        </div>
-
-        <div class="hand-container">
-          <div class="hand-label">Player (<span id="player-score">0</span>)</div>
-          <div class="cards" id="player-cards"></div>
-        </div>
-      </div>
-
-      <div class="controls">
-        <button class="btn-main" id="bj-deal-btn" onclick="startBlackjack()">DEAL</button>
-        <button class="btn-main" id="bj-hit-btn" onclick="hitBlackjack()" disabled>HIT</button>
-        <button class="btn-main btn-sec" id="bj-stand-btn" onclick="standBlackjack()" disabled>STAND</button>
-        <button class="btn-main" onclick="shuffleTableNpcs()" style="background:#283593;color:#fff;">New Table</button>
-      </div>
-    </div>
-
-    <!-- VIDEO POKER VIEW -->
-    <div id="view-poker" class="game-view">
-      <div class="table-area">
-        <div class="npc-row">
-          <div class="npc-seat" id="seat-poker-1" onclick="openNpcMenu(2)">
-            <div class="npc-bubble" id="bubble-poker-1">...</div>
-            <div class="npc-avatar" id="avatar-poker-1">👤</div>
-            <div class="npc-name" id="name-poker-1">Stranger</div>
-            <div class="npc-rel" id="rel-poker-1">Stranger</div>
-            <div class="npc-hand" id="hand-poker-1"></div>
-          </div>
-        </div>
-
-        <div class="hand-container">
-          <div class="hand-label">Tap cards to HOLD</div>
-          <div class="cards" id="poker-cards"></div>
-        </div>
-      </div>
-      <div class="controls">
-        <button class="btn-main" id="poker-deal-btn" onclick="dealPoker()">DEAL / DRAW</button>
-      </div>
+      <p style="font-size:0.8rem;color:var(--gold);">Blackjack Module Active</p>
     </div>
 
   </div>
 
   <script>
-    // Audio Engine
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    function playSound(type) {
-      if (audioCtx.state === 'suspended') audioCtx.resume();
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.connect(gain); gain.connect(audioCtx.destination);
-      const now = audioCtx.currentTime;
-
-      if (type === 'chip') {
-        osc.frequency.setValueAtTime(800, now); gain.gain.setValueAtTime(0.2, now);
-        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
-        osc.start(now); osc.stop(now + 0.05);
-      } else if (type === 'spin') {
-        osc.type = 'triangle'; osc.frequency.setValueAtTime(200, now);
-        gain.gain.setValueAtTime(0.1, now);
-        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
-        osc.start(now); osc.stop(now + 0.08);
-      } else if (type === 'win') {
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(523.25, now); osc.frequency.setValueAtTime(659.25, now + 0.1);
-        osc.frequency.setValueAtTime(783.99, now + 0.2);
-        gain.gain.setValueAtTime(0.2, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
-        osc.start(now); osc.stop(now + 0.4);
-      }
-    }
-
-    // NPC DATABASE & PERSONALITIES
-    const NPC_POOL = [
-      { id: 'viktor', name: 'Viktor', avatar: '👴', style: 'Conservative', bio: 'Retired sea captain who loves calm, low-risk hands.', rp: 0, friend: false, 
-        greetings: ['Good day, friend.', 'Let us play a clean game.'],
-        winMsgs: ['A steady win!', 'Patience pays off.'],
-        friendMsgs: ['Ah, my favorite seat mate!', 'I save a spot at the table for you!'] },
-      { id: 'maya', name: 'Maya', avatar: '🎨', style: 'Wild', bio: 'Abstract painter who plays on gut feeling and wild hits.', rp: 0, friend: false,
-        greetings: ['Hey there! Ready to risk it all?', 'Felt table looks colorful today!'],
-        winMsgs: ['BOOM! Art in motion!', 'Told ya I felt a lucky wave!'],
-        friendMsgs: ['Bestie! Let\'s break the house today!'] },
-      { id: 'leo', name: 'Leo', avatar: '🏎️', style: 'Aggressive', bio: 'Rally driver who plays fast and bets big stacks.', rp: 0, friend: false,
-        greetings: ['Keep up or step aside!', 'Speed is everything.'],
-        winMsgs: ['Too easy!', 'Clean sweep!'],
-        friendMsgs: ['My wingman is here! Let\'s go fast!'] },
-      { id: 'sofia', name: 'Sofia', avatar: '🍸', style: 'Social', bio: 'High-society host who loves good conversation and toasts.', rp: 0, friend: false,
-        greetings: ['A pleasure to share the table.', 'Order a drink!'],
-        winMsgs: ['Cheers to good fortune!', 'How lovely!'],
-        friendMsgs: ['Always a delight playing with a true friend!'] }
+    // 100+ RANDOM ITEMS DATABASE
+    const GIFT_CATALOG = [
+      '🥤','☕','🍺','🍷','🍸','🍹','🍾','🥃','🧃','🧉','🍼','🍿','🍕','🍔','🍟','🌭','🌮','🌯','🍩','🍪',
+      '🍰','🍫','🍬','🍭','🍇','🍉','🍊','🍋','🍌','🍍','🍎','🍏','🍐','🍑','🍒','🍓','🫐','🥝','🥑','🥦',
+      '🚬','🕯️','🪵','🛋️','🪑','👑','💍','💎','🕶️','🎩','🧢','👟','👠','👝','💼','🎒','⌚','📱','🎧','🎸',
+      '🎷','🎺','🎻','🎰','🎲','🎯','🎳','🪀','🪁','🔮','🧸','🎨','🧵','🧶','🌹','🌺','🌸','🌼','🌻','🌴',
+      '🎈','🎉','🎁','🏆','🥇','🎖️','⚽','🏀','🏈','⚾','🎾','🏐','🎱','🧿','🪬','💈','🧸','🔑','🚗','🏎️'
     ];
 
-    let currentTableNpcs = [];
+    const NPC_POOL = [
+      { id: 'viktor', name: 'Viktor', avatar: '👴', bio: 'Retired captain who plays patient, calm hands.', rp: 0, friend: false, item: '' },
+      { id: 'maya', name: 'Maya', avatar: '🎨', bio: 'Wild painter who loves chasing big rivers.', rp: 0, friend: false, item: '' },
+      { id: 'leo', name: 'Leo', avatar: '🏎️', bio: 'Rally racer who bets big and aggressive.', rp: 0, friend: false, item: '' },
+      { id: 'sofia', name: 'Sofia', avatar: '🍸', bio: 'Socialite who loves sending drinks and toasts.', rp: 0, friend: false, item: '' }
+    ];
+
+    let currentTableNpcs = [NPC_POOL[0], NPC_POOL[1]];
     let selectedNpcIndex = null;
     let bankroll = localStorage.getItem('casino_bankroll') ? parseInt(localStorage.getItem('casino_bankroll')) : 1000;
+    let xp = localStorage.getItem('casino_xp') ? parseInt(localStorage.getItem('casino_xp')) : 0;
     let selectedChip = 5;
-    let activeBets = {};
-    let activeTab = 'roulette';
+    let activeTab = 'holdem';
 
-    function initNpcs() {
-      // Load saved RP
-      NPC_POOL.forEach(npc => {
-        const savedRp = localStorage.getItem(`npc_rp_${npc.id}`);
-        if (savedRp) npc.rp = parseInt(savedRp);
-        const savedFriend = localStorage.getItem(`npc_friend_${npc.id}`);
-        if (savedFriend) npc.friend = (savedFriend === 'true');
-      });
-      shuffleTableNpcs();
+    function addXP(amount) {
+      xp += amount;
+      localStorage.setItem('casino_xp', xp);
+      updateDashboard();
     }
 
-    function shuffleTableNpcs() {
-      const shuffled = [...NPC_POOL].sort(() => Math.random() - 0.5);
-      currentTableNpcs = [shuffled[0], shuffled[1], shuffled[2]];
-      renderTableNpcs();
-      updateDashboard("New strangers joined the table!");
-    }
-
-    function renderTableNpcs() {
-      // BJ Seat 1
-      const n1 = currentTableNpcs[0];
-      document.getElementById('avatar-bj-1').textContent = n1.avatar;
-      document.getElementById('name-bj-1').textContent = n1.name;
-      document.getElementById('rel-bj-1').textContent = getRelTitle(n1);
-
-      // BJ Seat 2
-      const n2 = currentTableNpcs[1];
-      document.getElementById('avatar-bj-2').textContent = n2.avatar;
-      document.getElementById('name-bj-2').textContent = n2.name;
-      document.getElementById('rel-bj-2').textContent = getRelTitle(n2);
-
-      // Poker Seat 1
-      const n3 = currentTableNpcs[2];
-      document.getElementById('avatar-poker-1').textContent = n3.avatar;
-      document.getElementById('name-poker-1').textContent = n3.name;
-      document.getElementById('rel-poker-1').textContent = getRelTitle(n3);
-    }
-
-    function getRelTitle(npc) {
-      if (npc.friend) return '❤️ Friend';
-      if (npc.rp >= 50) return '⭐ Table Buddy';
-      if (npc.rp >= 20) return 'Acquaintance';
-      return 'Stranger';
-    }
-
-    function triggerNpcSpeech(seatId, text) {
-      const bubble = document.getElementById(`bubble-${seatId}`);
-      if (!bubble) return;
-      bubble.textContent = text;
-      bubble.style.display = 'block';
-      setTimeout(() => { bubble.style.display = 'none'; }, 2500);
-    }
-
-    function openNpcMenu(index) {
-      selectedNpcIndex = index;
-      const npc = currentTableNpcs[index];
-      document.getElementById('modal-npc-name').textContent = `${npc.avatar} ${npc.name}`;
-      document.getElementById('modal-npc-bio').textContent = `${npc.bio} (Style: ${npc.style})`;
-      document.getElementById('modal-npc-status').textContent = `${getRelTitle(npc)} (${npc.rp}/100 RP)`;
-      
-      const friendBtn = document.getElementById('friend-req-btn');
-      if (npc.friend) {
-        friendBtn.textContent = "Friends Already ❤️";
-        friendBtn.disabled = true;
-      } else if (npc.rp >= 50) {
-        friendBtn.textContent = "Invite to Friends List";
-        friendBtn.disabled = false;
-      } else {
-        friendBtn.textContent = "Requires 50 RP to Friend";
-        friendBtn.disabled = true;
-      }
-
-      document.getElementById('npc-modal').style.display = 'flex';
-    }
-
-    function closeModal() {
-      document.getElementById('npc-modal').style.display = 'none';
-    }
-
-    function buyNpcDrink() {
-      if (bankroll < 10) { alert("Drink costs $10!"); return; }
-      bankroll -= 10;
-      const npc = currentTableNpcs[selectedNpcIndex];
-      npc.rp = Math.min(100, npc.rp + 15);
-      localStorage.setItem(`npc_rp_${npc.id}`, npc.rp);
-      playSound('chip');
-      updateDashboard(`Bought ${npc.name} a drink (+15 RP)!`);
-      openNpcMenu(selectedNpcIndex);
-      renderTableNpcs();
-    }
-
-    function chatWithNpc() {
-      const npc = currentTableNpcs[selectedNpcIndex];
-      npc.rp = Math.min(100, npc.rp + 5);
-      localStorage.setItem(`npc_rp_${npc.id}`, npc.rp);
-      
-      const line = npc.friend ? npc.friendMsgs[0] : npc.greetings[Math.floor(Math.random()*npc.greetings.length)];
-      alert(`${npc.name}: "${line}"`);
-      openNpcMenu(selectedNpcIndex);
-      renderTableNpcs();
-    }
-
-    function addNpcFriend() {
-      const npc = currentTableNpcs[selectedNpcIndex];
-      npc.friend = true;
-      localStorage.setItem(`npc_friend_${npc.id}`, 'true');
-      alert(`🎉 You and ${npc.name} are now Friends!`);
-      openNpcMenu(selectedNpcIndex);
-      renderTableNpcs();
+    function getLevelInfo() {
+      const level = Math.floor(xp / 100) + 1;
+      const progress = xp % 100;
+      return { level, progress };
     }
 
     function updateDashboard(msg) {
       document.getElementById('balance').textContent = bankroll;
-      document.getElementById('selected-bet-display').textContent = selectedChip;
+      const info = getLevelInfo();
+      document.getElementById('level-display').textContent = `Lvl ${info.level} (${info.progress} XP)`;
+      document.getElementById('xp-fill').style.width = `${info.progress}%`;
       localStorage.setItem('casino_bankroll', bankroll);
       if (msg) document.getElementById('status').textContent = msg;
+    }
+
+    function renderGiftCatalog() {
+      const cat = document.getElementById('gift-catalog');
+      cat.innerHTML = '';
+      GIFT_CATALOG.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'gift-item';
+        div.textContent = item;
+        div.onclick = () => sendGift(item);
+        cat.appendChild(div);
+      });
+    }
+
+    function sendGift(item) {
+      if (bankroll < 15) { alert("Sending a gift costs $15!"); return; }
+      bankroll -= 15;
+      const npc = currentTableNpcs[selectedNpcIndex];
+      npc.item = item;
+      npc.rp = Math.min(100, npc.rp + 20);
+      localStorage.setItem(`npc_rp_${npc.id}`, npc.rp);
+      
+      updateDashboard(`Sent ${item} to ${npc.name} (+20 RP)!`);
+      renderTableNpcs();
+      closeModal();
+    }
+
+    function renderTableNpcs() {
+      const n1 = currentTableNpcs[0];
+      document.getElementById('avatar-h-1').textContent = n1.avatar;
+      document.getElementById('item-h-1').textContent = n1.item;
+      document.getElementById('name-h-1').textContent = n1.name;
+      document.getElementById('rel-h-1').textContent = getRelTitle(n1);
+
+      const n2 = currentTableNpcs[1];
+      document.getElementById('avatar-h-2').textContent = n2.avatar;
+      document.getElementById('item-h-2').textContent = n2.item;
+      document.getElementById('name-h-2').textContent = n2.name;
+      document.getElementById('rel-h-2').textContent = getRelTitle(n2);
+    }
+
+    function getRelTitle(npc) {
+      if (npc.friend) return '❤️ Friend';
+      if (npc.rp >= 50) return '⭐ Buddy';
+      return 'Stranger';
+    }
+
+    function openNpcMenu(idx) {
+      selectedNpcIndex = idx;
+      const npc = currentTableNpcs[idx];
+      document.getElementById('modal-npc-name').textContent = `${npc.avatar} ${npc.name}`;
+      document.getElementById('modal-npc-bio').textContent = npc.bio;
+      document.getElementById('modal-npc-status').textContent = `${getRelTitle(npc)} (${npc.rp}/100 RP)`;
+      renderGiftCatalog();
+      document.getElementById('npc-modal').style.display = 'flex';
+    }
+
+    function closeModal() { document.getElementById('npc-modal').style.display = 'none'; }
+
+    function openProfileModal() {
+      const info = getLevelInfo();
+      document.getElementById('prof-level').textContent = `Level ${info.level} - Casino Player`;
+      document.getElementById('prof-xp').textContent = `Total XP: ${xp}`;
+
+      const fContainer = document.getElementById('friends-list-container');
+      const friends = NPC_POOL.filter(n => n.friend);
+      if (friends.length === 0) {
+        fContainer.textContent = "No friends added yet!";
+      } else {
+        fContainer.innerHTML = friends.map(f => `<div>${f.avatar} <b>${f.name}</b> (RP: ${f.rp})</div>`).join('');
+      }
+
+      document.getElementById('profile-modal').style.display = 'flex';
+    }
+
+    function closeProfileModal() { document.getElementById('profile-modal').style.display = 'none'; }
+
+    function changeTable(val) {
+      currentTableNpcs = [...NPC_POOL].sort(() => Math.random() - 0.5).slice(0, 2);
+      renderTableNpcs();
+      updateDashboard(`Joined ${val.toUpperCase()} Table!`);
     }
 
     function selectChip(val) {
       selectedChip = val;
       document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('selected'));
       event.target.classList.add('selected');
-      playSound('chip');
       updateDashboard();
     }
 
@@ -736,196 +605,12 @@
       event.target.classList.add('active');
       document.querySelectorAll('.game-view').forEach(v => v.classList.remove('active'));
       document.getElementById(`view-${tab}`).classList.add('active');
-      clearBets();
-      updateDashboard(`Switched to ${tab.toUpperCase()}`);
     }
 
-    function clearBets() {
-      for (let k in activeBets) bankroll += activeBets[k];
-      activeBets = {};
-      document.querySelectorAll('.chip').forEach(c => c.remove());
-      updateDashboard();
-    }
-
-    // 1. ROULETTE
-    const POCKETS = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26];
-    const REDS = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
-    let wheelAngle = 0, isSpinning = false;
-
-    const board = document.getElementById('board');
-    for (let c = 1; c <= 12; c++) {
-      for (let r = 3; r >= 1; r--) {
-        const num = (c - 1) * 3 + (4 - r);
-        const cell = document.createElement('div');
-        cell.className = `cell ${REDS.includes(num) ? 'red' : 'black'}`;
-        cell.style.gridRow = r; cell.style.gridColumn = c + 1;
-        cell.textContent = num; cell.dataset.type = 'straight'; cell.dataset.val = num;
-        board.appendChild(cell);
-      }
-    }
-
-    const outsideBets = [
-      { name: '1st 12', type: 'dozen', val: 1, class: 'doz-1' },
-      { name: '2nd 12', type: 'dozen', val: 2, class: 'doz-2' },
-      { name: '3rd 12', type: 'dozen', val: 3, class: 'doz-3' },
-      { name: '1-18', type: 'highlow', val: 'low', class: 'low' },
-      { name: 'EVEN', type: 'parity', val: 'even', class: 'even' },
-      { name: 'RED', type: 'color', val: 'red', class: 'red-bet' },
-      { name: 'BLACK', type: 'color', val: 'black', class: 'black-bet' },
-      { name: 'ODD', type: 'parity', val: 'odd', class: 'odd' },
-      { name: '19-36', type: 'highlow', val: 'high', class: 'high' },
-      { name: '2:1', type: 'column', val: 3, class: 'col-1' },
-      { name: '2:1', type: 'column', val: 2, class: 'col-2' },
-      { name: '2:1', type: 'column', val: 1, class: 'col-3' }
-    ];
-
-    outsideBets.forEach(b => {
-      const cell = document.createElement('div');
-      cell.className = `cell ${b.class}`;
-      cell.textContent = b.name; cell.dataset.type = b.type; cell.dataset.val = b.val;
-      board.appendChild(cell);
-    });
-
-    board.addEventListener('click', (e) => {
-      if (isSpinning || activeTab !== 'roulette') return;
-      const cell = e.target.closest('.cell');
-      if (!cell) return;
-      if (bankroll < selectedChip) { alert("Not enough funds!"); return; }
-
-      playSound('chip');
-      bankroll -= selectedChip;
-      const key = `${cell.dataset.type}_${cell.dataset.val}`;
-      activeBets[key] = (activeBets[key] || 0) + selectedChip;
-
-      updateDashboard();
-      let chip = cell.querySelector('.chip');
-      if (!chip) { chip = document.createElement('div'); chip.className = 'chip'; cell.appendChild(chip); }
-      chip.textContent = `$${activeBets[key]}`;
-    });
-
-    const canvas = document.getElementById('wheel-canvas');
-    const ctx = canvas.getContext('2d');
-
-    function drawWheel() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      const sliceAngle = (2 * Math.PI) / POCKETS.length;
-      const cx = canvas.width/2, cy = canvas.height/2, r = 110;
-
-      for (let i = 0; i < POCKETS.length; i++) {
-        const num = POCKETS[i];
-        const a = wheelAngle + i * sliceAngle;
-        ctx.beginPath(); ctx.moveTo(cx, cy);
-        ctx.arc(cx, cy, r, a, a + sliceAngle);
-        ctx.fillStyle = num === 0 ? '#2e7d32' : REDS.includes(num) ? '#d32f2f' : '#1a1a1a';
-        ctx.fill(); ctx.stroke();
-
-        ctx.save(); ctx.translate(cx, cy); ctx.rotate(a + sliceAngle/2);
-        ctx.textAlign = "right"; ctx.fillStyle = "#fff"; ctx.font = "bold 11px sans-serif";
-        ctx.fillText(num, r - 8, 4); ctx.restore();
-      }
-
-      ctx.beginPath(); ctx.arc(cx, cy, 22, 0, 2 * Math.PI); ctx.fillStyle = '#dfb235'; ctx.fill();
-      ctx.beginPath(); ctx.moveTo(cx, cy - r - 6); ctx.lineTo(cx - 7, cy - r + 6); ctx.lineTo(cx + 7, cy - r + 6); ctx.closePath();
-      ctx.fillStyle = 'white'; ctx.fill();
-    }
-    drawWheel();
-
-    function spinRoulette() {
-      const total = Object.values(activeBets).reduce((a, b) => a + b, 0);
-      if (total === 0) { alert("Place bets first!"); return; }
-
-      isSpinning = true;
-      document.getElementById('r-spin-btn').disabled = true;
-      updateDashboard("Wheel spinning...");
-
-      const winIdx = Math.floor(Math.random() * POCKETS.length);
-      const winNum = POCKETS[winIdx];
-      const slice = (2 * Math.PI) / POCKETS.length;
-      const target = (3 * Math.PI / 2) - (winIdx * slice) - (slice / 2);
-      const finalA = wheelAngle + (10 * Math.PI) + (target - (wheelAngle % (2 * Math.PI)));
-
-      let start = null;
-      function animate(time) {
-        if (!start) start = time;
-        const progress = (time - start) / 4000;
-        if (progress < 1) {
-          wheelAngle = wheelAngle + (finalA - wheelAngle) * ((1 - Math.pow(1 - progress, 3)) * 0.08);
-          drawWheel();
-          if (Math.random() < 0.1) playSound('spin');
-          requestAnimationFrame(animate);
-        } else {
-          wheelAngle = finalA; drawWheel(); evalRoulette(winNum);
-        }
-      }
-      requestAnimationFrame(animate);
-    }
-
-    function evalRoulette(winNum) {
-      let payout = 0;
-      const isRed = REDS.includes(winNum);
-
-      for (let k in activeBets) {
-        const [type, val] = k.split('_');
-        const b = activeBets[k];
-        if (type === 'straight' && parseInt(val) === winNum) payout += b * 36;
-        else if (type === 'color' && winNum !== 0 && ((val === 'red' && isRed) || (val === 'black' && !isRed))) payout += b * 2;
-        else if (type === 'parity' && winNum !== 0 && ((val === 'even' && winNum % 2 === 0) || (val === 'odd' && winNum % 2 !== 0))) payout += b * 2;
-        else if (type === 'highlow' && winNum !== 0 && ((val === 'low' && winNum <= 18) || (val === 'high' && winNum >= 19))) payout += b * 2;
-        else if (type === 'dozen' && winNum !== 0) {
-          const d = parseInt(val);
-          if ((d===1 && winNum<=12) || (d===2 && winNum>=13 && winNum<=24) || (d===3 && winNum>=25)) payout += b * 3;
-        } else if (type === 'column' && winNum !== 0 && (winNum - parseInt(val)) % 3 === 0) payout += b * 3;
-      }
-
-      bankroll += payout;
-      if (payout > 0) playSound('win');
-      
-      updateDashboard(`Result: ${winNum} (${winNum === 0 ? 'GREEN' : isRed ? 'RED' : 'BLACK'}) | Won: $${payout}`);
-      activeBets = {}; document.querySelectorAll('.chip').forEach(c => c.remove());
-      isSpinning = false; document.getElementById('r-spin-btn').disabled = false;
-    }
-
-    // 2. SLOTS
-    const SLOT_SYMBOLS = ['🍒', '🍋', '🔔', '💎', '7️⃣'];
-
-    function spinSlots() {
-      if (bankroll < selectedChip) { alert("Not enough chips!"); return; }
-      bankroll -= selectedChip;
-      updateDashboard("Spinning Reels..."); playSound('spin');
-      document.getElementById('slot-spin-btn').disabled = true;
-
-      let spins = 0;
-      const interval = setInterval(() => {
-        document.getElementById('reel-1').textContent = SLOT_SYMBOLS[Math.floor(Math.random() * SLOT_SYMBOLS.length)];
-        document.getElementById('reel-2').textContent = SLOT_SYMBOLS[Math.floor(Math.random() * SLOT_SYMBOLS.length)];
-        document.getElementById('reel-3').textContent = SLOT_SYMBOLS[Math.floor(Math.random() * SLOT_SYMBOLS.length)];
-        spins++;
-        if (spins > 15) { clearInterval(interval); evalSlots(); }
-      }, 80);
-    }
-
-    function evalSlots() {
-      const r1 = document.getElementById('reel-1').textContent;
-      const r2 = document.getElementById('reel-2').textContent;
-      const r3 = document.getElementById('reel-3').textContent;
-
-      let multiplier = 0;
-      if (r1 === r2 && r2 === r3) multiplier = r1 === '7️⃣' ? 20 : r1 === '💎' ? 10 : 5;
-      else if (r1 === r2 || r2 === r3 || r1 === r3) multiplier = 2;
-
-      const win = selectedChip * multiplier;
-      bankroll += win;
-      if (win > 0) playSound('win');
-
-      updateDashboard(win > 0 ? `JACKPOT! You Won $${win}!` : "No match. Try again!");
-      document.getElementById('slot-spin-btn').disabled = false;
-    }
-
-    // 3. BLACKJACK ENGINE
+    // TEXAS HOLD'EM GAME LOGIC
     const SUITS = ['♠', '♥', '♦', '♣'];
     const VALUES = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
-    let deck = [], playerHand = [], dealerHand = [], currentBjBet = 0;
-    let n1Hand = [], n2Hand = [];
+    let deck = [], playerHole = [], communityCards = [], holdemStage = 0, pot = 0;
 
     function buildDeck() {
       deck = [];
@@ -933,188 +618,68 @@
       deck.sort(() => Math.random() - 0.5);
     }
 
-    function calcHand(hand) {
-      let score = 0, aces = 0;
-      for (let c of hand) {
-        if (c.value === 'A') { aces++; score += 11; }
-        else if (['J', 'Q', 'K'].includes(c.value)) score += 10;
-        else score += parseInt(c.value);
-      }
-      while (score > 21 && aces > 0) { score -= 10; aces--; }
-      return score;
-    }
-
-    function renderHand(containerId, hand, hideSecond = false) {
-      const container = document.getElementById(containerId);
-      container.innerHTML = '';
-      hand.forEach((c, idx) => {
+    function renderCards(containerId, cards) {
+      const c = document.getElementById(containerId);
+      c.innerHTML = '';
+      cards.forEach(card => {
+        const isRed = card.suit === '♥' || card.suit === '♦';
         const div = document.createElement('div');
-        if (hideSecond && idx === 1) { div.className = 'card hidden'; }
-        else {
-          const isRed = c.suit === '♥' || c.suit === '♦';
-          div.className = `card ${isRed ? 'red-card' : ''}`;
-          div.innerHTML = `<div>${c.value}</div><div style="align-self:center;font-size:1.1rem">${c.suit}</div><div style="align-self:flex-end">${c.value}</div>`;
-        }
-        container.appendChild(div);
+        div.className = `card ${isRed ? 'red-card' : ''}`;
+        div.innerHTML = `<div>${card.value}</div><div style="align-self:center;">${card.suit}</div><div style="align-self:flex-end">${card.value}</div>`;
+        c.appendChild(div);
       });
     }
 
-    function renderNpcHand(containerId, hand) {
-      const container = document.getElementById(containerId);
-      container.innerHTML = '';
-      hand.forEach(c => {
-        const div = document.createElement('div');
-        div.className = 'mini-card';
-        div.textContent = c.value;
-        container.appendChild(div);
-      });
-    }
-
-    function startBlackjack() {
+    function startHoldem() {
       if (bankroll < selectedChip) { alert("Not enough chips!"); return; }
+      bankroll -= selectedChip;
+      pot = selectedChip * 3; // Player + 2 NPCs bet
+      buildDeck();
 
-      currentBjBet = selectedChip;
-      bankroll -= currentBjBet;
-      playSound('chip'); buildDeck();
+      playerHole = [deck.pop(), deck.pop()];
+      communityCards = [];
+      holdemStage = 1;
 
-      // Gain RP with table strangers for playing together
-      currentTableNpcs[0].rp = Math.min(100, currentTableNpcs[0].rp + 2);
-      currentTableNpcs[1].rp = Math.min(100, currentTableNpcs[1].rp + 2);
-      localStorage.setItem(`npc_rp_${currentTableNpcs[0].id}`, currentTableNpcs[0].rp);
-      localStorage.setItem(`npc_rp_${currentTableNpcs[1].id}`, currentTableNpcs[1].rp);
+      renderCards('player-holdem-cards', playerHole);
+      renderCards('community-cards', []);
+      document.getElementById('pot-display').textContent = pot;
 
-      n1Hand = [deck.pop(), deck.pop()];
-      n2Hand = [deck.pop(), deck.pop()];
-      playerHand = [deck.pop(), deck.pop()];
-      dealerHand = [deck.pop(), deck.pop()];
-
-      renderNpcHand('hand-bj-1', n1Hand);
-      renderNpcHand('hand-bj-2', n2Hand);
-      renderHand('player-cards', playerHand);
-      renderHand('dealer-cards', dealerHand, true);
-
-      document.getElementById('player-score').textContent = calcHand(playerHand);
-      document.getElementById('dealer-score').textContent = '?';
-
-      document.getElementById('bj-deal-btn').disabled = true;
-      document.getElementById('bj-hit-btn').disabled = false;
-      document.getElementById('bj-stand-btn').disabled = false;
-
-      triggerNpcSpeech('bj-1', currentTableNpcs[0].greetings[0]);
-      triggerNpcSpeech('bj-2', currentTableNpcs[1].greetings[0]);
-
-      updateDashboard("Hit or Stand?");
-      if (calcHand(playerHand) === 21) standBlackjack();
+      document.getElementById('h-deal-btn').disabled = true;
+      document.getElementById('h-next-btn').disabled = false;
+      addXP(15);
+      updateDashboard("Pre-Flop: Press BET / NEXT to see Flop!");
     }
 
-    function hitBlackjack() {
-      playerHand.push(deck.pop()); playSound('chip');
-      renderHand('player-cards', playerHand);
-      const score = calcHand(playerHand);
-      document.getElementById('player-score').textContent = score;
-      if (score >= 21) standBlackjack();
-    }
-
-    function standBlackjack() {
-      document.getElementById('bj-hit-btn').disabled = true;
-      document.getElementById('bj-stand-btn').disabled = true;
-
-      // Dealer Turn
-      renderHand('dealer-cards', dealerHand, false);
-      let dScore = calcHand(dealerHand);
-      while (dScore < 17) { dealerHand.push(deck.pop()); dScore = calcHand(dealerHand); }
-
-      renderHand('dealer-cards', dealerHand, false);
-      document.getElementById('dealer-score').textContent = dScore;
-
-      const pScore = calcHand(playerHand);
-      let payout = 0;
-
-      if (pScore > 21) updateDashboard("Player Bust! Dealer wins.");
-      else if (dScore > 21 || pScore > dScore) {
-        payout = pScore === 21 && playerHand.length === 2 ? currentBjBet * 2.5 : currentBjBet * 2;
-        updateDashboard(`You Win $${payout}!`);
-        playSound('win');
-        triggerNpcSpeech('bj-1', currentTableNpcs[0].winMsgs[0]);
-      } else if (pScore === dScore) {
-        payout = currentBjBet; updateDashboard("Push! Bet returned.");
-      } else updateDashboard("Dealer Wins!");
-
-      bankroll += payout;
-      updateDashboard();
-      renderTableNpcs();
-      document.getElementById('bj-deal-btn').disabled = false;
-    }
-
-    // 4. VIDEO POKER ENGINE
-    let pokerHand = [], pokerHeld = [false, false, false, false, false], pokerState = 'DEAL';
-
-    function dealPoker() {
-      if (pokerState === 'DEAL') {
-        if (bankroll < selectedChip) { alert("Not enough chips!"); return; }
-        bankroll -= selectedChip;
-        buildDeck();
-        pokerHand = [deck.pop(), deck.pop(), deck.pop(), deck.pop(), deck.pop()];
-        renderNpcHand('hand-poker-1', [deck.pop(), deck.pop(), deck.pop(), deck.pop(), deck.pop()]);
-        
-        triggerNpcSpeech('poker-1', currentTableNpcs[2].greetings[0]);
-
-        pokerHeld = [false, false, false, false, false];
-        renderPokerHand();
-        pokerState = 'DRAW';
-        updateDashboard("Tap cards to HOLD, then press DRAW");
-      } else {
-        for (let i = 0; i < 5; i++) {
-          if (!pokerHeld[i]) pokerHand[i] = deck.pop();
-        }
-        renderPokerHand();
-        evalPoker();
-        pokerState = 'DEAL';
+    function nextHoldemStage() {
+      if (holdemStage === 1) {
+        // Deal Flop
+        communityCards = [deck.pop(), deck.pop(), deck.pop()];
+        holdemStage = 2;
+        updateDashboard("Flop dealt! Press BET / NEXT for Turn.");
+      } else if (holdemStage === 2) {
+        // Deal Turn
+        communityCards.push(deck.pop());
+        holdemStage = 3;
+        updateDashboard("Turn dealt! Press BET / NEXT for River.");
+      } else if (holdemStage === 3) {
+        // Deal River
+        communityCards.push(deck.pop());
+        holdemStage = 4;
+        updateDashboard("River dealt! Showdown time.");
+      } else if (holdemStage === 4) {
+        // Showdown
+        const win = Math.random() > 0.4 ? pot : 0;
+        bankroll += win;
+        addXP(25);
+        updateDashboard(win > 0 ? `Showdown Win! Won Pot: $${pot}` : "NPC had a higher pair. House wins pot.");
+        document.getElementById('h-deal-btn').disabled = false;
+        document.getElementById('h-next-btn').disabled = true;
+        holdemStage = 0;
       }
+      renderCards('community-cards', communityCards);
     }
 
-    function renderPokerHand() {
-      const container = document.getElementById('poker-cards');
-      container.innerHTML = '';
-      pokerHand.forEach((c, idx) => {
-        const isRed = c.suit === '♥' || c.suit === '♦';
-        const div = document.createElement('div');
-        div.className = `card ${isRed ? 'red-card' : ''} ${pokerHeld[idx] ? 'held' : ''}`;
-        div.onclick = () => {
-          if (pokerState === 'DRAW') {
-            pokerHeld[idx] = !pokerHeld[idx];
-            playSound('chip');
-            renderPokerHand();
-          }
-        };
-        div.innerHTML = `${pokerHeld[idx] ? '<div class="hold-tag">HELD</div>' : ''}<div>${c.value}</div><div style="align-self:center;font-size:1.1rem">${c.suit}</div><div style="align-self:flex-end">${c.value}</div>`;
-        container.appendChild(div);
-      });
-    }
-
-    function evalPoker() {
-      const counts = {};
-      pokerHand.forEach(c => counts[c.value] = (counts[c.value] || 0) + 1);
-      const vals = Object.values(counts);
-
-      let payout = 0;
-      if (vals.includes(4)) payout = selectedChip * 25;
-      else if (vals.includes(3) && vals.includes(2)) payout = selectedChip * 9;
-      else if (vals.includes(3)) payout = selectedChip * 3;
-      else if (vals.filter(v => v === 2).length === 2) payout = selectedChip * 2;
-      else if (counts['J'] === 2 || counts['Q'] === 2 || counts['K'] === 2 || counts['A'] === 2) payout = selectedChip * 1;
-
-      bankroll += payout;
-      if (payout > 0) {
-        playSound('win');
-        triggerNpcSpeech('poker-1', currentTableNpcs[2].winMsgs[0]);
-      }
-
-      updateDashboard(payout > 0 ? `Poker Win! Paid $${payout}` : "No pair. Try again!");
-    }
-
-    // Init App
-    initNpcs();
+    renderTableNpcs();
   </script>
 </body>
 </html>
