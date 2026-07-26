@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>Casino Millen - Pro AI Suite</title>
+  <title>Casino Millen - Advanced Betting Control</title>
   <style>
     :root {
       --bg-dark: #07131e;
@@ -89,7 +89,7 @@
     /* POKER OVAL TABLE */
     .poker-table-oval {
       width: 100%;
-      min-height: 320px;
+      min-height: 310px;
       background: radial-gradient(ellipse at center, #23587d 0%, #133550 100%);
       border: 10px solid var(--felt-border);
       border-radius: 110px;
@@ -99,7 +99,7 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      margin: 10px 0;
+      margin: 8px 0;
     }
 
     .center-pot-area {
@@ -107,10 +107,11 @@
       flex-direction: column;
       align-items: center;
       gap: 6px;
+      z-index: 5;
     }
 
     .pot-badge {
-      background: rgba(0,0,0,0.8);
+      background: rgba(0,0,0,0.85);
       border: 1.5px solid var(--gold);
       border-radius: 14px;
       padding: 3px 12px;
@@ -138,7 +139,7 @@
     }
 
     .card.red { color: var(--red); }
-    .card.mini { width: 22px; height: 32px; font-size: 0.5rem; padding: 1px 2px; }
+    .card.mini { width: 20px; height: 30px; font-size: 0.48rem; padding: 1px; }
 
     .hand-strength-badge {
       background: rgba(15, 44, 72, 0.95);
@@ -151,17 +152,18 @@
       margin-top: 4px;
     }
 
-    /* SEAT AVATARS & THINKING RINGS */
+    /* SEAT AVATARS */
     .seat {
       position: absolute;
       display: flex;
       flex-direction: column;
       align-items: center;
+      z-index: 10;
     }
 
     .seat-avatar {
-      width: 44px;
-      height: 44px;
+      width: 42px;
+      height: 42px;
       border-radius: 50%;
       background: #122b42;
       border: 2px solid var(--gold);
@@ -199,7 +201,7 @@
       white-space: nowrap;
       box-shadow: 0 2px 5px rgba(0,0,0,0.4);
       display: none;
-      z-index: 10;
+      z-index: 20;
     }
 
     .seat-label {
@@ -215,115 +217,69 @@
     .seat-chips { font-size: 0.6rem; color: var(--gold); font-weight: bold; }
 
     .seat-top { top: -20px; }
-    .seat-top-right { top: 12%; right: 2%; }
-    .seat-bottom-left { bottom: 15%; left: 2%; }
+    .seat-top-right { top: 12%; right: 4%; }
+    .seat-bottom-left { bottom: 15%; left: 4%; }
     .seat-bottom { bottom: -20px; }
 
-    .player-hole-cards { position: absolute; bottom: 25px; display: flex; gap: 3px; }
-    .npc-hole-cards { position: absolute; display: flex; gap: 2px; top: 10px; left: 45px; }
-    .seat-bottom-left .npc-hole-cards { left: auto; right: 45px; }
+    .player-hole-cards { position: absolute; bottom: 25px; display: flex; gap: 3px; z-index: 8; }
+    .npc-hole-cards { position: absolute; display: flex; gap: 2px; top: 38px; }
 
-    /* SLOTS ENGINE */
-    .slots-wrapper {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-      background: var(--panel-blue);
-      border: 3px solid var(--gold);
-      border-radius: 12px;
-      padding: 15px;
-      margin: 15px 0;
+    /* ADVANCED ACTION CONTROLS & BET SLIDER */
+    .table-controls {
       width: 100%;
-      max-width: 400px;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.7);
+      max-width: 800px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      background: var(--panel-blue);
+      border: 1px solid var(--panel-border);
+      padding: 8px;
+      border-radius: 10px;
     }
 
-    .slot-select-tabs { display: flex; gap: 5px; width: 100%; }
+    .quick-bet-row {
+      display: flex;
+      gap: 4px;
+      width: 100%;
+    }
 
-    .tab-btn {
+    .quick-bet-btn {
       flex: 1;
-      background: #122b42;
+      background: #14324a;
       border: 1px solid var(--panel-border);
-      color: #aaa;
-      padding: 6px;
-      font-size: 0.68rem;
+      color: var(--gold);
       font-weight: bold;
+      font-size: 0.65rem;
+      padding: 6px 2px;
       border-radius: 4px;
       cursor: pointer;
       text-align: center;
     }
 
-    .tab-btn.active { background: var(--gold); color: #000; border-color: #fff; }
+    .quick-bet-btn:active { background: var(--gold); color: #000; }
 
-    .reels-row {
+    .slider-container {
       display: flex;
+      align-items: center;
       gap: 8px;
-      padding: 10px;
-      background: #07131e;
-      border-radius: 8px;
-      border: 1px solid var(--panel-border);
-      overflow: hidden;
+      padding: 0 4px;
     }
 
-    .reel {
-      width: 55px;
-      height: 75px;
-      background: #ffffff;
-      color: #000;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2rem;
-      border: 2px solid #444;
-      box-shadow: inset 0 0 8px rgba(0,0,0,0.4);
-    }
-
-    .reel.spinning { animation: blurSpin 0.15s infinite linear; }
-
-    @keyframes blurSpin {
-      0% { filter: blur(0px); transform: translateY(-3px); }
-      50% { filter: blur(3px); transform: translateY(3px); }
-      100% { filter: blur(0px); transform: translateY(-3px); }
-    }
-
-    /* CHIP SELECTOR BAR */
-    .chip-selector-bar {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      padding: 6px;
-      background: rgba(0,0,0,0.5);
-      border-radius: 20px;
-      border: 1px solid rgba(255,255,255,0.1);
-      margin-bottom: 6px;
-    }
-
-    .chip-btn {
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      border: 2px dashed #000;
-      font-weight: 900;
-      font-size: 0.7rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .bet-slider {
+      flex: 1;
+      accent-color: var(--gold);
       cursor: pointer;
     }
 
-    .chip-btn.selected { transform: scale(1.15); border: 3px solid #fff !important; box-shadow: 0 0 10px var(--gold); }
+    .slider-val-label {
+      font-size: 0.75rem;
+      font-weight: 900;
+      color: var(--gold);
+      min-width: 60px;
+      text-align: right;
+    }
 
-    .c-1 { background: #ffffff; color: #000; }
-    .c-5 { background: #e53935; color: #fff; }
-    .c-25 { background: #2e7d32; color: #fff; }
-    .c-500 { background: #212121; color: var(--gold); border-color: var(--gold); }
-
-    /* ACTION CONTROLS BAR */
-    .table-controls { width: 100%; max-width: 800px; display: flex; gap: 5px; }
+    .main-btn-row { display: flex; gap: 5px; width: 100%; }
 
     .act-btn {
       flex: 1;
@@ -334,7 +290,7 @@
       padding: 12px 2px;
       border-radius: 6px;
       cursor: pointer;
-      font-size: 0.7rem;
+      font-size: 0.75rem;
       box-shadow: 0 3px 6px rgba(0,0,0,0.4);
       text-transform: uppercase;
     }
@@ -346,26 +302,26 @@
     .toast-banner {
       display: none;
       position: absolute;
-      top: 50%;
+      top: 8%;
       left: 50%;
-      transform: translate(-50%, -50%);
+      transform: translateX(-50%);
       background: linear-gradient(180deg, #fbc02d 0%, #b87e09 100%);
       color: #000;
       font-weight: 900;
-      padding: 12px 24px;
-      border-radius: 12px;
+      padding: 8px 18px;
+      border-radius: 20px;
       border: 2px solid #fff;
-      box-shadow: 0 0 30px rgba(0,0,0,0.8);
-      z-index: 300;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.8);
+      z-index: 100;
       text-align: center;
-      font-size: 0.85rem;
+      font-size: 0.75rem;
       white-space: nowrap;
       animation: popIn 0.3s ease-out;
     }
 
     @keyframes popIn {
-      0% { transform: translate(-50%, -30%) scale(0.8); opacity: 0; }
-      100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+      0% { transform: translate(-50%, -10px) scale(0.8); opacity: 0; }
+      100% { transform: translate(-50%, 0) scale(1); opacity: 1; }
     }
 
     /* MODALS */
@@ -432,15 +388,6 @@
   <div class="screen active" id="screen-table">
     <div class="poker-table-wrapper">
       
-      <!-- CHIP SELECTOR BAR -->
-      <div class="chip-selector-bar">
-        <span style="font-size:0.75rem;font-weight:bold;color:var(--gold);">STAKE:</span>
-        <div class="chip-btn c-1" onclick="selectStake(1, this)">€1</div>
-        <div class="chip-btn c-5 selected" onclick="selectStake(5, this)">€5</div>
-        <div class="chip-btn c-25" onclick="selectStake(25, this)">€25</div>
-        <div class="chip-btn c-500" onclick="selectStake(500, this)">€500</div>
-      </div>
-
       <!-- GAME VIEW 1: OVAL POKER TABLE -->
       <div class="poker-table-oval" id="poker-table-view">
         
@@ -495,24 +442,33 @@
 
       </div>
 
-      <!-- GAME VIEW 2: MULTI-SLOT MACHINE -->
-      <div class="slots-wrapper" id="slots-view">
-        <div class="slot-select-tabs">
-          <div class="tab-btn active" id="tab-classic" onclick="switchSlotMachine('classic')">Classic 777 (3x)</div>
-          <div class="tab-btn" id="tab-neon" onclick="switchSlotMachine('neon')">Neon Vegas (5x)</div>
-          <div class="tab-btn" id="tab-pirate" onclick="switchSlotMachine('pirate')">Pirate Bay (5x)</div>
-        </div>
-        <div class="reels-row" id="reels-container"></div>
-        <button class="act-btn" style="width:100%;" id="slot-spin-btn" onclick="spinSlots()">SPIN REELS</button>
-      </div>
-
-      <!-- POKER ACTION CONTROLS BAR -->
+      <!-- ADVANCED POKER ACTION CONTROLS & BETTING SLIDER -->
       <div class="table-controls" id="poker-controls">
-        <button class="act-btn btn-fold" id="btn-fold" onclick="foldHand()" disabled>FOLD</button>
-        <button class="act-btn" id="btn-deal" onclick="startNewHand()">DEAL</button>
-        <button class="act-btn" id="btn-next" onclick="advanceRound()" disabled>CHECK / CALL</button>
-        <button class="act-btn" id="btn-bet50" onclick="quickBet(50)" disabled>BET €50</button>
-        <button class="act-btn" id="btn-bet500" onclick="quickBet(500)" disabled>BET €500</button>
+        
+        <!-- QUICK BET SIZES -->
+        <div class="quick-bet-row">
+          <button class="quick-bet-btn" onclick="setBetFraction(0.1)">MIN</button>
+          <button class="quick-bet-btn" onclick="setBetFraction(0.25)">2X BLIND</button>
+          <button class="quick-bet-btn" onclick="setBetFraction(0.5)">1/2 POT</button>
+          <button class="quick-bet-btn" onclick="setBetFraction(1.0)">POT</button>
+          <button class="quick-bet-btn" style="color:#ef5350;" onclick="setBetAllIn()">ALL-IN 💥</button>
+        </div>
+
+        <!-- BET SLIDER -->
+        <div class="slider-container">
+          <span style="font-size:0.65rem;color:#aaa;">Bet Amount:</span>
+          <input type="range" class="bet-slider" id="bet-slider" min="5" max="1000" step="5" value="50" oninput="onSliderChange(this.value)">
+          <span class="slider-val-label" id="slider-val-display">€50</span>
+        </div>
+
+        <!-- MAIN ACTION BUTTONS -->
+        <div class="main-btn-row">
+          <button class="act-btn btn-fold" id="btn-fold" onclick="foldHand()" disabled>FOLD</button>
+          <button class="act-btn" id="btn-deal" onclick="startNewHand()">DEAL</button>
+          <button class="act-btn" id="btn-next" onclick="advanceRound()" disabled>CHECK / CALL</button>
+          <button class="act-btn" id="btn-raise" onclick="executeCustomBet()" disabled>RAISE €<span id="raise-btn-label">50</span></button>
+        </div>
+
       </div>
 
     </div>
@@ -547,7 +503,6 @@
       </div>
       <div class="game-grid">
         <div class="game-tile selected" id="gt-poker" onclick="switchGameMode('poker')">🃏 TEXAS HOLD'EM</div>
-        <div class="game-tile" id="gt-slots" onclick="switchGameMode('slots')">🎰 SLOTS</div>
       </div>
     </div>
   </div>
@@ -603,23 +558,16 @@
       }
     }
 
-    // GAME & ADVANCED AI MEMORY ENGINE STATE
+    // GAME & AI MEMORY STATE
     let bankroll = localStorage.getItem('casino_bankroll') ? parseInt(localStorage.getItem('casino_bankroll')) : 103424;
-    
-    // Player Habit Tracker
-    let playerBetHabits = { aggressiveBetsCount: 0 };
+    let currentCustomBet = 50;
 
-    // NPC Personalities:
-    // 0: Elena (The Rock) - Tight-Aggressive
-    // 1: Leo (The Maniac) - Loose-Aggressive
-    // 2: Viktor (The Calling Station) - Loose-Passive
     let npcs = [
       { id: 0, name: 'Elena', style: 'Rock', chips: 15000, active: true, hole: [], defaultAvatar: '👩‍💼', isTilt: false },
       { id: 1, name: 'Leo', style: 'Maniac', chips: 15000, active: true, hole: [], defaultAvatar: '👨', isTilt: false },
       { id: 2, name: 'Viktor', style: 'Station', chips: 15000, active: true, hole: [], defaultAvatar: '🤴', isTilt: false }
     ];
 
-    let selectedStake = 5;
     let pot = 0;
     let gameStage = 0;
 
@@ -633,7 +581,7 @@
       const banner = document.getElementById('toast-banner');
       document.getElementById('toast-msg').textContent = msg;
       banner.style.display = 'block';
-      setTimeout(() => { banner.style.display = 'none'; }, 3500);
+      setTimeout(() => { banner.style.display = 'none'; }, 4000);
     }
 
     function showNpcBubble(npcId, text) {
@@ -647,7 +595,6 @@
 
     function updateBankrollUI() {
       npcs.forEach(n => {
-        // Dynamic Tilt Trigger if stack falls low
         if (n.chips < 5000) {
           n.isTilt = true;
           document.getElementById(`avatar-npc-${n.id}`).textContent = '😤';
@@ -655,21 +602,45 @@
           document.getElementById(`avatar-npc-${n.id}`).textContent = n.defaultAvatar;
         }
 
-        if (n.chips < 500) n.chips = 15000; // auto reload
+        if (n.chips < 500) n.chips = 15000;
         const el = document.getElementById(`npc-${n.id}-chips`);
         if (el) el.textContent = n.chips;
       });
 
       document.querySelectorAll('.bankroll-val').forEach(el => el.textContent = bankroll);
       localStorage.setItem('casino_bankroll', bankroll);
+
+      // Adjust Slider Max to Player Bankroll
+      const slider = document.getElementById('bet-slider');
+      slider.max = Math.min(bankroll, 25000);
     }
 
-    function selectStake(val, btn) {
+    // DYNAMIC BET SLIDER FUNCTIONS
+    function onSliderChange(val) {
+      currentCustomBet = parseInt(val);
+      document.getElementById('slider-val-display').textContent = `€${currentCustomBet}`;
+      document.getElementById('raise-btn-label').textContent = currentCustomBet;
+    }
+
+    function setBetFraction(fraction) {
+      if (fraction === 1.0) {
+        currentCustomBet = Math.max(50, pot > 0 ? pot : 200);
+      } else if (fraction === 0.5) {
+        currentCustomBet = Math.max(25, Math.floor(pot / 2));
+      } else {
+        currentCustomBet = Math.floor(bankroll * fraction);
+      }
+      currentCustomBet = Math.min(bankroll, Math.max(10, currentCustomBet));
+      document.getElementById('bet-slider').value = currentCustomBet;
+      onSliderChange(currentCustomBet);
       playSound('chip');
-      selectedStake = val;
-      document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('selected'));
-      btn.classList.add('selected');
-      updateBankrollUI();
+    }
+
+    function setBetAllIn() {
+      currentCustomBet = bankroll;
+      document.getElementById('bet-slider').value = currentCustomBet;
+      onSliderChange(currentCustomBet);
+      playSound('chip');
     }
 
     function switchScreen(id) {
@@ -683,27 +654,6 @@
     }
 
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-
-    function switchGameMode(mode) {
-      closeModal('modal-games');
-      switchScreen('screen-table');
-      document.querySelectorAll('.game-tile').forEach(t => t.classList.remove('selected'));
-
-      if (mode === 'slots') {
-        document.getElementById('game-title').textContent = "CASINO MILLEN - SLOTS";
-        document.getElementById('poker-table-view').style.display = 'none';
-        document.getElementById('poker-controls').style.display = 'none';
-        document.getElementById('slots-view').style.display = 'flex';
-        document.getElementById('gt-slots').classList.add('selected');
-        switchSlotMachine('classic');
-      } else {
-        document.getElementById('game-title').textContent = "CASINO MILLEN";
-        document.getElementById('poker-table-view').style.display = 'flex';
-        document.getElementById('poker-controls').style.display = 'flex';
-        document.getElementById('slots-view').style.display = 'none';
-        document.getElementById('gt-poker').classList.add('selected');
-      }
-    }
 
     // REAL 7-CARD HAND EVALUATOR
     function evaluateHand(hole, community) {
@@ -736,7 +686,7 @@
       return { name: "High Card", score: score };
     }
 
-    // POKER ENGINE WITH REALISTIC THINKING DELAYS
+    // POKER ENGINE
     function buildDeck() {
       deck = [];
       for (let s of SUITS) {
@@ -758,15 +708,16 @@
     }
 
     function startNewHand() {
-      if (bankroll < selectedStake) { showBanner("⚠️ NOT ENOUGH CHIPS!"); return; }
+      if (bankroll < 10) { showBanner("⚠️ NOT ENOUGH CHIPS!"); return; }
       
       playSound('card');
-      bankroll -= selectedStake;
-      pot = selectedStake;
+      bankroll -= 10;
+      pot = 10;
 
       npcs.forEach(n => {
-        n.chips -= selectedStake;
-        pot += selectedStake;
+        const ante = Math.min(10, n.chips);
+        n.chips -= ante;
+        pot += ante;
         n.active = true;
         document.getElementById(`seat-npc-${n.id}`).classList.remove('folded', 'thinking');
         document.getElementById(`cards-npc-${n.id}`).innerHTML = '';
@@ -788,24 +739,23 @@
 
       document.getElementById('btn-deal').disabled = true;
       document.getElementById('btn-next').disabled = false;
-      document.getElementById('btn-bet50').disabled = false;
-      document.getElementById('btn-bet500').disabled = false;
+      document.getElementById('btn-raise').disabled = false;
       document.getElementById('btn-fold').disabled = false;
     }
 
     function advanceRound() {
       playSound('card');
       if (gameStage === 1) {
-        communityCards = [deck.pop(), deck.pop(), deck.pop()]; // Flop
+        communityCards = [deck.pop(), deck.pop(), deck.pop()];
         gameStage = 2;
       } else if (gameStage === 2) {
-        communityCards.push(deck.pop()); // Turn
+        communityCards.push(deck.pop());
         gameStage = 3;
       } else if (gameStage === 3) {
-        communityCards.push(deck.pop()); // River
+        communityCards.push(deck.pop());
         gameStage = 4;
       } else if (gameStage === 4) {
-        // SHOWDOWN
+        // SHOWDOWN LOGIC
         const pHand = evaluateHand(playerHole, communityCards);
         let bestNpc = null;
         let bestNpcScore = -1;
@@ -838,13 +788,12 @@
       document.getElementById('hand-strength-box').textContent = evaluateHand(playerHole, communityCards).name;
     }
 
-    // ADVANCED REALISTIC NPC DECISION ENGINE
-    function quickBet(amt) {
+    // CUSTOM BETTING ENGINE WITH ADVANCED ALL-IN & POT ODDS
+    function executeCustomBet() {
+      const amt = currentCustomBet;
       if (bankroll < amt) { showBanner("⚠️ NOT ENOUGH CHIPS!"); return; }
       playSound('chip');
       
-      if (amt >= 500) playerBetHabits.aggressiveBetsCount++;
-
       bankroll -= amt;
       pot += amt;
 
@@ -852,11 +801,10 @@
       let delayAcc = 0;
 
       npcs.forEach((n, idx) => {
-        if (!n.active) return;
+        if (!n.active || n.chips <= 0) return;
 
-        // Contextual thinking delay (1.2s to 2.2s for big bets)
-        const thinkTime = amt >= 500 ? (1200 + Math.random() * 1000) : (800 + Math.random() * 500);
-        delayAcc += 300;
+        const thinkTime = amt >= 1000 ? (1500 + Math.random() * 1200) : (800 + Math.random() * 500);
+        delayAcc += 350;
 
         setTimeout(() => {
           const seatEl = document.getElementById(`seat-npc-${n.id}`);
@@ -865,26 +813,17 @@
           setTimeout(() => {
             seatEl.classList.remove('thinking');
             const handInfo = evaluateHand(n.hole, communityCards);
-            let action = 'call'; // default
+            let action = 'call';
 
-            // PERSONALITY LOGIC ENGINE:
-            if (n.style === 'Rock') {
-              // Elena: Folds weak/med hands unless holding a strong pair or better
-              if (amt >= 500 && handInfo.score < 2000 && playerBetHabits.aggressiveBetsCount < 3) action = 'fold';
-              else if (amt >= 50 && handInfo.score < 1000) action = 'fold';
-              else if (handInfo.score >= 3000) action = 'raise'; // Trap raise
-            } else if (n.style === 'Station') {
-              // Viktor: Calls all €50 bets, folds €500 if holding pure high card
-              if (amt >= 500 && handInfo.score < 1000 && Math.random() < 0.6) action = 'fold';
-              else action = 'call';
-            } else if (n.style === 'Maniac') {
-              // Leo: Loves calling & bluff re-raising, shows "Sweat" tell on bluffs!
-              if (handInfo.score < 1000 && Math.random() < 0.4) {
-                action = 'bluff_call';
-                document.getElementById(`avatar-npc-${n.id}`).textContent = '😅'; // Sweat tell!
-              } else if (n.isTilt || handInfo.score >= 1000) {
-                action = 'call';
-              }
+            // COMPLEX ALL-IN & HIGH BET REACTION ENGINE
+            if (amt >= 5000) {
+              // Facing huge All-In
+              if (n.style === 'Rock' && handInfo.score < 4000) action = 'fold'; // Needs Straight+
+              else if (n.style === 'Station' && handInfo.score < 2000) action = 'fold'; // Needs Two Pair+
+              else if (n.style === 'Maniac' && Math.random() < 0.5) action = 'call';
+            } else if (amt >= 500) {
+              if (n.style === 'Rock' && handInfo.score < 2000) action = 'fold';
+              else if (n.style === 'Station' && handInfo.score < 1000 && Math.random() < 0.5) action = 'fold';
             }
 
             if (action === 'fold') {
@@ -892,22 +831,16 @@
               seatEl.classList.add('folded');
               showNpcBubble(n.id, "Fold ❌");
             } else {
-              n.chips -= amt;
-              pot += amt;
+              const actualBet = Math.min(amt, n.chips);
+              n.chips -= actualBet;
+              pot += actualBet;
               remainingActive++;
-              if (action === 'raise') {
-                n.chips -= 100;
-                pot += 100;
-                showNpcBubble(n.id, `Raise €${amt + 100} 🚀`);
-              } else {
-                showNpcBubble(n.id, `Call €${amt} 👍`);
-              }
+              showNpcBubble(n.id, actualBet < amt ? `All-In €${actualBet} 💥` : `Call €${actualBet} 👍`);
             }
 
             updateBankrollUI();
             document.getElementById('pot-val').textContent = pot;
 
-            // Check if all NPCs folded to your bluff!
             if (idx === npcs.length - 1 && remainingActive === 0) {
               bankroll += pot;
               playSound('win');
@@ -933,89 +866,13 @@
       gameStage = 0;
       document.getElementById('btn-deal').disabled = false;
       document.getElementById('btn-next').disabled = true;
-      document.getElementById('btn-bet50').disabled = true;
-      document.getElementById('btn-bet500').disabled = true;
+      document.getElementById('btn-raise').disabled = true;
       document.getElementById('btn-fold').disabled = true;
       document.getElementById('pot-val').textContent = '0';
       npcs.forEach(n => {
         document.getElementById(`seat-npc-${n.id}`).classList.remove('folded', 'thinking');
       });
       updateBankrollUI();
-    }
-
-    // MULTI-SLOT ENGINE
-    const SLOT_THEMES = {
-      classic: { reels: 3, symbols: ['🍒', '🍋', '🔔', '💎', '7️⃣'] },
-      neon: { reels: 5, symbols: ['⚡', '💎', '🎰', '7️⃣', '🔥', '👑'] },
-      pirate: { reels: 5, symbols: ['🏴‍☠️', '⚔️', '🪙', '🦜', '💣', '⚓'] }
-    };
-
-    let currentSlotTheme = 'classic';
-
-    function switchSlotMachine(themeKey) {
-      currentSlotTheme = themeKey;
-      document.querySelectorAll('.slot-select-tabs .tab-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById(`tab-${themeKey}`).classList.add('active');
-
-      const config = SLOT_THEMES[themeKey];
-      const container = document.getElementById('reels-container');
-      container.innerHTML = '';
-
-      for (let i = 1; i <= config.reels; i++) {
-        const div = document.createElement('div');
-        div.className = 'reel';
-        div.id = `reel-${i}`;
-        div.textContent = config.symbols[0];
-        container.appendChild(div);
-      }
-    }
-
-    function spinSlots() {
-      if (bankroll < selectedStake) { showBanner("⚠️ NOT ENOUGH CHIPS!"); return; }
-      bankroll -= selectedStake;
-      updateBankrollUI();
-
-      const btn = document.getElementById('slot-spin-btn');
-      btn.disabled = true;
-
-      const config = SLOT_THEMES[currentSlotTheme];
-      const reels = [];
-      for (let i = 1; i <= config.reels; i++) {
-        const r = document.getElementById(`reel-${i}`);
-        r.classList.add('spinning');
-        reels.push(r);
-      }
-
-      let spinCount = 0;
-      const interval = setInterval(() => {
-        reels.forEach(r => {
-          r.textContent = config.symbols[Math.floor(Math.random() * config.symbols.length)];
-        });
-        spinCount++;
-
-        if (spinCount > 12) {
-          clearInterval(interval);
-          reels.forEach(r => r.classList.remove('spinning'));
-          btn.disabled = false;
-
-          const results = reels.map(r => r.textContent);
-          const allMatch = results.every(v => v === results[0]);
-          const someMatch = results.some((val, idx) => results.indexOf(val) !== idx);
-
-          if (allMatch) {
-            const win = selectedStake * (config.reels === 5 ? 25 : 10);
-            bankroll += win;
-            playSound('win');
-            showBanner(`🎉 JACKPOT! YOU WON €${win}!`);
-          } else if (someMatch) {
-            const win = selectedStake * 2;
-            bankroll += win;
-            playSound('win');
-            showBanner(`✨ MATCH FOUND! YOU WON €${win}!`);
-          }
-          updateBankrollUI();
-        }
-      }, 80);
     }
 
     // DAILY FORTUNE WHEEL
