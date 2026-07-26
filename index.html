@@ -131,7 +131,7 @@
 
     .community-cards { display: flex; gap: 4px; min-height: 54px; }
 
-    /* FIXED CARD ANIMATIONS (No more crooked stacking) */
+    /* CARD ANIMATIONS */
     @keyframes slideInCard {
       0% { transform: translateY(-40px) scale(0.8); opacity: 0; }
       100% { transform: translateY(0) scale(1); opacity: 1; }
@@ -1087,7 +1087,7 @@
         playSound('card');
       }
 
-      lockActionButtons(true); // Prevent spam clicking
+      lockActionButtons(true);
       processNPCTurns(callAmt);
     }
 
@@ -1103,7 +1103,7 @@
       pot += amt;
       showFloatingText('seat-player-3', `-€${amt}`, '#ef5350');
 
-      lockActionButtons(true); // Prevent spam clicking
+      lockActionButtons(true);
       processNPCTurns(amt);
     }
 
@@ -1182,9 +1182,9 @@
       });
 
       setTimeout(() => {
-        if (gameStage > 0 && gameStage < 4 && remainingActive > 0) {
+        if (gameStage > 0 && remainingActive > 0) {
           advanceRound();
-          if (gameStage < 4) { lockActionButtons(false); }
+          if (gameStage > 0) { lockActionButtons(false); }
         }
       }, delayAcc + 1000);
     }
