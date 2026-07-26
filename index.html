@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Vegas Casino Suite Deluxe</title>
+  <title>Vegas Casino Suite - Social NPCs</title>
   <style>
     :root {
       --bg-color: #0b140e;
@@ -27,13 +27,12 @@
       box-sizing: border-box;
     }
 
-    /* Top Navigation */
     .nav-bar {
       display: flex;
-      gap: 6px;
+      gap: 5px;
       width: 100%;
       max-width: 500px;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
 
     .nav-btn {
@@ -41,20 +40,18 @@
       background: #1e2d24;
       color: #aaa;
       border: 1px solid #2e4537;
-      padding: 10px 3px;
+      padding: 8px 2px;
       border-radius: 6px;
       font-weight: bold;
       cursor: pointer;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       text-transform: uppercase;
-      transition: all 0.2s;
     }
 
     .nav-btn.active {
       background: linear-gradient(180deg, #dfb235 0%, #aa820a 100%);
       color: #000;
       border-color: var(--gold);
-      box-shadow: 0 0 10px rgba(223, 178, 53, 0.4);
     }
 
     .container {
@@ -63,7 +60,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       position: relative;
     }
 
@@ -71,10 +68,10 @@
     .dashboard {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 4px;
       width: 100%;
       background: rgba(0, 0, 0, 0.6);
-      padding: 10px 15px;
+      padding: 8px 12px;
       border-radius: 8px;
       border: 1px solid var(--gold);
       box-sizing: border-box;
@@ -84,12 +81,12 @@
     .stats-row {
       display: flex;
       justify-content: space-between;
-      font-size: 1.1rem;
+      font-size: 1rem;
       font-weight: bold;
     }
 
     .status-msg {
-      font-size: 1rem;
+      font-size: 0.85rem;
       color: var(--gold);
       font-weight: bold;
       min-height: 1.2em;
@@ -98,31 +95,29 @@
     /* Chip Selector */
     .chip-selector {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       justify-content: center;
       width: 100%;
-      margin: 2px 0;
     }
 
     .chip-btn {
-      width: 38px;
-      height: 38px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       border: 2px dashed #000;
       font-weight: 900;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       box-shadow: 0 3px 6px rgba(0,0,0,0.4);
-      transition: transform 0.1s;
     }
 
     .chip-btn.selected {
-      transform: scale(1.18);
+      transform: scale(1.15);
       border: 3px solid #fff !important;
-      box-shadow: 0 0 12px var(--gold);
+      box-shadow: 0 0 10px var(--gold);
     }
 
     .c-1 { background: #ffffff; color: #000; border-color: #888; }
@@ -136,13 +131,13 @@
       width: 100%;
       flex-direction: column;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
     }
 
     .game-view.active { display: flex; }
 
-    /* ROULETTE */
-    #wheel-canvas { max-width: 240px; height: auto; }
+    /* Roulette & Board */
+    #wheel-canvas { max-width: 220px; height: auto; }
 
     .board-wrapper {
       width: 100%;
@@ -196,8 +191,8 @@
 
     .chip {
       position: absolute;
-      width: 20px;
-      height: 20px;
+      width: 18px;
+      height: 18px;
       background: var(--gold);
       color: black;
       border-radius: 50%;
@@ -209,94 +204,171 @@
       font-weight: 900;
     }
 
-    /* SLOTS */
+    /* Slots */
     .slots-machine {
       background: linear-gradient(180deg, #222 0%, #111 100%);
       border: 4px solid var(--gold);
       border-radius: 12px;
-      padding: 15px;
+      padding: 12px;
       display: flex;
       gap: 10px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.8);
     }
 
     .reel {
-      width: 70px;
-      height: 90px;
+      width: 65px;
+      height: 85px;
       background: #fff;
       border-radius: 6px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2.5rem;
+      font-size: 2.2rem;
       border: 2px solid #444;
     }
 
-    /* CARDS TABLES (BLACKJACK & POKER) */
+    /* Tables & Dynamic NPCs */
     .table-area {
       width: 100%;
       background: var(--felt-green);
       border: 3px solid var(--felt-border);
       border-radius: 10px;
-      padding: 15px;
+      padding: 10px;
       box-sizing: border-box;
       display: flex;
       flex-direction: column;
-      gap: 15px;
+      gap: 10px;
+      position: relative;
+    }
+
+    .npc-row {
+      display: flex;
+      justify-content: space-around;
+      width: 100%;
+      border-bottom: 1px dashed rgba(255,255,255,0.2);
+      padding-bottom: 6px;
+    }
+
+    .npc-seat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .npc-avatar {
+      font-size: 1.6rem;
+      background: rgba(0,0,0,0.4);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid var(--gold);
+      transition: transform 0.2s;
+    }
+
+    .npc-seat:hover .npc-avatar { transform: scale(1.1); }
+
+    .npc-name {
+      font-size: 0.7rem;
+      font-weight: bold;
+      color: #fff;
+      margin-top: 2px;
+    }
+
+    .npc-rel {
+      font-size: 0.6rem;
+      color: var(--gold);
+      font-weight: bold;
+    }
+
+    .npc-bubble {
+      position: absolute;
+      top: -24px;
+      background: #fff;
+      color: #000;
+      font-size: 0.65rem;
+      font-weight: bold;
+      padding: 2px 6px;
+      border-radius: 8px;
+      white-space: nowrap;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+      display: none;
+      z-index: 10;
+    }
+
+    .npc-hand {
+      display: flex;
+      gap: 2px;
+      margin-top: 3px;
+    }
+
+    .mini-card {
+      width: 20px;
+      height: 28px;
+      background: #fff;
+      color: #000;
+      border-radius: 3px;
+      font-size: 0.6rem;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .hand-container {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 5px;
+      gap: 4px;
     }
 
-    .hand-label { font-weight: bold; color: var(--gold); }
+    .hand-label { font-weight: bold; color: var(--gold); font-size: 0.85rem; }
 
     .cards {
       display: flex;
-      gap: 6px;
-      min-height: 70px;
+      gap: 5px;
+      min-height: 60px;
     }
 
     .card {
-      width: 46px;
-      height: 66px;
+      width: 42px;
+      height: 60px;
       background: var(--card-bg);
       color: #000;
       border-radius: 5px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 4px;
+      padding: 3px;
       box-sizing: border-box;
       font-weight: bold;
-      font-size: 0.85rem;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+      font-size: 0.8rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.4);
       cursor: pointer;
       position: relative;
     }
 
     .card.red-card { color: var(--red); }
     .card.hidden { background: linear-gradient(135deg, #1a237e 25%, #283593 100%); color: transparent; }
-    .card.held { border: 3px solid var(--gold); transform: translateY(-5px); }
+    .card.held { border: 3px solid var(--gold); transform: translateY(-4px); }
 
     .hold-tag {
       position: absolute;
-      top: -12px;
+      top: -10px;
       background: var(--gold);
       color: #000;
-      font-size: 8px;
-      padding: 1px 4px;
+      font-size: 7px;
+      padding: 1px 3px;
       font-weight: 900;
       border-radius: 3px;
     }
 
-    /* Controls */
     .controls {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       width: 100%;
       justify-content: center;
     }
@@ -304,8 +376,8 @@
     button.btn-main {
       background: linear-gradient(180deg, #dfb235 0%, #aa820a 100%);
       border: none;
-      padding: 12px 15px;
-      font-size: 0.95rem;
+      padding: 10px 12px;
+      font-size: 0.9rem;
       font-weight: bold;
       color: #000;
       border-radius: 6px;
@@ -317,8 +389,8 @@
     button.btn-sec { background: #e53935; color: white; }
     button:disabled { opacity: 0.4; cursor: not-allowed; }
 
-    /* Big Win Banner Overlay */
-    #win-overlay {
+    /* Modals & Popups */
+    .modal {
       display: none;
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -329,27 +401,33 @@
       flex-direction: column;
     }
 
-    .win-box {
-      background: linear-gradient(180deg, #dfb235 0%, #8c6a08 100%);
-      padding: 30px;
-      border-radius: 15px;
+    .modal-box {
+      background: #1e2d24;
+      border: 2px solid var(--gold);
+      padding: 20px;
+      border-radius: 12px;
       text-align: center;
-      color: #000;
-      box-shadow: 0 0 30px var(--gold);
-      animation: pop 0.3s ease-out;
+      color: white;
+      max-width: 320px;
+      width: 90%;
+      box-shadow: 0 0 20px rgba(0,0,0,0.8);
     }
-
-    @keyframes pop { 0% { transform: scale(0.5); } 100% { transform: scale(1); } }
   </style>
 </head>
 <body>
 
-  <!-- Big Win Banner -->
-  <div id="win-overlay" onclick="this.style.display='none'">
-    <div class="win-box">
-      <h1 style="margin:0;font-size:2.5rem;">🎉 BIG WIN! 🎉</h1>
-      <h2 id="win-amount" style="margin:10px 0;">+$100</h2>
-      <p>Tap anywhere to continue</p>
+  <!-- Modal for NPC Interactions -->
+  <div class="modal" id="npc-modal">
+    <div class="modal-box">
+      <h2 id="modal-npc-name" style="color:var(--gold);margin-top:0;">NPC</h2>
+      <p id="modal-npc-bio" style="font-size:0.85rem;color:#ccc;">Bio text...</p>
+      <p id="modal-npc-status" style="font-size:0.8rem;font-weight:bold;color:var(--gold);">Stranger (0/100 RP)</p>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:15px;">
+        <button class="btn-main" onclick="buyNpcDrink()">Buy Drink ($10)</button>
+        <button class="btn-main" onclick="chatWithNpc()">Chat</button>
+        <button class="btn-main" id="friend-req-btn" onclick="addNpcFriend()">Add to Friends List</button>
+        <button class="btn-main btn-sec" onclick="closeModal()">Close</button>
+      </div>
     </div>
   </div>
 
@@ -369,7 +447,7 @@
         <div class="stat">Bankroll: $<span id="balance">1000</span></div>
         <div class="stat">Bet: $<span id="selected-bet-display">5</span></div>
       </div>
-      <div class="status-msg" id="status">Welcome to Vegas Deluxe!</div>
+      <div class="status-msg" id="status">Tap NPCs at the table to talk!</div>
     </div>
 
     <!-- Chip Selector -->
@@ -406,28 +484,59 @@
       </div>
     </div>
 
-    <!-- BLACKJACK VIEW -->
+    <!-- BLACKJACK VIEW WITH DYNAMIC STRANGERS -->
     <div id="view-blackjack" class="game-view">
       <div class="table-area">
+        
+        <div class="npc-row">
+          <div class="npc-seat" id="seat-bj-1" onclick="openNpcMenu(0)">
+            <div class="npc-bubble" id="bubble-bj-1">...</div>
+            <div class="npc-avatar" id="avatar-bj-1">👤</div>
+            <div class="npc-name" id="name-bj-1">Stranger</div>
+            <div class="npc-rel" id="rel-bj-1">Stranger</div>
+            <div class="npc-hand" id="hand-bj-1"></div>
+          </div>
+          <div class="npc-seat" id="seat-bj-2" onclick="openNpcMenu(1)">
+            <div class="npc-bubble" id="bubble-bj-2">...</div>
+            <div class="npc-avatar" id="avatar-bj-2">👤</div>
+            <div class="npc-name" id="name-bj-2">Stranger</div>
+            <div class="npc-rel" id="rel-bj-2">Stranger</div>
+            <div class="npc-hand" id="hand-bj-2"></div>
+          </div>
+        </div>
+
         <div class="hand-container">
           <div class="hand-label">Dealer (<span id="dealer-score">0</span>)</div>
           <div class="cards" id="dealer-cards"></div>
         </div>
+
         <div class="hand-container">
           <div class="hand-label">Player (<span id="player-score">0</span>)</div>
           <div class="cards" id="player-cards"></div>
         </div>
       </div>
+
       <div class="controls">
         <button class="btn-main" id="bj-deal-btn" onclick="startBlackjack()">DEAL</button>
         <button class="btn-main" id="bj-hit-btn" onclick="hitBlackjack()" disabled>HIT</button>
         <button class="btn-main btn-sec" id="bj-stand-btn" onclick="standBlackjack()" disabled>STAND</button>
+        <button class="btn-main" onclick="shuffleTableNpcs()" style="background:#283593;color:#fff;">New Table</button>
       </div>
     </div>
 
     <!-- VIDEO POKER VIEW -->
     <div id="view-poker" class="game-view">
       <div class="table-area">
+        <div class="npc-row">
+          <div class="npc-seat" id="seat-poker-1" onclick="openNpcMenu(2)">
+            <div class="npc-bubble" id="bubble-poker-1">...</div>
+            <div class="npc-avatar" id="avatar-poker-1">👤</div>
+            <div class="npc-name" id="name-poker-1">Stranger</div>
+            <div class="npc-rel" id="rel-poker-1">Stranger</div>
+            <div class="npc-hand" id="hand-poker-1"></div>
+          </div>
+        </div>
+
         <div class="hand-container">
           <div class="hand-label">Tap cards to HOLD</div>
           <div class="cards" id="poker-cards"></div>
@@ -441,55 +550,176 @@
   </div>
 
   <script>
-    // Audio Synth
+    // Audio Engine
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     function playSound(type) {
       if (audioCtx.state === 'suspended') audioCtx.resume();
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
+      osc.connect(gain); gain.connect(audioCtx.destination);
       const now = audioCtx.currentTime;
 
       if (type === 'chip') {
-        osc.frequency.setValueAtTime(800, now);
-        gain.gain.setValueAtTime(0.2, now);
+        osc.frequency.setValueAtTime(800, now); gain.gain.setValueAtTime(0.2, now);
         gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
         osc.start(now); osc.stop(now + 0.05);
       } else if (type === 'spin') {
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(200, now);
+        osc.type = 'triangle'; osc.frequency.setValueAtTime(200, now);
         gain.gain.setValueAtTime(0.1, now);
         gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
         osc.start(now); osc.stop(now + 0.08);
       } else if (type === 'win') {
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(523.25, now);
-        osc.frequency.setValueAtTime(659.25, now + 0.1);
+        osc.frequency.setValueAtTime(523.25, now); osc.frequency.setValueAtTime(659.25, now + 0.1);
         osc.frequency.setValueAtTime(783.99, now + 0.2);
-        gain.gain.setValueAtTime(0.2, now);
-        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+        gain.gain.setValueAtTime(0.2, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
         osc.start(now); osc.stop(now + 0.4);
       }
     }
 
-    // Saved Progress
+    // NPC DATABASE & PERSONALITIES
+    const NPC_POOL = [
+      { id: 'viktor', name: 'Viktor', avatar: '👴', style: 'Conservative', bio: 'Retired sea captain who loves calm, low-risk hands.', rp: 0, friend: false, 
+        greetings: ['Good day, friend.', 'Let us play a clean game.'],
+        winMsgs: ['A steady win!', 'Patience pays off.'],
+        friendMsgs: ['Ah, my favorite seat mate!', 'I save a spot at the table for you!'] },
+      { id: 'maya', name: 'Maya', avatar: '🎨', style: 'Wild', bio: 'Abstract painter who plays on gut feeling and wild hits.', rp: 0, friend: false,
+        greetings: ['Hey there! Ready to risk it all?', 'Felt table looks colorful today!'],
+        winMsgs: ['BOOM! Art in motion!', 'Told ya I felt a lucky wave!'],
+        friendMsgs: ['Bestie! Let\'s break the house today!'] },
+      { id: 'leo', name: 'Leo', avatar: '🏎️', style: 'Aggressive', bio: 'Rally driver who plays fast and bets big stacks.', rp: 0, friend: false,
+        greetings: ['Keep up or step aside!', 'Speed is everything.'],
+        winMsgs: ['Too easy!', 'Clean sweep!'],
+        friendMsgs: ['My wingman is here! Let\'s go fast!'] },
+      { id: 'sofia', name: 'Sofia', avatar: '🍸', style: 'Social', bio: 'High-society host who loves good conversation and toasts.', rp: 0, friend: false,
+        greetings: ['A pleasure to share the table.', 'Order a drink!'],
+        winMsgs: ['Cheers to good fortune!', 'How lovely!'],
+        friendMsgs: ['Always a delight playing with a true friend!'] }
+    ];
+
+    let currentTableNpcs = [];
+    let selectedNpcIndex = null;
     let bankroll = localStorage.getItem('casino_bankroll') ? parseInt(localStorage.getItem('casino_bankroll')) : 1000;
     let selectedChip = 5;
     let activeBets = {};
     let activeTab = 'roulette';
+
+    function initNpcs() {
+      // Load saved RP
+      NPC_POOL.forEach(npc => {
+        const savedRp = localStorage.getItem(`npc_rp_${npc.id}`);
+        if (savedRp) npc.rp = parseInt(savedRp);
+        const savedFriend = localStorage.getItem(`npc_friend_${npc.id}`);
+        if (savedFriend) npc.friend = (savedFriend === 'true');
+      });
+      shuffleTableNpcs();
+    }
+
+    function shuffleTableNpcs() {
+      const shuffled = [...NPC_POOL].sort(() => Math.random() - 0.5);
+      currentTableNpcs = [shuffled[0], shuffled[1], shuffled[2]];
+      renderTableNpcs();
+      updateDashboard("New strangers joined the table!");
+    }
+
+    function renderTableNpcs() {
+      // BJ Seat 1
+      const n1 = currentTableNpcs[0];
+      document.getElementById('avatar-bj-1').textContent = n1.avatar;
+      document.getElementById('name-bj-1').textContent = n1.name;
+      document.getElementById('rel-bj-1').textContent = getRelTitle(n1);
+
+      // BJ Seat 2
+      const n2 = currentTableNpcs[1];
+      document.getElementById('avatar-bj-2').textContent = n2.avatar;
+      document.getElementById('name-bj-2').textContent = n2.name;
+      document.getElementById('rel-bj-2').textContent = getRelTitle(n2);
+
+      // Poker Seat 1
+      const n3 = currentTableNpcs[2];
+      document.getElementById('avatar-poker-1').textContent = n3.avatar;
+      document.getElementById('name-poker-1').textContent = n3.name;
+      document.getElementById('rel-poker-1').textContent = getRelTitle(n3);
+    }
+
+    function getRelTitle(npc) {
+      if (npc.friend) return '❤️ Friend';
+      if (npc.rp >= 50) return '⭐ Table Buddy';
+      if (npc.rp >= 20) return 'Acquaintance';
+      return 'Stranger';
+    }
+
+    function triggerNpcSpeech(seatId, text) {
+      const bubble = document.getElementById(`bubble-${seatId}`);
+      if (!bubble) return;
+      bubble.textContent = text;
+      bubble.style.display = 'block';
+      setTimeout(() => { bubble.style.display = 'none'; }, 2500);
+    }
+
+    function openNpcMenu(index) {
+      selectedNpcIndex = index;
+      const npc = currentTableNpcs[index];
+      document.getElementById('modal-npc-name').textContent = `${npc.avatar} ${npc.name}`;
+      document.getElementById('modal-npc-bio').textContent = `${npc.bio} (Style: ${npc.style})`;
+      document.getElementById('modal-npc-status').textContent = `${getRelTitle(npc)} (${npc.rp}/100 RP)`;
+      
+      const friendBtn = document.getElementById('friend-req-btn');
+      if (npc.friend) {
+        friendBtn.textContent = "Friends Already ❤️";
+        friendBtn.disabled = true;
+      } else if (npc.rp >= 50) {
+        friendBtn.textContent = "Invite to Friends List";
+        friendBtn.disabled = false;
+      } else {
+        friendBtn.textContent = "Requires 50 RP to Friend";
+        friendBtn.disabled = true;
+      }
+
+      document.getElementById('npc-modal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('npc-modal').style.display = 'none';
+    }
+
+    function buyNpcDrink() {
+      if (bankroll < 10) { alert("Drink costs $10!"); return; }
+      bankroll -= 10;
+      const npc = currentTableNpcs[selectedNpcIndex];
+      npc.rp = Math.min(100, npc.rp + 15);
+      localStorage.setItem(`npc_rp_${npc.id}`, npc.rp);
+      playSound('chip');
+      updateDashboard(`Bought ${npc.name} a drink (+15 RP)!`);
+      openNpcMenu(selectedNpcIndex);
+      renderTableNpcs();
+    }
+
+    function chatWithNpc() {
+      const npc = currentTableNpcs[selectedNpcIndex];
+      npc.rp = Math.min(100, npc.rp + 5);
+      localStorage.setItem(`npc_rp_${npc.id}`, npc.rp);
+      
+      const line = npc.friend ? npc.friendMsgs[0] : npc.greetings[Math.floor(Math.random()*npc.greetings.length)];
+      alert(`${npc.name}: "${line}"`);
+      openNpcMenu(selectedNpcIndex);
+      renderTableNpcs();
+    }
+
+    function addNpcFriend() {
+      const npc = currentTableNpcs[selectedNpcIndex];
+      npc.friend = true;
+      localStorage.setItem(`npc_friend_${npc.id}`, 'true');
+      alert(`🎉 You and ${npc.name} are now Friends!`);
+      openNpcMenu(selectedNpcIndex);
+      renderTableNpcs();
+    }
 
     function updateDashboard(msg) {
       document.getElementById('balance').textContent = bankroll;
       document.getElementById('selected-bet-display').textContent = selectedChip;
       localStorage.setItem('casino_bankroll', bankroll);
       if (msg) document.getElementById('status').textContent = msg;
-    }
-
-    function triggerBigWin(amount) {
-      document.getElementById('win-amount').textContent = `+$${amount}`;
-      document.getElementById('win-overlay').style.display = 'flex';
-      playSound('win');
     }
 
     function selectChip(val) {
@@ -579,7 +809,7 @@
     function drawWheel() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       const sliceAngle = (2 * Math.PI) / POCKETS.length;
-      const cx = canvas.width/2, cy = canvas.height/2, r = 120;
+      const cx = canvas.width/2, cy = canvas.height/2, r = 110;
 
       for (let i = 0; i < POCKETS.length; i++) {
         const num = POCKETS[i];
@@ -594,7 +824,7 @@
         ctx.fillText(num, r - 8, 4); ctx.restore();
       }
 
-      ctx.beginPath(); ctx.arc(cx, cy, 25, 0, 2 * Math.PI); ctx.fillStyle = '#dfb235'; ctx.fill();
+      ctx.beginPath(); ctx.arc(cx, cy, 22, 0, 2 * Math.PI); ctx.fillStyle = '#dfb235'; ctx.fill();
       ctx.beginPath(); ctx.moveTo(cx, cy - r - 6); ctx.lineTo(cx - 7, cy - r + 6); ctx.lineTo(cx + 7, cy - r + 6); ctx.closePath();
       ctx.fillStyle = 'white'; ctx.fill();
     }
@@ -648,8 +878,7 @@
       }
 
       bankroll += payout;
-      if (payout >= 100) triggerBigWin(payout);
-      else if (payout > 0) playSound('win');
+      if (payout > 0) playSound('win');
       
       updateDashboard(`Result: ${winNum} (${winNum === 0 ? 'GREEN' : isRed ? 'RED' : 'BLACK'}) | Won: $${payout}`);
       activeBets = {}; document.querySelectorAll('.chip').forEach(c => c.remove());
@@ -661,7 +890,6 @@
 
     function spinSlots() {
       if (bankroll < selectedChip) { alert("Not enough chips!"); return; }
-
       bankroll -= selectedChip;
       updateDashboard("Spinning Reels..."); playSound('spin');
       document.getElementById('slot-spin-btn').disabled = true;
@@ -687,18 +915,17 @@
 
       const win = selectedChip * multiplier;
       bankroll += win;
-
-      if (win >= 100) triggerBigWin(win);
-      else if (win > 0) playSound('win');
+      if (win > 0) playSound('win');
 
       updateDashboard(win > 0 ? `JACKPOT! You Won $${win}!` : "No match. Try again!");
       document.getElementById('slot-spin-btn').disabled = false;
     }
 
-    // 3. BLACKJACK
+    // 3. BLACKJACK ENGINE
     const SUITS = ['♠', '♥', '♦', '♣'];
     const VALUES = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
     let deck = [], playerHand = [], dealerHand = [], currentBjBet = 0;
+    let n1Hand = [], n2Hand = [];
 
     function buildDeck() {
       deck = [];
@@ -726,8 +953,19 @@
         else {
           const isRed = c.suit === '♥' || c.suit === '♦';
           div.className = `card ${isRed ? 'red-card' : ''}`;
-          div.innerHTML = `<div>${c.value}</div><div style="align-self:center;font-size:1.2rem">${c.suit}</div><div style="align-self:flex-end">${c.value}</div>`;
+          div.innerHTML = `<div>${c.value}</div><div style="align-self:center;font-size:1.1rem">${c.suit}</div><div style="align-self:flex-end">${c.value}</div>`;
         }
+        container.appendChild(div);
+      });
+    }
+
+    function renderNpcHand(containerId, hand) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+      hand.forEach(c => {
+        const div = document.createElement('div');
+        div.className = 'mini-card';
+        div.textContent = c.value;
         container.appendChild(div);
       });
     }
@@ -739,9 +977,19 @@
       bankroll -= currentBjBet;
       playSound('chip'); buildDeck();
 
+      // Gain RP with table strangers for playing together
+      currentTableNpcs[0].rp = Math.min(100, currentTableNpcs[0].rp + 2);
+      currentTableNpcs[1].rp = Math.min(100, currentTableNpcs[1].rp + 2);
+      localStorage.setItem(`npc_rp_${currentTableNpcs[0].id}`, currentTableNpcs[0].rp);
+      localStorage.setItem(`npc_rp_${currentTableNpcs[1].id}`, currentTableNpcs[1].rp);
+
+      n1Hand = [deck.pop(), deck.pop()];
+      n2Hand = [deck.pop(), deck.pop()];
       playerHand = [deck.pop(), deck.pop()];
       dealerHand = [deck.pop(), deck.pop()];
 
+      renderNpcHand('hand-bj-1', n1Hand);
+      renderNpcHand('hand-bj-2', n2Hand);
       renderHand('player-cards', playerHand);
       renderHand('dealer-cards', dealerHand, true);
 
@@ -751,6 +999,9 @@
       document.getElementById('bj-deal-btn').disabled = true;
       document.getElementById('bj-hit-btn').disabled = false;
       document.getElementById('bj-stand-btn').disabled = false;
+
+      triggerNpcSpeech('bj-1', currentTableNpcs[0].greetings[0]);
+      triggerNpcSpeech('bj-2', currentTableNpcs[1].greetings[0]);
 
       updateDashboard("Hit or Stand?");
       if (calcHand(playerHand) === 21) standBlackjack();
@@ -768,6 +1019,7 @@
       document.getElementById('bj-hit-btn').disabled = true;
       document.getElementById('bj-stand-btn').disabled = true;
 
+      // Dealer Turn
       renderHand('dealer-cards', dealerHand, false);
       let dScore = calcHand(dealerHand);
       while (dScore < 17) { dealerHand.push(deck.pop()); dScore = calcHand(dealerHand); }
@@ -782,17 +1034,19 @@
       else if (dScore > 21 || pScore > dScore) {
         payout = pScore === 21 && playerHand.length === 2 ? currentBjBet * 2.5 : currentBjBet * 2;
         updateDashboard(`You Win $${payout}!`);
-        if (payout >= 100) triggerBigWin(payout); else playSound('win');
+        playSound('win');
+        triggerNpcSpeech('bj-1', currentTableNpcs[0].winMsgs[0]);
       } else if (pScore === dScore) {
         payout = currentBjBet; updateDashboard("Push! Bet returned.");
       } else updateDashboard("Dealer Wins!");
 
       bankroll += payout;
       updateDashboard();
+      renderTableNpcs();
       document.getElementById('bj-deal-btn').disabled = false;
     }
 
-    // 4. VIDEO POKER
+    // 4. VIDEO POKER ENGINE
     let pokerHand = [], pokerHeld = [false, false, false, false, false], pokerState = 'DEAL';
 
     function dealPoker() {
@@ -801,6 +1055,10 @@
         bankroll -= selectedChip;
         buildDeck();
         pokerHand = [deck.pop(), deck.pop(), deck.pop(), deck.pop(), deck.pop()];
+        renderNpcHand('hand-poker-1', [deck.pop(), deck.pop(), deck.pop(), deck.pop(), deck.pop()]);
+        
+        triggerNpcSpeech('poker-1', currentTableNpcs[2].greetings[0]);
+
         pokerHeld = [false, false, false, false, false];
         renderPokerHand();
         pokerState = 'DRAW';
@@ -829,7 +1087,7 @@
             renderPokerHand();
           }
         };
-        div.innerHTML = `${pokerHeld[idx] ? '<div class="hold-tag">HELD</div>' : ''}<div>${c.value}</div><div style="align-self:center;font-size:1.2rem">${c.suit}</div><div style="align-self:flex-end">${c.value}</div>`;
+        div.innerHTML = `${pokerHeld[idx] ? '<div class="hold-tag">HELD</div>' : ''}<div>${c.value}</div><div style="align-self:center;font-size:1.1rem">${c.suit}</div><div style="align-self:flex-end">${c.value}</div>`;
         container.appendChild(div);
       });
     }
@@ -840,18 +1098,23 @@
       const vals = Object.values(counts);
 
       let payout = 0;
-      if (vals.includes(4)) payout = selectedChip * 25; // 4 of a kind
-      else if (vals.includes(3) && vals.includes(2)) payout = selectedChip * 9; // Full house
-      else if (vals.includes(3)) payout = selectedChip * 3; // 3 of a kind
-      else if (vals.filter(v => v === 2).length === 2) payout = selectedChip * 2; // 2 Pair
-      else if (counts['J'] === 2 || counts['Q'] === 2 || counts['K'] === 2 || counts['A'] === 2) payout = selectedChip * 1; // Jacks or Better
+      if (vals.includes(4)) payout = selectedChip * 25;
+      else if (vals.includes(3) && vals.includes(2)) payout = selectedChip * 9;
+      else if (vals.includes(3)) payout = selectedChip * 3;
+      else if (vals.filter(v => v === 2).length === 2) payout = selectedChip * 2;
+      else if (counts['J'] === 2 || counts['Q'] === 2 || counts['K'] === 2 || counts['A'] === 2) payout = selectedChip * 1;
 
       bankroll += payout;
-      if (payout >= 100) triggerBigWin(payout);
-      else if (payout > 0) playSound('win');
+      if (payout > 0) {
+        playSound('win');
+        triggerNpcSpeech('poker-1', currentTableNpcs[2].winMsgs[0]);
+      }
 
       updateDashboard(payout > 0 ? `Poker Win! Paid $${payout}` : "No pair. Try again!");
     }
+
+    // Init App
+    initNpcs();
   </script>
 </body>
 </html>
