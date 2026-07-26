@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Vegas Casino Suite - Hold'em & Social</title>
+  <title>Vegas Casino Suite - Authentic Texas Hold'em</title>
   <style>
     :root {
       --bg-color: #0b140e;
@@ -368,9 +368,7 @@
   <!-- Navigation -->
   <div class="nav-bar">
     <button class="nav-btn active" onclick="switchTab('holdem')">Hold'em</button>
-    <button class="nav-btn" onclick="switchTab('roulette')">Roulette</button>
     <button class="nav-btn" onclick="switchTab('slots')">Slots</button>
-    <button class="nav-btn" onclick="switchTab('blackjack')">Blackjack</button>
     <button class="nav-btn" onclick="openProfileModal()" style="background:#283593;color:#fff;">Profile</button>
   </div>
 
@@ -439,14 +437,10 @@
       </div>
 
       <div class="controls">
-        <button class="btn-main" id="h-deal-btn" onclick="startHoldem()">DEAL</button>
+        <button class="btn-main" id="h-deal-btn" onclick="startHoldem()">DEAL PRE-FLOP</button>
         <button class="btn-main" id="h-next-btn" onclick="nextHoldemStage()" disabled>BET / NEXT</button>
+        <button class="btn-main btn-sec" id="h-fold-btn" onclick="foldHoldem()" disabled>FOLD</button>
       </div>
-    </div>
-
-    <!-- ROULETTE VIEW -->
-    <div id="view-roulette" class="game-view">
-      <p style="font-size:0.8rem;color:var(--gold);">Roulette Module Active</p>
     </div>
 
     <!-- SLOTS VIEW -->
@@ -459,15 +453,10 @@
       <div class="controls"><button class="btn-main" onclick="spinSlots()">SPIN</button></div>
     </div>
 
-    <!-- BLACKJACK VIEW -->
-    <div id="view-blackjack" class="game-view">
-      <p style="font-size:0.8rem;color:var(--gold);">Blackjack Module Active</p>
-    </div>
-
   </div>
 
   <script>
-    // 100+ RANDOM ITEMS DATABASE
+    // 100+ GIFT CATALOG
     const GIFT_CATALOG = [
       '🥤','☕','🍺','🍷','🍸','🍹','🍾','🥃','🧃','🧉','🍼','🍿','🍕','🍔','🍟','🌭','🌮','🌯','🍩','🍪',
       '🍰','🍫','🍬','🍭','🍇','🍉','🍊','🍋','🍌','🍍','🍎','🍏','🍐','🍑','🍒','🍓','🫐','🥝','🥑','🥦',
@@ -607,10 +596,13 @@
       document.getElementById(`view-${tab}`).classList.add('active');
     }
 
-    // TEXAS HOLD'EM GAME LOGIC
+    // AUTHENTIC TEXAS HOLD'EM ENGINE
     const SUITS = ['♠', '♥', '♦', '♣'];
     const VALUES = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
-    let deck = [], playerHole = [], communityCards = [], holdemStage = 0, pot = 0;
+    const RANK_MAP = { '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14 };
+
+    let deck = [], playerHole = [], npc1Hole = [], npc2Hole = [], communityCards = [];
+    let holdemStage = 0, pot = 0;
 
     function buildDeck() {
       deck = [];
@@ -618,65 +610,154 @@
       deck.sort(() => Math.random() - 0.5);
     }
 
-    function renderCards(containerId, cards) {
+    function renderCards(containerId, cards, hide = false) {
       const c = document.getElementById(containerId);
       c.innerHTML = '';
       cards.forEach(card => {
-        const isRed = card.suit === '♥' || card.suit === '♦';
         const div = document.createElement('div');
-        div.className = `card ${isRed ? 'red-card' : ''}`;
-        div.innerHTML = `<div>${card.value}</div><div style="align-self:center;">${card.suit}</div><div style="align-self:flex-end">${card.value}</div>`;
+        if (hide) {
+          div.className = 'card hidden';
+        } else {
+          const isRed = card.suit === '♥' || card.suit === '♦';
+          div.className = `card ${isRed ? 'red-card' : ''}`;
+          div.innerHTML = `<div>${card.value}</div><div style="align-self:center;">${card.suit}</div><div style="align-self:flex-end">${card.value}</div>`;
+        }
         c.appendChild(div);
       });
+    }
+
+    function renderNpcMiniHand(containerId, count) {
+      const c = document.getElementById(containerId);
+      c.innerHTML = '';
+      for(let i=0; i<count; i++) {
+        const div = document.createElement('div');
+        div.className = 'mini-card';
+        div.textContent = '🂠';
+        c.appendChild(div);
+      }
     }
 
     function startHoldem() {
       if (bankroll < selectedChip) { alert("Not enough chips!"); return; }
       bankroll -= selectedChip;
-      pot = selectedChip * 3; // Player + 2 NPCs bet
+      pot = selectedChip * 3; // Blind bets
       buildDeck();
 
       playerHole = [deck.pop(), deck.pop()];
+      npc1Hole = [deck.pop(), deck.pop()];
+      npc2Hole = [deck.pop(), deck.pop()];
       communityCards = [];
       holdemStage = 1;
 
       renderCards('player-holdem-cards', playerHole);
       renderCards('community-cards', []);
-      document.getElementById('pot-display').textContent = pot;
+      renderNpcMiniHand('hand-h-1', 2);
+      renderNpcMiniHand('hand-h-2', 2);
 
+      document.getElementById('pot-display').textContent = pot;
       document.getElementById('h-deal-btn').disabled = true;
       document.getElementById('h-next-btn').disabled = false;
+      document.getElementById('h-fold-btn').disabled = false;
+
       addXP(15);
-      updateDashboard("Pre-Flop: Press BET / NEXT to see Flop!");
+      updateDashboard("Pre-Flop: Small & Big Blinds posted. Press BET / NEXT!");
+    }
+
+    function foldHoldem() {
+      updateDashboard("You folded your hand. Pot lost!");
+      resetHoldem();
     }
 
     function nextHoldemStage() {
       if (holdemStage === 1) {
-        // Deal Flop
+        // Flop (3 cards)
         communityCards = [deck.pop(), deck.pop(), deck.pop()];
         holdemStage = 2;
-        updateDashboard("Flop dealt! Press BET / NEXT for Turn.");
+        pot += selectedChip * 3;
+        updateDashboard("The Flop is dealt! Additional bets placed.");
       } else if (holdemStage === 2) {
-        // Deal Turn
+        // Turn (1 card)
         communityCards.push(deck.pop());
         holdemStage = 3;
-        updateDashboard("Turn dealt! Press BET / NEXT for River.");
+        pot += selectedChip * 3;
+        updateDashboard("The Turn is dealt! Final round of betting.");
       } else if (holdemStage === 3) {
-        // Deal River
+        // River (1 card)
         communityCards.push(deck.pop());
         holdemStage = 4;
-        updateDashboard("River dealt! Showdown time.");
+        pot += selectedChip * 3;
+        updateDashboard("The River is dealt! Showdown time!");
       } else if (holdemStage === 4) {
         // Showdown
-        const win = Math.random() > 0.4 ? pot : 0;
-        bankroll += win;
-        addXP(25);
-        updateDashboard(win > 0 ? `Showdown Win! Won Pot: $${pot}` : "NPC had a higher pair. House wins pot.");
-        document.getElementById('h-deal-btn').disabled = false;
-        document.getElementById('h-next-btn').disabled = true;
-        holdemStage = 0;
+        evaluateShowdown();
+        return;
       }
+      document.getElementById('pot-display').textContent = pot;
       renderCards('community-cards', communityCards);
+    }
+
+    function resetHoldem() {
+      document.getElementById('h-deal-btn').disabled = false;
+      document.getElementById('h-next-btn').disabled = true;
+      document.getElementById('h-fold-btn').disabled = true;
+      holdemStage = 0;
+    }
+
+    // 5-CARD HAND EVALUATION ALGORITHM
+    function evaluate7CardHand(cards) {
+      // Get all rank values
+      const ranks = cards.map(c => RANK_MAP[c.value]).sort((a,b) => b-a);
+      const suits = cards.map(c => c.suit);
+
+      const rankCounts = {};
+      ranks.forEach(r => rankCounts[r] = (rankCounts[r] || 0) + 1);
+
+      const suitCounts = {};
+      suits.forEach(s => suitCounts[s] = (suitCounts[s] || 0) + 1);
+
+      const isFlush = Object.values(suitCounts).some(count => count >= 5);
+      const counts = Object.values(rankCounts).sort((a,b) => b-a);
+
+      // Check Straight
+      const uniqueRanks = [...new Set(ranks)];
+      let isStraight = false;
+      for(let i=0; i<=uniqueRanks.length - 5; i++) {
+        if(uniqueRanks[i] - uniqueRanks[i+4] === 4) { isStraight = true; break; }
+      }
+
+      if (isFlush && isStraight) return { score: 9, name: "Straight Flush" };
+      if (counts[0] === 4) return { score: 8, name: "Four of a Kind" };
+      if (counts[0] === 3 && counts[1] >= 2) return { score: 7, name: "Full House" };
+      if (isFlush) return { score: 6, name: "Flush" };
+      if (isStraight) return { score: 5, name: "Straight" };
+      if (counts[0] === 3) return { score: 4, name: "Three of a Kind" };
+      if (counts[0] === 2 && counts[1] === 2) return { score: 3, name: "Two Pair" };
+      if (counts[0] === 2) return { score: 2, name: "One Pair" };
+      return { score: 1, name: `High Card (${VALUES[ranks[0]-2]})` };
+    }
+
+    function evaluateShowdown() {
+      const pHand = evaluate7CardHand([...playerHole, ...communityCards]);
+      const n1Hand = evaluate7CardHand([...npc1Hole, ...communityCards]);
+      const n2Hand = evaluate7CardHand([...npc2Hole, ...communityCards]);
+
+      // Reveal NPC Hole Cards
+      renderCards('hand-h-1', npc1Hole);
+      renderCards('hand-h-2', npc2Hole);
+
+      let msg = `Your Hand: ${pHand.name}. `;
+
+      if (pHand.score >= n1Hand.score && pHand.score >= n2Hand.score) {
+        bankroll += pot;
+        addXP(40);
+        msg += `You WIN the $${pot} Pot! 🎉`;
+      } else {
+        const winner = n1Hand.score > n2Hand.score ? currentTableNpcs[0].name : currentTableNpcs[1].name;
+        msg += `${winner} won with ${n1Hand.score > n2Hand.score ? n1Hand.name : n2Hand.name}.`;
+      }
+
+      updateDashboard(msg);
+      resetHoldem();
     }
 
     renderTableNpcs();
