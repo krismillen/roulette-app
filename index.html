@@ -3,25 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Texas Poker - HD Casino Suite</title>
+  <title>Pokerist - Texas Hold'em</title>
   <style>
     :root {
-      --bg-gradient: radial-gradient(circle at center, #1b4267 0%, #07131e 100%);
-      --panel-bg: rgba(11, 29, 48, 0.95);
+      --bg-dark: #07131e;
+      --panel-blue: #0f2c48;
       --panel-border: #21517a;
       --gold: #f3ad22;
-      --gold-dark: #b87e09;
-      --felt-blue: #1c4a6b;
-      --felt-border: #42586b;
+      --felt-blue: #1d4e70;
+      --felt-border: #3d5163;
       --red: #d32f2f;
-      --green: #2e7d32;
     }
 
     * { box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
 
     body {
       font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-      background: var(--bg-gradient);
+      background: radial-gradient(circle at center, #183e63 0%, #07131e 100%);
       color: #ffffff;
       margin: 0;
       padding: 0;
@@ -31,19 +29,18 @@
       overflow-x: hidden;
     }
 
-    /* TOP HEADER BAR (POKERIST STYLE) */
+    /* TOP HEADER BAR */
     .top-bar {
-      height: 50px;
+      height: 48px;
       background: linear-gradient(180deg, #132b40 0%, #081522 100%);
       border-bottom: 1px solid var(--panel-border);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 10px;
+      padding: 0 8px;
       position: sticky;
       top: 0;
       z-index: 100;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
     }
 
     .hdr-group { display: flex; align-items: center; gap: 6px; }
@@ -60,21 +57,10 @@
       display: flex;
       align-items: center;
       gap: 4px;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.2);
-    }
-
-    .hdr-btn:active { transform: scale(0.96); }
-
-    .badge-num {
-      background: var(--red);
-      color: #fff;
-      border-radius: 10px;
-      padding: 1px 5px;
-      font-size: 0.65rem;
     }
 
     .title-banner {
-      font-size: 1rem;
+      font-size: 0.9rem;
       font-weight: 900;
       font-style: italic;
       color: #fff;
@@ -82,30 +68,27 @@
       letter-spacing: 1px;
     }
 
-    /* MAIN CONTAINER & VIEWS */
-    .view-container {
-      flex: 1;
+    /* VIEWS */
+    .screen { display: none; width: 100%; flex-direction: column; padding: 8px; gap: 10px; }
+    .screen.active { display: flex; }
+
+    /* POKER TABLE OVAL (POKERIST STYLE) */
+    .poker-table-wrapper {
+      width: 100%;
+      max-width: 800px;
+      margin: 0 auto;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 10px;
-      gap: 10px;
-      width: 100%;
-      max-width: 900px;
-      margin: 0 auto;
     }
 
-    .screen { display: none; width: 100%; flex-direction: column; gap: 10px; }
-    .screen.active { display: flex; }
-
-    /* POKER TABLE OVAL (3D FELT LOOK) */
-    .table-container {
+    .poker-table-oval {
       width: 100%;
-      min-height: 340px;
-      background: radial-gradient(ellipse at center, #275d82 0%, #153854 100%);
-      border: 12px solid #3d4f61;
-      border-radius: 120px;
-      box-shadow: inset 0 0 50px rgba(0,0,0,0.8), 0 10px 30px rgba(0,0,0,0.6);
+      min-height: 320px;
+      background: radial-gradient(ellipse at center, #23587d 0%, #133550 100%);
+      border: 10px solid var(--felt-border);
+      border-radius: 110px;
+      box-shadow: inset 0 0 50px rgba(0,0,0,0.8), 0 10px 25px rgba(0,0,0,0.6);
       position: relative;
       display: flex;
       flex-direction: column;
@@ -119,32 +102,29 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
     }
 
     .pot-badge {
-      background: rgba(0,0,0,0.75);
+      background: rgba(0,0,0,0.8);
       border: 1.5px solid var(--gold);
-      border-radius: 15px;
-      padding: 3px 14px;
-      font-size: 0.85rem;
+      border-radius: 14px;
+      padding: 3px 12px;
+      font-size: 0.8rem;
       font-weight: bold;
       color: var(--gold);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.6);
     }
 
-    .community-cards { display: flex; gap: 5px; min-height: 56px; }
+    .community-cards { display: flex; gap: 4px; min-height: 54px; }
 
     .card {
-      width: 38px;
-      height: 54px;
+      width: 36px;
+      height: 52px;
       background: #ffffff;
       color: #000;
       border-radius: 4px;
-      padding: 3px;
+      padding: 2px 3px;
       font-size: 0.75rem;
       font-weight: 900;
       display: flex;
@@ -154,98 +134,84 @@
     }
 
     .card.red { color: var(--red); }
-    .card.back {
-      background: linear-gradient(135deg, #a71d1d 0%, #630a0a 100%);
-      border: 1px solid #fff;
-    }
 
-    /* SEAT POSITIONS & AVATARS */
+    /* SEAT AVATARS & POSITIONS */
     .seat {
       position: absolute;
       display: flex;
       flex-direction: column;
       align-items: center;
-      cursor: pointer;
     }
 
     .seat-avatar {
-      width: 44px;
-      height: 44px;
+      width: 42px;
+      height: 42px;
       border-radius: 50%;
       background: #122b42;
       border: 2px solid var(--gold);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.2rem;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+      font-size: 1.1rem;
       position: relative;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.6);
     }
 
     .seat-label {
       font-size: 0.65rem;
       font-weight: bold;
-      background: rgba(0,0,0,0.8);
-      padding: 2px 8px;
-      border-radius: 10px;
-      margin-top: -6px;
+      background: rgba(0,0,0,0.85);
+      padding: 1px 6px;
+      border-radius: 8px;
+      margin-top: -5px;
       white-space: nowrap;
-      border: 1px solid rgba(255,255,255,0.1);
     }
 
-    .seat-chips { font-size: 0.65rem; color: var(--gold); font-weight: bold; margin-top: 1px; }
+    .seat-chips { font-size: 0.6rem; color: var(--gold); font-weight: bold; }
 
-    .seat-top { top: -22px; }
+    .seat-top { top: -20px; }
     .seat-top-right { top: 12%; right: 2%; }
-    .seat-top-left { top: 12%; left: 2%; }
-    .seat-bottom-left { bottom: 16%; left: 2%; }
-    .seat-bottom-right { bottom: 16%; right: 2%; }
-    .seat-bottom { bottom: -22px; }
+    .seat-bottom-left { bottom: 15%; left: 2%; }
+    .seat-bottom { bottom: -20px; }
 
     .player-hole-cards {
       position: absolute;
-      bottom: 28px;
+      bottom: 25px;
       display: flex;
-      gap: 4px;
+      gap: 3px;
     }
 
-    /* BOTTOM BETTING & ACTION CONTROL BAR */
-    .action-bar {
-      width: 100%;
-      background: rgba(8, 21, 34, 0.95);
-      border: 1px solid var(--panel-border);
-      border-radius: 10px;
-      padding: 8px;
+    /* CHIP SELECTOR BAR */
+    .chip-selector-bar {
       display: flex;
-      flex-direction: column;
       gap: 8px;
-    }
-
-    .chip-selector {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
       align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 6px;
+      background: rgba(0,0,0,0.5);
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.1);
+      margin-bottom: 6px;
     }
 
     .chip-btn {
-      width: 38px;
-      height: 38px;
+      width: 34px;
+      height: 34px;
       border-radius: 50%;
       border: 2px dashed #000;
       font-weight: 900;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      box-shadow: 0 3px 6px rgba(0,0,0,0.4);
     }
 
     .chip-btn.selected {
       transform: scale(1.15);
       border: 3px solid #fff !important;
-      box-shadow: 0 0 12px var(--gold);
+      box-shadow: 0 0 10px var(--gold);
     }
 
     .c-1 { background: #ffffff; color: #000; }
@@ -253,7 +219,13 @@
     .c-25 { background: #2e7d32; color: #fff; }
     .c-500 { background: #212121; color: var(--gold); border-color: var(--gold); }
 
-    .btn-row { display: flex; gap: 6px; width: 100%; }
+    /* ACTION CONTROLS BAR */
+    .table-controls {
+      width: 100%;
+      max-width: 800px;
+      display: flex;
+      gap: 6px;
+    }
 
     .act-btn {
       flex: 1;
@@ -261,10 +233,10 @@
       border: 1px solid var(--gold);
       color: #000;
       font-weight: 900;
-      padding: 12px 6px;
+      padding: 12px 4px;
       border-radius: 6px;
       cursor: pointer;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       box-shadow: 0 3px 6px rgba(0,0,0,0.4);
       text-transform: uppercase;
     }
@@ -277,29 +249,7 @@
 
     .act-btn:disabled { opacity: 0.4; cursor: not-allowed; filter: grayscale(1); }
 
-    /* LOBBY SCREEN PANELS */
-    .lobby-card {
-      background: var(--panel-bg);
-      border: 1px solid var(--panel-border);
-      border-radius: 8px;
-      padding: 12px;
-      width: 100%;
-    }
-
-    .grid-6 { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
-
-    .avatar-box {
-      aspect-ratio: 1;
-      background: #14324a;
-      border: 1px solid var(--panel-border);
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.2rem;
-    }
-
-    /* MODAL OVERLAYS */
+    /* MODALS */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -312,16 +262,15 @@
     }
 
     .modal-box {
-      background: var(--panel-bg);
+      background: var(--panel-blue);
       border: 2px solid var(--panel-border);
-      border-radius: 12px;
+      border-radius: 10px;
       width: 100%;
-      max-width: 480px;
-      padding: 16px;
+      max-width: 450px;
+      padding: 15px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      box-shadow: 0 0 30px rgba(0,0,0,0.8);
+      gap: 10px;
     }
 
     .game-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
@@ -330,75 +279,81 @@
       background: linear-gradient(180deg, #1a3f61 0%, #0e2740 100%);
       border: 1px solid var(--panel-border);
       border-radius: 6px;
-      padding: 12px 6px;
+      padding: 10px 4px;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 4px;
       cursor: pointer;
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       font-weight: bold;
       text-align: center;
     }
 
-    .game-tile.selected {
-      background: linear-gradient(180deg, #0288d1 0%, #01579b 100%);
-      border-color: #29b6f6;
-    }
+    .game-tile.selected { background: linear-gradient(180deg, #0288d1 0%, #01579b 100%); border-color: #29b6f6; }
   </style>
 </head>
 <body>
 
-  <!-- TOP HEADER -->
+  <!-- HEADER -->
   <div class="top-bar">
     <div class="hdr-group">
-      <button class="hdr-btn" onclick="openModal('modal-games')">🎲 Games <span class="badge-num">17</span></button>
+      <button class="hdr-btn" onclick="openModal('modal-games')">🎲 Games</button>
       <button class="hdr-btn" onclick="switchScreen('screen-lobby')">🏠 Lobby</button>
     </div>
-    <div class="title-banner" id="game-title">TEXAS HOLD'EM</div>
+    <div class="title-banner">TEXAS HOLD'EM</div>
     <div class="hdr-group">
       <button class="hdr-btn" onclick="openModal('modal-settings')">⚙️ Settings</button>
     </div>
   </div>
 
-  <div class="view-container">
-
-    <!-- SCREEN 1: TABLE VIEW -->
-    <div class="screen active" id="screen-table">
+  <!-- TABLE SCREEN -->
+  <div class="screen active" id="screen-table">
+    <div class="poker-table-wrapper">
       
-      <div class="table-container">
+      <!-- CHIP SELECTOR BAR -->
+      <div class="chip-selector-bar">
+        <span style="font-size:0.75rem;font-weight:bold;color:var(--gold);">STAKE:</span>
+        <div class="chip-btn c-1" onclick="selectStake(1, this)">€1</div>
+        <div class="chip-btn c-5 selected" onclick="selectStake(5, this)">€5</div>
+        <div class="chip-btn c-25" onclick="selectStake(25, this)">€25</div>
+        <div class="chip-btn c-500" onclick="selectStake(500, this)">€500</div>
+      </div>
+
+      <!-- OVAL TABLE -->
+      <div class="poker-table-oval">
         
-        <!-- SEAT 1: TOP DEALER -->
+        <!-- SEAT 1: DEALER TOP -->
         <div class="seat seat-top">
           <div class="seat-avatar">👩‍💼</div>
           <div class="seat-label">Elena</div>
-          <div class="seat-chips">⚙️ 20,275</div>
+          <div class="seat-chips">€ 20,275</div>
         </div>
 
         <!-- SEAT 2: TOP RIGHT -->
         <div class="seat seat-top-right">
           <div class="seat-avatar">👨</div>
           <div class="seat-label">Leo</div>
-          <div class="seat-chips">⚙️ 5,050</div>
+          <div class="seat-chips">€ 5,050</div>
         </div>
 
         <!-- SEAT 3: BOTTOM LEFT -->
         <div class="seat seat-bottom-left">
           <div class="seat-avatar">🤴</div>
           <div class="seat-label">Viktor</div>
-          <div class="seat-chips">⚙️ 275</div>
+          <div class="seat-chips">€ 275</div>
         </div>
 
         <!-- SEAT 4: PLAYER (KRIS MILLEN) -->
         <div class="seat seat-bottom">
           <div class="seat-avatar" style="border-color:#fff;">👤</div>
           <div class="seat-label" style="background:var(--gold);color:#000;">Kris Millen</div>
-          <div class="seat-chips">⚙️ <span class="bankroll-val">20000</span></div>
+          <div class="seat-chips">€ <span class="bankroll-val">20000</span></div>
         </div>
 
-        <!-- CENTER COMMUNITY CARDS & POT -->
+        <!-- COMMUNITY CARDS & POT -->
         <div class="center-pot-area">
-          <div class="pot-badge">POT: ⚙️ <span id="pot-val">0</span></div>
+          <div class="pot-badge">POT: € <span id="pot-val">0</span></div>
           <div class="community-cards" id="community-box"></div>
         </div>
 
@@ -407,74 +362,39 @@
 
       </div>
 
-      <!-- BOTTOM ACTION CONTROL DECK -->
-      <div class="action-bar">
-        <div class="chip-selector">
-          <span style="font-size:0.75rem;font-weight:bold;color:var(--gold);">STAKE:</span>
-          <div class="chip-btn c-1" onclick="selectStake(1, this)">€1</div>
-          <div class="chip-btn c-5 selected" onclick="selectStake(5, this)">€5</div>
-          <div class="chip-btn c-25" onclick="selectStake(25, this)">€25</div>
-          <div class="chip-btn c-500" onclick="selectStake(500, this)">€500</div>
-        </div>
-
-        <div class="btn-row">
-          <button class="act-btn btn-fold" id="btn-fold" onclick="foldHand()" disabled>FOLD</button>
-          <button class="act-btn" id="btn-deal" onclick="startNewHand()">DEAL</button>
-          <button class="act-btn" id="btn-next" onclick="advanceRound()" disabled>CHECK / CALL</button>
-          <button class="act-btn" id="btn-raise" onclick="raiseBet()" disabled>RAISE +<span id="raise-val">5</span></button>
-        </div>
+      <!-- TABLE ACTION CONTROLS -->
+      <div class="table-controls">
+        <button class="act-btn btn-fold" id="btn-fold" onclick="foldHand()" disabled>FOLD</button>
+        <button class="act-btn" id="btn-deal" onclick="startNewHand()">DEAL</button>
+        <button class="act-btn" id="btn-next" onclick="advanceRound()" disabled>CHECK / CALL</button>
+        <button class="act-btn" id="btn-bet50" onclick="quickBet(50)" disabled>BET €50</button>
+        <button class="act-btn" id="btn-bet500" onclick="quickBet(500)" disabled>BET €500</button>
       </div>
 
     </div>
+  </div>
 
-    <!-- SCREEN 2: LOBBY VIEW -->
-    <div class="screen" id="screen-lobby">
-      <div class="lobby-card" style="display:flex;align-items:center;gap:12px;">
-        <div style="font-size:2rem;background:#122b42;border:2px solid var(--gold);border-radius:50%;width:50px;height:50px;display:flex;align-items:center;justify-content:center;">👤</div>
-        <div>
-          <h3 style="margin:0;color:#fff;">Kris Millen</h3>
-          <span style="color:var(--gold);font-weight:bold;">⚙️ <span class="bankroll-val">20000</span> Chips</span>
-        </div>
-      </div>
-
-      <div class="lobby-card">
-        <h4 style="margin:0 0 8px 0;color:var(--gold);">Friends & Players Online</h4>
-        <div class="grid-6">
-          <div class="avatar-box">👩‍💼</div>
-          <div class="avatar-box">👨</div>
-          <div class="avatar-box">🤴</div>
-          <div class="avatar-box">🤡</div>
-          <div class="avatar-box">👩</div>
-          <div class="avatar-box">🤠</div>
-        </div>
-      </div>
-
-      <div class="lobby-card" style="text-align:center;background:linear-gradient(135deg, #311b92 0%, #1a237e 100%);">
-        <h3 style="color:var(--gold);margin:0;">DAILY BONUS</h3>
-        <p style="font-size:0.8rem;color:#ccc;margin:6px 0;">Claim your daily chip reward!</p>
-        <button class="act-btn" style="width:160px;margin:0 auto;" onclick="claimBonus()">CLAIM €1,000</button>
-      </div>
+  <!-- LOBBY SCREEN -->
+  <div class="screen" id="screen-lobby">
+    <div style="background:var(--panel-blue);border:1px solid var(--panel-border);padding:15px;border-radius:8px;text-align:center;">
+      <h3 style="margin:0;color:var(--gold);">Player Profile</h3>
+      <p style="font-weight:bold;margin:8px 0;">Kris Millen</p>
+      <p style="color:var(--gold);margin:0;">Chips: € <span class="bankroll-val">20000</span></p>
+      <button class="act-btn" style="margin-top:15px;width:160px;" onclick="claimBonus()">Claim Daily Bonus</button>
     </div>
-
   </div>
 
   <!-- MODAL: GAMES SELECTOR -->
   <div class="modal-overlay" id="modal-games">
     <div class="modal-box">
       <div style="display:flex;justify-content:space-between;align-items:center;">
-        <h3 style="margin:0;color:var(--gold);">Select Casino Game</h3>
-        <span style="cursor:pointer;font-weight:bold;padding:4px;" onclick="closeModal('modal-games')">✕</span>
+        <h3 style="margin:0;color:var(--gold);">Select Game</h3>
+        <span style="cursor:pointer;font-weight:bold;" onclick="closeModal('modal-games')">✕</span>
       </div>
       <div class="game-grid">
-        <div class="game-tile selected" onclick="loadGame('Texas Hold\'em')">🃏 TEXAS HOLD'EM</div>
-        <div class="game-tile" onclick="loadGame('Omaha Poker')">🎴 OMAHA</div>
-        <div class="game-tile" onclick="loadGame('Video Slots')">🎰 SLOTS</div>
-        <div class="game-tile" onclick="loadGame('Blackjack 21')">🃏 BLACKJACK</div>
-        <div class="game-tile" onclick="loadGame('European Roulette')">🎡 ROULETTE</div>
-        <div class="game-tile" onclick="loadGame('Sportsbook')">⚽ SPORTS</div>
-        <div class="game-tile" onclick="loadGame('Keno Grid')">🔢 KENO</div>
-        <div class="game-tile" onclick="loadGame('Video Poker')">💻 VIDEO POKER</div>
-        <div class="game-tile" onclick="loadGame('Baccarat')">💎 BACCARAT</div>
+        <div class="game-tile selected" onclick="closeModal('modal-games')">🃏 TEXAS HOLD'EM</div>
+        <div class="game-tile" onclick="closeModal('modal-games')">🎰 SLOTS</div>
+        <div class="game-tile" onclick="closeModal('modal-games')">🃏 BLACKJACK</div>
       </div>
     </div>
   </div>
@@ -482,26 +402,19 @@
   <!-- MODAL: SETTINGS -->
   <div class="modal-overlay" id="modal-settings">
     <div class="modal-box">
-      <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--panel-border);padding-bottom:8px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
         <h3 style="margin:0;color:var(--gold);">Settings</h3>
         <span style="cursor:pointer;font-weight:bold;" onclick="closeModal('modal-settings')">✕</span>
       </div>
-      <div style="display:flex;flex-direction:column;gap:12px;font-size:0.85rem;">
-        <div style="display:flex;justify-content:space-between;align-items:center;">
-          <span>Sound Effects</span>
-          <input type="checkbox" checked>
-        </div>
-        <div style="display:flex;justify-content:space-between;align-items:center;">
-          <span>Show Table Hints</span>
-          <input type="checkbox" checked>
-        </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.85rem;margin-top:10px;">
+        <span>Sound Effects</span>
+        <input type="checkbox" checked>
       </div>
-      <button class="act-btn" style="margin-top:10px;" onclick="closeModal('modal-settings')">Save & Close</button>
+      <button class="act-btn" style="margin-top:15px;" onclick="closeModal('modal-settings')">Save & Close</button>
     </div>
   </div>
 
   <script>
-    // GAME ENGINE & STATE
     let bankroll = localStorage.getItem('casino_bankroll') ? parseInt(localStorage.getItem('casino_bankroll')) : 20000;
     let selectedStake = 5;
     let pot = 0;
@@ -514,7 +427,6 @@
     function updateBankrollUI() {
       document.querySelectorAll('.bankroll-val').forEach(el => el.textContent = bankroll);
       localStorage.setItem('casino_bankroll', bankroll);
-      document.getElementById('raise-val').textContent = selectedStake;
     }
 
     function selectStake(val, btn) {
@@ -532,19 +444,12 @@
     function openModal(id) { document.getElementById(id).style.display = 'flex'; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-    function loadGame(name) {
-      document.getElementById('game-title').textContent = name.toUpperCase();
-      closeModal('modal-games');
-      switchScreen('screen-table');
-    }
-
     function claimBonus() {
       bankroll += 1000;
       updateBankrollUI();
       alert("🎉 Claimed €1,000 Bonus!");
     }
 
-    // POKER CARDS LOGIC
     function buildDeck() {
       deck = [];
       for (let s of SUITS) {
@@ -584,7 +489,8 @@
 
       document.getElementById('btn-deal').disabled = true;
       document.getElementById('btn-next').disabled = false;
-      document.getElementById('btn-raise').disabled = false;
+      document.getElementById('btn-bet50').disabled = false;
+      document.getElementById('btn-bet500').disabled = false;
       document.getElementById('btn-fold').disabled = false;
     }
 
@@ -599,7 +505,6 @@
         communityCards.push(deck.pop()); // River
         gameStage = 4;
       } else if (gameStage === 4) {
-        // Showdown
         bankroll += pot;
         alert(`🎉 Showdown Complete! You won the €${pot} pot!`);
         resetHand();
@@ -609,10 +514,10 @@
       renderCards('community-box', communityCards);
     }
 
-    function raiseBet() {
-      if (bankroll < selectedStake) { alert("Not enough chips!"); return; }
-      bankroll -= selectedStake;
-      pot += selectedStake * 2;
+    function quickBet(amt) {
+      if (bankroll < amt) { alert("Not enough chips!"); return; }
+      bankroll -= amt;
+      pot += amt * 2;
       updateBankrollUI();
       document.getElementById('pot-val').textContent = pot;
     }
@@ -626,7 +531,8 @@
       gameStage = 0;
       document.getElementById('btn-deal').disabled = false;
       document.getElementById('btn-next').disabled = true;
-      document.getElementById('btn-raise').disabled = true;
+      document.getElementById('btn-bet50').disabled = true;
+      document.getElementById('btn-bet500').disabled = true;
       document.getElementById('btn-fold').disabled = true;
       document.getElementById('pot-val').textContent = '0';
       document.getElementById('community-box').innerHTML = '';
