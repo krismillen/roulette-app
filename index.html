@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Pokerist - Texas Hold'em</title>
+  <title>Pokerist - Multi-Game Suite</title>
   <style>
     :root {
       --bg-dark: #07131e;
@@ -181,6 +181,38 @@
       gap: 3px;
     }
 
+    /* SLOT MACHINE CONTAINER */
+    .slots-wrapper {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      background: var(--panel-blue);
+      border: 3px solid var(--gold);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 20px 0;
+      width: 100%;
+      max-width: 320px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.7);
+    }
+
+    .reels-row { display: flex; gap: 10px; }
+
+    .reel {
+      width: 70px;
+      height: 90px;
+      background: #ffffff;
+      color: #000;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      border: 2px solid #444;
+      box-shadow: inset 0 0 8px rgba(0,0,0,0.4);
+    }
+
     /* CHIP SELECTOR BAR */
     .chip-selector-bar {
       display: flex;
@@ -301,7 +333,7 @@
       <button class="hdr-btn" onclick="openModal('modal-games')">🎲 Games</button>
       <button class="hdr-btn" onclick="switchScreen('screen-lobby')">🏠 Lobby</button>
     </div>
-    <div class="title-banner">TEXAS HOLD'EM</div>
+    <div class="title-banner" id="game-title">TEXAS HOLD'EM</div>
     <div class="hdr-group">
       <button class="hdr-btn" onclick="openModal('modal-settings')">⚙️ Settings</button>
     </div>
@@ -320,8 +352,8 @@
         <div class="chip-btn c-500" onclick="selectStake(500, this)">€500</div>
       </div>
 
-      <!-- OVAL TABLE -->
-      <div class="poker-table-oval">
+      <!-- GAME VIEW 1: OVAL POKER TABLE -->
+      <div class="poker-table-oval" id="poker-table-view">
         
         <!-- SEAT 1: DEALER TOP -->
         <div class="seat seat-top">
@@ -362,8 +394,18 @@
 
       </div>
 
-      <!-- TABLE ACTION CONTROLS -->
-      <div class="table-controls">
+      <!-- GAME VIEW 2: SLOT MACHINE -->
+      <div class="slots-wrapper" id="slots-view">
+        <div class="reels-row">
+          <div class="reel" id="reel-1">🎰</div>
+          <div class="reel" id="reel-2">🎰</div>
+          <div class="reel" id="reel-3">🎰</div>
+        </div>
+        <button class="act-btn" style="width:100%;" id="slot-spin-btn" onclick="spinSlots()">SPIN REELS</button>
+      </div>
+
+      <!-- POKER ACTION CONTROLS BAR -->
+      <div class="table-controls" id="poker-controls">
         <button class="act-btn btn-fold" id="btn-fold" onclick="foldHand()" disabled>FOLD</button>
         <button class="act-btn" id="btn-deal" onclick="startNewHand()">DEAL</button>
         <button class="act-btn" id="btn-next" onclick="advanceRound()" disabled>CHECK / CALL</button>
@@ -392,9 +434,8 @@
         <span style="cursor:pointer;font-weight:bold;" onclick="closeModal('modal-games')">✕</span>
       </div>
       <div class="game-grid">
-        <div class="game-tile selected" onclick="closeModal('modal-games')">🃏 TEXAS HOLD'EM</div>
-        <div class="game-tile" onclick="closeModal('modal-games')">🎰 SLOTS</div>
-        <div class="game-tile" onclick="closeModal('modal-games')">🃏 BLACKJACK</div>
+        <div class="game-tile selected" id="gt-poker" onclick="switchGameMode('poker')">🃏 TEXAS HOLD'EM</div>
+        <div class="game-tile" id="gt-slots" onclick="switchGameMode('slots')">🎰 SLOTS</div>
       </div>
     </div>
   </div>
@@ -444,12 +485,34 @@
     function openModal(id) { document.getElementById(id).style.display = 'flex'; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
+    function switchGameMode(mode) {
+      closeModal('modal-games');
+      switchScreen('screen-table');
+      
+      document.querySelectorAll('.game-tile').forEach(t => t.classList.remove('selected'));
+
+      if (mode === 'slots') {
+        document.getElementById('game-title').textContent = "SLOTS";
+        document.getElementById('poker-table-view').style.display = 'none';
+        document.getElementById('poker-controls').style.display = 'none';
+        document.getElementById('slots-view').style.display = 'flex';
+        document.getElementById('gt-slots').classList.add('selected');
+      } else {
+        document.getElementById('game-title').textContent = "TEXAS HOLD'EM";
+        document.getElementById('poker-table-view').style.display = 'flex';
+        document.getElementById('poker-controls').style.display = 'flex';
+        document.getElementById('slots-view').style.display = 'none';
+        document.getElementById('gt-poker').classList.add('selected');
+      }
+    }
+
     function claimBonus() {
       bankroll += 1000;
       updateBankrollUI();
       alert("🎉 Claimed €1,000 Bonus!");
     }
 
+    // POKER ENGINE
     function buildDeck() {
       deck = [];
       for (let s of SUITS) {
@@ -537,6 +600,45 @@
       document.getElementById('pot-val').textContent = '0';
       document.getElementById('community-box').innerHTML = '';
       document.getElementById('hole-box').innerHTML = '';
+    }
+
+    // SLOTS ENGINE
+    const SLOT_SYMBOLS = ['🍒', '🍋', '🔔', '💎', '7️⃣'];
+
+    function spinSlots() {
+      if (bankroll < selectedStake) { alert("Not enough chips!"); return; }
+      bankroll -= selectedStake;
+      updateBankrollUI();
+
+      document.getElementById('slot-spin-btn').disabled = true;
+
+      let spins = 0;
+      const interval = setInterval(() => {
+        document.getElementById('reel-1').textContent = SLOT_SYMBOLS[Math.floor(Math.random() * SLOT_SYMBOLS.length)];
+        document.getElementById('reel-2').textContent = SLOT_SYMBOLS[Math.floor(Math.random() * SLOT_SYMBOLS.length)];
+        document.getElementById('reel-3').textContent = SLOT_SYMBOLS[Math.floor(Math.random() * SLOT_SYMBOLS.length)];
+        spins++;
+
+        if (spins > 12) {
+          clearInterval(interval);
+          document.getElementById('slot-spin-btn').disabled = false;
+
+          const r1 = document.getElementById('reel-1').textContent;
+          const r2 = document.getElementById('reel-2').textContent;
+          const r3 = document.getElementById('reel-3').textContent;
+
+          if (r1 === r2 && r2 === r3) {
+            const win = selectedStake * 15;
+            bankroll += win;
+            alert(`🎉 JACKPOT! You won €${win}!`);
+          } else if (r1 === r2 || r2 === r3 || r1 === r3) {
+            const win = selectedStake * 2;
+            bankroll += win;
+            alert(`Match! You won €${win}!`);
+          }
+          updateBankrollUI();
+        }
+      }, 80);
     }
 
     updateBankrollUI();
