@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>Casino Millen - Deluxe Suite</title>
+  <title>Casino Millen - Pro AI Suite</title>
   <style>
     :root {
       --bg-dark: #07131e;
@@ -15,7 +15,6 @@
       --felt-blue: #1d4e70;
       --felt-border: #3d5163;
       --red: #d32f2f;
-      --green: #2e7d32;
     }
 
     * { box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
@@ -84,6 +83,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      position: relative;
     }
 
     /* POKER OVAL TABLE */
@@ -138,8 +138,8 @@
     }
 
     .card.red { color: var(--red); }
+    .card.mini { width: 22px; height: 32px; font-size: 0.5rem; padding: 1px 2px; }
 
-    /* HAND STRENGTH BADGE */
     .hand-strength-badge {
       background: rgba(15, 44, 72, 0.95);
       border: 1px solid var(--gold);
@@ -151,7 +151,7 @@
       margin-top: 4px;
     }
 
-    /* SEAT AVATARS & THINKING TIMERS */
+    /* SEAT AVATARS & THINKING RINGS */
     .seat {
       position: absolute;
       display: flex;
@@ -160,28 +160,46 @@
     }
 
     .seat-avatar {
-      width: 42px;
-      height: 42px;
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
       background: #122b42;
       border: 2px solid var(--gold);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       position: relative;
       box-shadow: 0 4px 8px rgba(0,0,0,0.6);
+      transition: all 0.3s ease;
     }
 
-    .seat-avatar.thinking {
+    .seat.thinking .seat-avatar {
       border-color: #29b6f6;
-      box-shadow: 0 0 12px #29b6f6;
-      animation: pulseGlow 1s infinite alternate;
+      box-shadow: 0 0 15px #29b6f6;
+      animation: pulseGlow 0.8s infinite alternate;
     }
 
     @keyframes pulseGlow {
-      0% { box-shadow: 0 0 4px #29b6f6; }
-      100% { box-shadow: 0 0 16px #29b6f6; }
+      0% { transform: scale(1); }
+      100% { transform: scale(1.1); }
+    }
+
+    .seat.folded { opacity: 0.4; filter: grayscale(1); }
+
+    .speech-bubble {
+      position: absolute;
+      top: -24px;
+      background: #ffffff;
+      color: #000;
+      font-weight: bold;
+      font-size: 0.6rem;
+      padding: 2px 8px;
+      border-radius: 8px;
+      white-space: nowrap;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+      display: none;
+      z-index: 10;
     }
 
     .seat-label {
@@ -201,12 +219,9 @@
     .seat-bottom-left { bottom: 15%; left: 2%; }
     .seat-bottom { bottom: -20px; }
 
-    .player-hole-cards {
-      position: absolute;
-      bottom: 25px;
-      display: flex;
-      gap: 3px;
-    }
+    .player-hole-cards { position: absolute; bottom: 25px; display: flex; gap: 3px; }
+    .npc-hole-cards { position: absolute; display: flex; gap: 2px; top: 10px; left: 45px; }
+    .seat-bottom-left .npc-hole-cards { left: auto; right: 45px; }
 
     /* SLOTS ENGINE */
     .slots-wrapper {
@@ -300,11 +315,7 @@
       cursor: pointer;
     }
 
-    .chip-btn.selected {
-      transform: scale(1.15);
-      border: 3px solid #fff !important;
-      box-shadow: 0 0 10px var(--gold);
-    }
+    .chip-btn.selected { transform: scale(1.15); border: 3px solid #fff !important; box-shadow: 0 0 10px var(--gold); }
 
     .c-1 { background: #ffffff; color: #000; }
     .c-5 { background: #e53935; color: #fff; }
@@ -312,12 +323,7 @@
     .c-500 { background: #212121; color: var(--gold); border-color: var(--gold); }
 
     /* ACTION CONTROLS BAR */
-    .table-controls {
-      width: 100%;
-      max-width: 800px;
-      display: flex;
-      gap: 5px;
-    }
+    .table-controls { width: 100%; max-width: 800px; display: flex; gap: 5px; }
 
     .act-btn {
       flex: 1;
@@ -336,32 +342,33 @@
     .act-btn.btn-fold { background: linear-gradient(180deg, #e53935 0%, #b71c1c 100%); color: #fff; border-color: #ef5350; }
     .act-btn:disabled { opacity: 0.4; cursor: not-allowed; filter: grayscale(1); }
 
-    /* IN-GAME TOAST BANNER */
+    /* TOAST BANNER */
     .toast-banner {
       display: none;
-      position: fixed;
-      top: 60px;
+      position: absolute;
+      top: 50%;
       left: 50%;
-      transform: translateX(-50%);
+      transform: translate(-50%, -50%);
       background: linear-gradient(180deg, #fbc02d 0%, #b87e09 100%);
       color: #000;
       font-weight: 900;
       padding: 12px 24px;
-      border-radius: 30px;
+      border-radius: 12px;
       border: 2px solid #fff;
-      box-shadow: 0 0 20px rgba(243, 173, 34, 0.8);
+      box-shadow: 0 0 30px rgba(0,0,0,0.8);
       z-index: 300;
       text-align: center;
       font-size: 0.85rem;
+      white-space: nowrap;
       animation: popIn 0.3s ease-out;
     }
 
     @keyframes popIn {
-      0% { transform: translate(-50%, -20px) scale(0.8); opacity: 0; }
-      100% { transform: translate(-50%, 0) scale(1); opacity: 1; }
+      0% { transform: translate(-50%, -30%) scale(0.8); opacity: 0; }
+      100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
     }
 
-    /* MODALS & FORTUNE WHEEL */
+    /* MODALS */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -403,21 +410,10 @@
     }
 
     .game-tile.selected { background: linear-gradient(180deg, #0288d1 0%, #01579b 100%); border-color: #29b6f6; }
-
-    /* WHEEL CANVAS */
-    #wheel-canvas {
-      max-width: 220px;
-      height: auto;
-      margin: 0 auto;
-    }
+    #wheel-canvas { max-width: 220px; height: auto; margin: 0 auto; }
   </style>
 </head>
 <body>
-
-  <!-- IN-GAME WIN TOAST BANNER -->
-  <div class="toast-banner" id="toast-banner" onclick="this.style.display='none'">
-    <span id="toast-msg">🎉 YOU WIN!</span>
-  </div>
 
   <!-- HEADER -->
   <div class="top-bar">
@@ -448,25 +444,36 @@
       <!-- GAME VIEW 1: OVAL POKER TABLE -->
       <div class="poker-table-oval" id="poker-table-view">
         
-        <!-- SEAT 1: TOP DEALER -->
-        <div class="seat seat-top">
+        <!-- TOAST BANNER -->
+        <div class="toast-banner" id="toast-banner" onclick="this.style.display='none'">
+          <span id="toast-msg">🎉 YOU WIN!</span>
+        </div>
+        
+        <!-- SEAT 1: ELENA (THE ROCK) -->
+        <div class="seat seat-top" id="seat-npc-0">
+          <div class="speech-bubble" id="bubble-npc-0">Check</div>
           <div class="seat-avatar" id="avatar-npc-0">👩‍💼</div>
-          <div class="seat-label">Elena</div>
-          <div class="seat-chips">€ <span id="npc-0-chips">20000</span></div>
+          <div class="seat-label" id="label-npc-0">Elena (Rock)</div>
+          <div class="seat-chips">€ <span id="npc-0-chips">15000</span></div>
+          <div class="npc-hole-cards" id="cards-npc-0"></div>
         </div>
 
-        <!-- SEAT 2: TOP RIGHT -->
-        <div class="seat seat-top-right">
+        <!-- SEAT 2: LEO (THE MANIAC) -->
+        <div class="seat seat-top-right" id="seat-npc-1">
+          <div class="speech-bubble" id="bubble-npc-1">Check</div>
           <div class="seat-avatar" id="avatar-npc-1">👨</div>
-          <div class="seat-label">Leo</div>
-          <div class="seat-chips">€ <span id="npc-1-chips">20000</span></div>
+          <div class="seat-label" id="label-npc-1">Leo (Maniac)</div>
+          <div class="seat-chips">€ <span id="npc-1-chips">15000</span></div>
+          <div class="npc-hole-cards" id="cards-npc-1"></div>
         </div>
 
-        <!-- SEAT 3: BOTTOM LEFT -->
-        <div class="seat seat-bottom-left">
+        <!-- SEAT 3: VIKTOR (CALLING STATION) -->
+        <div class="seat seat-bottom-left" id="seat-npc-2">
+          <div class="speech-bubble" id="bubble-npc-2">Check</div>
           <div class="seat-avatar" id="avatar-npc-2">🤴</div>
-          <div class="seat-label">Viktor</div>
-          <div class="seat-chips">€ <span id="npc-2-chips">20000</span></div>
+          <div class="seat-label" id="label-npc-2">Viktor (Station)</div>
+          <div class="seat-chips">€ <span id="npc-2-chips">15000</span></div>
+          <div class="npc-hole-cards" id="cards-npc-2"></div>
         </div>
 
         <!-- SEAT 4: PLAYER (KRIS MILLEN) -->
@@ -490,15 +497,12 @@
 
       <!-- GAME VIEW 2: MULTI-SLOT MACHINE -->
       <div class="slots-wrapper" id="slots-view">
-        
         <div class="slot-select-tabs">
           <div class="tab-btn active" id="tab-classic" onclick="switchSlotMachine('classic')">Classic 777 (3x)</div>
           <div class="tab-btn" id="tab-neon" onclick="switchSlotMachine('neon')">Neon Vegas (5x)</div>
           <div class="tab-btn" id="tab-pirate" onclick="switchSlotMachine('pirate')">Pirate Bay (5x)</div>
         </div>
-
         <div class="reels-row" id="reels-container"></div>
-
         <button class="act-btn" style="width:100%;" id="slot-spin-btn" onclick="spinSlots()">SPIN REELS</button>
       </div>
 
@@ -564,7 +568,7 @@
   </div>
 
   <script>
-    // SYNTHESIZED WEB AUDIO ENGINE (NO EXTERNAL FILES REQUIRED)
+    // SYNTHESIZED WEB AUDIO ENGINE
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
     function playSound(type) {
@@ -596,26 +600,28 @@
         gain.gain.setValueAtTime(0.25, now);
         gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
         osc.start(now); osc.stop(now + 0.4);
-      } else if (type === 'spin') {
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(180, now);
-        gain.gain.setValueAtTime(0.08, now);
-        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.04);
-        osc.start(now); osc.stop(now + 0.04);
       }
     }
 
-    // GAME & NPC STATE
+    // GAME & ADVANCED AI MEMORY ENGINE STATE
     let bankroll = localStorage.getItem('casino_bankroll') ? parseInt(localStorage.getItem('casino_bankroll')) : 103424;
+    
+    // Player Habit Tracker
+    let playerBetHabits = { aggressiveBetsCount: 0 };
+
+    // NPC Personalities:
+    // 0: Elena (The Rock) - Tight-Aggressive
+    // 1: Leo (The Maniac) - Loose-Aggressive
+    // 2: Viktor (The Calling Station) - Loose-Passive
     let npcs = [
-      { id: 0, name: 'Elena', chips: 20000, active: true },
-      { id: 1, name: 'Leo', chips: 20000, active: true },
-      { id: 2, name: 'Viktor', chips: 20000, active: true }
+      { id: 0, name: 'Elena', style: 'Rock', chips: 15000, active: true, hole: [], defaultAvatar: '👩‍💼', isTilt: false },
+      { id: 1, name: 'Leo', style: 'Maniac', chips: 15000, active: true, hole: [], defaultAvatar: '👨', isTilt: false },
+      { id: 2, name: 'Viktor', style: 'Station', chips: 15000, active: true, hole: [], defaultAvatar: '🤴', isTilt: false }
     ];
 
     let selectedStake = 5;
     let pot = 0;
-    let gameStage = 0; // 0: Idle, 1: Pre-Flop, 2: Flop, 3: Turn, 4: River
+    let gameStage = 0;
 
     const SUITS = ['♠', '♥', '♦', '♣'];
     const VALUES = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
@@ -627,12 +633,29 @@
       const banner = document.getElementById('toast-banner');
       document.getElementById('toast-msg').textContent = msg;
       banner.style.display = 'block';
-      setTimeout(() => { banner.style.display = 'none'; }, 3000);
+      setTimeout(() => { banner.style.display = 'none'; }, 3500);
+    }
+
+    function showNpcBubble(npcId, text) {
+      const b = document.getElementById(`bubble-npc-${npcId}`);
+      if (b) {
+        b.textContent = text;
+        b.style.display = 'block';
+        setTimeout(() => { b.style.display = 'none'; }, 2200);
+      }
     }
 
     function updateBankrollUI() {
       npcs.forEach(n => {
-        if (n.chips < 500) n.chips = 20000;
+        // Dynamic Tilt Trigger if stack falls low
+        if (n.chips < 5000) {
+          n.isTilt = true;
+          document.getElementById(`avatar-npc-${n.id}`).textContent = '😤';
+        } else if (!n.isTilt) {
+          document.getElementById(`avatar-npc-${n.id}`).textContent = n.defaultAvatar;
+        }
+
+        if (n.chips < 500) n.chips = 15000; // auto reload
         const el = document.getElementById(`npc-${n.id}-chips`);
         if (el) el.textContent = n.chips;
       });
@@ -682,41 +705,53 @@
       }
     }
 
-    // HAND STRENGTH EVALUATOR
-    function evaluateHandRank(hole, community) {
+    // REAL 7-CARD HAND EVALUATOR
+    function evaluateHand(hole, community) {
       const all = [...hole, ...community];
-      if (all.length < 2) return "Start a new hand";
+      if (all.length < 2) return { name: "Start a new hand", score: 0 };
 
-      const counts = {};
-      all.forEach(c => counts[c.value] = (counts[c.value] || 0) + 1);
-      const vals = Object.values(counts);
+      const ranks = all.map(c => RANK_MAP[c.value]).sort((a,b) => b-a);
+      const suits = all.map(c => c.suit);
+      const counts = {}; ranks.forEach(r => counts[r] = (counts[r]||0)+1);
+      const suitCounts = {}; suits.forEach(s => suitCounts[s] = (suitCounts[s]||0)+1);
 
-      if (vals.includes(4)) return "Four of a Kind";
-      if (vals.includes(3) && vals.includes(2)) return "Full House";
-      if (vals.includes(3)) return "Three of a Kind";
-      if (vals.filter(v => v === 2).length >= 2) return "Two Pair";
-      if (vals.includes(2)) return "One Pair";
-      return "High Card";
+      const isFlush = Object.values(suitCounts).some(v => v >= 5);
+      const uniqueRanks = [...new Set(ranks)];
+      let isStraight = false;
+      for(let i=0; i<=uniqueRanks.length-5; i++) {
+        if(uniqueRanks[i] - uniqueRanks[i+4] === 4) isStraight = true;
+      }
+
+      const countVals = Object.values(counts).sort((a,b) => b-a);
+      let score = ranks[0];
+
+      if (isFlush && isStraight) return { name: "Straight Flush", score: 8000 + score };
+      if (countVals[0] === 4) return { name: "Four of a Kind", score: 7000 + score };
+      if (countVals[0] === 3 && countVals[1] >= 2) return { name: "Full House", score: 6000 + score };
+      if (isFlush) return { name: "Flush", score: 5000 + score };
+      if (isStraight) return { name: "Straight", score: 4000 + score };
+      if (countVals[0] === 3) return { name: "Three of a Kind", score: 3000 + score };
+      if (countVals[0] === 2 && countVals[1] === 2) return { name: "Two Pair", score: 2000 + score };
+      if (countVals[0] === 2) return { name: "One Pair", score: 1000 + score };
+      return { name: "High Card", score: score };
     }
 
-    // POKER ENGINE WITH THINKING TIMERS & AUDIO
+    // POKER ENGINE WITH REALISTIC THINKING DELAYS
     function buildDeck() {
       deck = [];
       for (let s of SUITS) {
-        for (let v of VALUES) {
-          deck.push({ suit: s, value: v });
-        }
+        for (let v of VALUES) { deck.push({ suit: s, value: v }); }
       }
       deck.sort(() => Math.random() - 0.5);
     }
 
-    function renderCards(containerId, cards) {
+    function renderCards(containerId, cards, mini = false) {
       const box = document.getElementById(containerId);
       box.innerHTML = '';
       cards.forEach(c => {
         const isRed = c.suit === '♥' || c.suit === '♦';
         const div = document.createElement('div');
-        div.className = `card ${isRed ? 'red' : ''}`;
+        div.className = `card ${isRed ? 'red' : ''} ${mini ? 'mini' : ''}`;
         div.innerHTML = `<div>${c.value}</div><div style="align-self:center;">${c.suit}</div><div style="align-self:flex-end">${c.value}</div>`;
         box.appendChild(div);
       });
@@ -733,19 +768,23 @@
         n.chips -= selectedStake;
         pot += selectedStake;
         n.active = true;
+        document.getElementById(`seat-npc-${n.id}`).classList.remove('folded', 'thinking');
+        document.getElementById(`cards-npc-${n.id}`).innerHTML = '';
       });
 
       updateBankrollUI();
-
       buildDeck();
+      
       playerHole = [deck.pop(), deck.pop()];
+      npcs.forEach(n => { n.hole = [deck.pop(), deck.pop()]; });
+      
       communityCards = [];
       gameStage = 1;
 
       renderCards('hole-box', playerHole);
       renderCards('community-box', []);
       document.getElementById('pot-val').textContent = pot;
-      document.getElementById('hand-strength-box').textContent = evaluateHandRank(playerHole, communityCards);
+      document.getElementById('hand-strength-box').textContent = evaluateHand(playerHole, communityCards).name;
 
       document.getElementById('btn-deal').disabled = true;
       document.getElementById('btn-next').disabled = false;
@@ -754,70 +793,139 @@
       document.getElementById('btn-fold').disabled = false;
     }
 
-    function animateNpcThinking(callback) {
-      const activeIdx = Math.floor(Math.random() * 3);
-      const av = document.getElementById(`avatar-npc-${activeIdx}`);
-      av.classList.add('thinking');
-      setTimeout(() => {
-        av.classList.remove('thinking');
-        callback();
-      }, 800);
-    }
-
     function advanceRound() {
       playSound('card');
-      animateNpcThinking(() => {
-        if (gameStage === 1) {
-          communityCards = [deck.pop(), deck.pop(), deck.pop()]; // Flop
-          gameStage = 2;
-        } else if (gameStage === 2) {
-          communityCards.push(deck.pop()); // Turn
-          gameStage = 3;
-        } else if (gameStage === 3) {
-          communityCards.push(deck.pop()); // River
-          gameStage = 4;
-        } else if (gameStage === 4) {
-          const playerWins = Math.random() > 0.3;
-          if (playerWins) {
-            bankroll += pot;
-            playSound('win');
-            showBanner(`🎉 SHOWDOWN WIN! YOU WON €${pot}!`);
-          } else {
-            const winningNpc = npcs[Math.floor(Math.random() * npcs.length)];
-            winningNpc.chips += pot;
-            showBanner(`${winningNpc.name.toUpperCase()} WONS €${pot} POT`);
+      if (gameStage === 1) {
+        communityCards = [deck.pop(), deck.pop(), deck.pop()]; // Flop
+        gameStage = 2;
+      } else if (gameStage === 2) {
+        communityCards.push(deck.pop()); // Turn
+        gameStage = 3;
+      } else if (gameStage === 3) {
+        communityCards.push(deck.pop()); // River
+        gameStage = 4;
+      } else if (gameStage === 4) {
+        // SHOWDOWN
+        const pHand = evaluateHand(playerHole, communityCards);
+        let bestNpc = null;
+        let bestNpcScore = -1;
+
+        npcs.forEach(n => {
+          if (n.active) {
+            renderCards(`cards-npc-${n.id}`, n.hole, true);
+            const nHand = evaluateHand(n.hole, communityCards);
+            if (nHand.score > bestNpcScore) {
+              bestNpcScore = nHand.score;
+              bestNpc = { ...n, handName: nHand.name };
+            }
           }
-          resetHand();
-          updateBankrollUI();
-          return;
+        });
+
+        if (!bestNpc || pHand.score >= bestNpcScore) {
+          bankroll += pot;
+          playSound('win');
+          showBanner(`🎉 YOU WIN WITH ${pHand.name.toUpperCase()}! (€${pot})`);
+        } else {
+          bestNpc.chips += pot;
+          showBanner(`${bestNpc.name.toUpperCase()} WINS WITH ${bestNpc.handName.toUpperCase()}!`);
         }
-        renderCards('community-box', communityCards);
-        document.getElementById('hand-strength-box').textContent = evaluateHandRank(playerHole, communityCards);
-      });
+        
+        resetHand();
+        updateBankrollUI();
+        return;
+      }
+      renderCards('community-box', communityCards);
+      document.getElementById('hand-strength-box').textContent = evaluateHand(playerHole, communityCards).name;
     }
 
+    // ADVANCED REALISTIC NPC DECISION ENGINE
     function quickBet(amt) {
       if (bankroll < amt) { showBanner("⚠️ NOT ENOUGH CHIPS!"); return; }
       playSound('chip');
       
+      if (amt >= 500) playerBetHabits.aggressiveBetsCount++;
+
       bankroll -= amt;
       pot += amt;
 
-      npcs.forEach(n => {
-        if (n.active) {
-          n.chips -= amt;
-          pot += amt;
-        }
-      });
+      let remainingActive = 0;
+      let delayAcc = 0;
 
-      updateBankrollUI();
-      document.getElementById('pot-val').textContent = pot;
+      npcs.forEach((n, idx) => {
+        if (!n.active) return;
+
+        // Contextual thinking delay (1.2s to 2.2s for big bets)
+        const thinkTime = amt >= 500 ? (1200 + Math.random() * 1000) : (800 + Math.random() * 500);
+        delayAcc += 300;
+
+        setTimeout(() => {
+          const seatEl = document.getElementById(`seat-npc-${n.id}`);
+          seatEl.classList.add('thinking');
+
+          setTimeout(() => {
+            seatEl.classList.remove('thinking');
+            const handInfo = evaluateHand(n.hole, communityCards);
+            let action = 'call'; // default
+
+            // PERSONALITY LOGIC ENGINE:
+            if (n.style === 'Rock') {
+              // Elena: Folds weak/med hands unless holding a strong pair or better
+              if (amt >= 500 && handInfo.score < 2000 && playerBetHabits.aggressiveBetsCount < 3) action = 'fold';
+              else if (amt >= 50 && handInfo.score < 1000) action = 'fold';
+              else if (handInfo.score >= 3000) action = 'raise'; // Trap raise
+            } else if (n.style === 'Station') {
+              // Viktor: Calls all €50 bets, folds €500 if holding pure high card
+              if (amt >= 500 && handInfo.score < 1000 && Math.random() < 0.6) action = 'fold';
+              else action = 'call';
+            } else if (n.style === 'Maniac') {
+              // Leo: Loves calling & bluff re-raising, shows "Sweat" tell on bluffs!
+              if (handInfo.score < 1000 && Math.random() < 0.4) {
+                action = 'bluff_call';
+                document.getElementById(`avatar-npc-${n.id}`).textContent = '😅'; // Sweat tell!
+              } else if (n.isTilt || handInfo.score >= 1000) {
+                action = 'call';
+              }
+            }
+
+            if (action === 'fold') {
+              n.active = false;
+              seatEl.classList.add('folded');
+              showNpcBubble(n.id, "Fold ❌");
+            } else {
+              n.chips -= amt;
+              pot += amt;
+              remainingActive++;
+              if (action === 'raise') {
+                n.chips -= 100;
+                pot += 100;
+                showNpcBubble(n.id, `Raise €${amt + 100} 🚀`);
+              } else {
+                showNpcBubble(n.id, `Call €${amt} 👍`);
+              }
+            }
+
+            updateBankrollUI();
+            document.getElementById('pot-val').textContent = pot;
+
+            // Check if all NPCs folded to your bluff!
+            if (idx === npcs.length - 1 && remainingActive === 0) {
+              bankroll += pot;
+              playSound('win');
+              showBanner(`EVERYONE FOLDED! YOU WIN €${pot}!`);
+              resetHand();
+            }
+          }, thinkTime);
+        }, delayAcc);
+      });
     }
 
     function foldHand() {
-      let winningNpc = npcs[0];
-      winningNpc.chips += pot;
-      showBanner(`FOLDED HAND! ${winningNpc.name.toUpperCase()} WINS €${pot}`);
+      let activeNpcs = npcs.filter(n => n.active);
+      if (activeNpcs.length > 0) {
+        let winner = activeNpcs[0];
+        winner.chips += pot;
+        showBanner(`FOLDED! ${winner.name.toUpperCase()} WINS €${pot}`);
+      }
       resetHand();
     }
 
@@ -829,9 +937,9 @@
       document.getElementById('btn-bet500').disabled = true;
       document.getElementById('btn-fold').disabled = true;
       document.getElementById('pot-val').textContent = '0';
-      document.getElementById('community-box').innerHTML = '';
-      document.getElementById('hole-box').innerHTML = '';
-      document.getElementById('hand-strength-box').textContent = 'Start a new hand';
+      npcs.forEach(n => {
+        document.getElementById(`seat-npc-${n.id}`).classList.remove('folded', 'thinking');
+      });
       updateBankrollUI();
     }
 
@@ -880,7 +988,6 @@
 
       let spinCount = 0;
       const interval = setInterval(() => {
-        playSound('spin');
         reels.forEach(r => {
           r.textContent = config.symbols[Math.floor(Math.random() * config.symbols.length)];
         });
@@ -905,15 +1012,13 @@
             bankroll += win;
             playSound('win');
             showBanner(`✨ MATCH FOUND! YOU WON €${win}!`);
-          } else {
-            showBanner("NO MATCH! TRY AGAIN.");
           }
           updateBankrollUI();
         }
       }, 80);
     }
 
-    // DAILY FORTUNE WHEEL ENGINE
+    // DAILY FORTUNE WHEEL
     const WHEEL_PRIZES = [500, 1000, 2500, 5000, 10000, 100];
     let wheelAngle = 0;
 
@@ -960,7 +1065,6 @@
         if (progress < 1) {
           wheelAngle = wheelAngle + (targetAngle - wheelAngle) * 0.08;
           drawWheel();
-          playSound('spin');
           requestAnimationFrame(animateWheel);
         } else {
           bankroll += prize;
