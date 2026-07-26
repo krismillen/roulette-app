@@ -130,7 +130,7 @@
 
     .community-cards { display: flex; gap: 4px; min-height: 54px; }
 
-    /* CARD ANIMATIONS & PEEKING */
+    /* CARD ANIMATIONS */
     @keyframes slideInCard {
       0% { transform: translateY(-40px) scale(0.8); opacity: 0; }
       100% { transform: translateY(0) scale(1); opacity: 1; }
@@ -158,7 +158,6 @@
     .card.red { color: var(--red); }
     .card.mini { width: 20px; height: 30px; font-size: 0.48rem; padding: 1px; }
 
-    /* Face Down Card Style */
     .card.face-down {
       background: repeating-linear-gradient(45deg, #0f2c48, #0f2c48 5px, #1a3f61 5px, #1a3f61 10px);
       border: 2px solid #fff;
@@ -434,7 +433,6 @@
     }
     .achievement-item.unlocked { border-color: var(--gold); background: rgba(243, 173, 34, 0.15); }
 
-    /* STORE STYLES */
     .store-item {
       display: flex;
       justify-content: space-between;
@@ -446,7 +444,6 @@
     }
     .store-item button { padding: 4px 10px; font-size: 0.7rem; }
 
-    /* SLOTS STYLES */
     .slot-machine {
       background: #000; border: 4px solid var(--gold); border-radius: 12px;
       padding: 20px; display: flex; justify-content: center; gap: 15px;
@@ -490,7 +487,6 @@
           <span id="toast-msg">🎉 YOU WIN!</span>
         </div>
         
-        <!-- NPCs -->
         <div class="seat seat-top" id="seat-npc-0">
           <div class="speech-bubble" id="bubble-npc-0">Check</div>
           <div class="seat-avatar" id="avatar-npc-0">👩‍💼<div class="dealer-btn" id="db-npc-0">Ⓓ</div></div>
@@ -515,7 +511,6 @@
           <div class="npc-hole-cards" id="cards-npc-2"></div>
         </div>
 
-        <!-- PLAYER -->
         <div class="seat seat-bottom" id="seat-player-3">
           <div class="seat-avatar" style="border-color:#fff;">👤<div class="dealer-btn" id="db-player-3">Ⓓ</div></div>
           <div class="seat-label" style="background:var(--gold);color:#000;">Kris Millen</div>
@@ -550,7 +545,7 @@
         <div class="main-btn-row">
           <button class="act-btn btn-fold" id="btn-fold" onclick="foldHand()" disabled>FOLD</button>
           <button class="act-btn" id="btn-deal" onclick="startNewHand()">DEAL</button>
-          <button class="act-btn" id="btn-next" onclick="executeCheckCall()" disabled>CHECK / CALL</button>
+          <button class="act-btn" id="btn-next" onclick="executeCheckCall()" disabled>CHECK</button>
           <button class="act-btn" id="btn-raise" onclick="executeCustomBet()" disabled>BET €<span id="raise-btn-label">50</span></button>
         </div>
       </div>
@@ -665,7 +660,6 @@
     </div>
   </div>
 
-  <!-- MODAL: TROPHIES & WHEEL & SETTINGS OMITTED FOR BREVITY, USING STANDARD OVERLAYS -->
   <div class="modal-overlay" id="modal-trophies">
     <div class="modal-box">
       <div style="display:flex;justify-content:space-between;align-items:center;">
@@ -675,6 +669,7 @@
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:5px;" id="achievements-list"></div>
     </div>
   </div>
+  
   <div class="modal-overlay" id="modal-wheel">
     <div class="modal-box" style="text-align:center;">
       <h3 style="margin:0;color:var(--gold);">Daily Fortune Wheel</h3>
@@ -683,6 +678,7 @@
       <button class="act-btn btn-fold" onclick="closeModal('modal-wheel')" style="margin-top:5px;">Close</button>
     </div>
   </div>
+  
   <div class="modal-overlay" id="modal-settings">
     <div class="modal-box">
       <div style="display:flex;justify-content:space-between;align-items:center;">
@@ -759,6 +755,7 @@
     
     let currentTableKey = 'terrace';
     let currentCustomBet = 50;
+    let currentCallAmount = 0; // Tracks required call size dynamically
     let sbAmount = 25, bbAmount = 50, dealerIndex = 3; 
     
     const TABLES = {
@@ -858,11 +855,23 @@
       saveStats();
     }
 
+    function updateActionButtons() {
+        const btnNext = document.getElementById('btn-next');
+        if (currentCallAmount > 0) {
+            btnNext.textContent = `CALL €${currentCallAmount}`;
+        } else {
+            btnNext.textContent = `CHECK`;
+        }
+    }
+
     function changeTable(tableKey) {
       currentTableKey = tableKey; const t = TABLES[tableKey]; sbAmount = t.sb; bbAmount = t.bb;
       npcs = JSON.parse(JSON.stringify(t.opponents));
       document.getElementById('active-table-name').textContent = `${t.name.toUpperCase()} (€${t.sb}/€${t.bb})`;
-      closeModal('modal-tables'); resetHand(); showBanner(`📍 SWAPPED TO TABLE: ${t.name}`);
+      closeModal('modal-tables'); 
+      gameStage = 0; document.getElementById('btn-deal').disabled = false;
+      showBanner(`📍 SWAPPED TO TABLE: ${t.name}`);
+      updateBankrollUI();
     }
 
     function unlockAchievement(id) {
@@ -884,22 +893,28 @@
 
     function onSliderChange(val) {
       currentCustomBet = parseInt(val);
+      let minBet = Math.max(bbAmount, currentCallAmount * 2);
+      if (currentCustomBet < minBet && currentCustomBet !== bankroll) {
+         currentCustomBet = Math.min(bankroll, minBet);
+      }
       document.getElementById('slider-val-display').textContent = `€${currentCustomBet}`;
       document.getElementById('raise-btn-label').textContent = currentCustomBet;
     }
 
     function adjustBet(amt) {
       let val = currentCustomBet + amt;
-      val = Math.max(bbAmount, Math.min(bankroll, val));
+      let minBet = Math.max(bbAmount, currentCallAmount * 2);
+      val = Math.max(minBet, Math.min(bankroll, val));
       document.getElementById('bet-slider').value = val;
       onSliderChange(val); playSound('chip');
     }
 
     function setBetFraction(fraction) {
-      if (fraction === 1.0) { currentCustomBet = Math.max(bbAmount, pot > 0 ? pot : bbAmount * 4); } 
-      else if (fraction === 0.5) { currentCustomBet = Math.max(Math.floor(bbAmount), Math.floor(pot / 2)); } 
+      let minBet = Math.max(bbAmount, currentCallAmount * 2);
+      if (fraction === 1.0) { currentCustomBet = Math.max(minBet, pot > 0 ? pot : minBet * 2); } 
+      else if (fraction === 0.5) { currentCustomBet = Math.max(Math.floor(minBet), Math.floor(pot / 2)); } 
       else { currentCustomBet = Math.floor(bankroll * fraction); }
-      currentCustomBet = Math.min(bankroll, Math.max(bbAmount, currentCustomBet));
+      currentCustomBet = Math.min(bankroll, Math.max(minBet, currentCustomBet));
       document.getElementById('bet-slider').value = currentCustomBet;
       onSliderChange(currentCustomBet); playSound('chip');
     }
@@ -976,10 +991,24 @@
 
     function startNewHand() {
       if (bankroll < bbAmount) { showBanner("⚠️ NOT ENOUGH CHIPS FOR BLINDS!"); return; }
+      
+      // CLEAR PREVIOUS CARDS COMPLETELY
+      document.getElementById('pot-val').textContent = '0';
+      document.getElementById('community-box').innerHTML = '';
+      npcs.forEach(n => {
+        document.getElementById(`seat-npc-${n.id}`).classList.remove('folded', 'thinking');
+        document.getElementById(`cards-npc-${n.id}`).innerHTML = '';
+      });
+
       playSound('card'); pot = 0; careerStats.hands++;
 
       dealerIndex = (dealerIndex + 1) % 4; updateDealerUI();
       let sbIndex = (dealerIndex + 1) % 4, bbIndex = (dealerIndex + 2) % 4;
+
+      if(bbIndex === 3) { currentCallAmount = 0; } 
+      else if(sbIndex === 3) { currentCallAmount = bbAmount - sbAmount; } 
+      else { currentCallAmount = bbAmount; }
+      updateActionButtons();
 
       if(sbIndex === 3) { bankroll -= sbAmount; pot += sbAmount; showFloatingText('seat-player-3', `-€${sbAmount}`, '#ef5350'); }
       if(bbIndex === 3) { bankroll -= bbAmount; pot += bbAmount; showFloatingText('seat-player-3', `-€${bbAmount}`, '#ef5350'); }
@@ -987,8 +1016,6 @@
       npcs.forEach(n => {
         if (n.chips <= 0) { n.active = false; return; }
         n.active = true;
-        document.getElementById(`seat-npc-${n.id}`).classList.remove('folded', 'thinking');
-        document.getElementById(`cards-npc-${n.id}`).innerHTML = '';
         if (n.id === sbIndex) { let amt = Math.min(sbAmount, n.chips); n.chips -= amt; pot += amt; showFloatingText(`seat-npc-${n.id}`, `-€${amt}`, '#ef5350'); }
         if (n.id === bbIndex) { let amt = Math.min(bbAmount, n.chips); n.chips -= amt; pot += amt; showFloatingText(`seat-npc-${n.id}`, `-€${amt}`, '#ef5350'); }
       });
@@ -1007,16 +1034,31 @@
       lockActionButtons(false);
     }
 
+    // THE FIX: FORMAL END HAND STATE THAT LEAVES CARDS VISIBLE
+    function endHand() {
+      gameStage = 0;
+      document.getElementById('btn-deal').disabled = false; 
+      document.getElementById('btn-next').disabled = true;
+      document.getElementById('btn-raise').disabled = true; 
+      document.getElementById('btn-fold').disabled = true;
+      
+      currentCallAmount = 0;
+      updateActionButtons();
+      saveStats();
+      updateBankrollUI();
+    }
+
     function advanceRound() {
       playSound('card');
       if (gameStage === 1) { communityCards = [deck.pop(), deck.pop(), deck.pop()]; gameStage = 2; } 
       else if (gameStage === 2) { communityCards.push(deck.pop()); gameStage = 3; } 
       else if (gameStage === 3) { communityCards.push(deck.pop()); gameStage = 4; } 
       else if (gameStage === 4) {
+        // SHOWDOWN (NO MORE FREEZING OR DISAPPEARING CARDS)
         const pHand = evaluateHand(playerHole, communityCards);
         document.getElementById('hand-strength-box').textContent = pHand.name;
-        let bestNpc = null, bestNpcScore = -1;
 
+        let bestNpc = null, bestNpcScore = -1;
         npcs.forEach(n => {
           if (n.active) {
             renderCards(`cards-npc-${n.id}`, n.hole, true);
@@ -1025,7 +1067,7 @@
           }
         });
 
-        if (pot > careerStats.biggestPot) careerStats.biggestPot = pot;
+        if (pot > careerStats.biggestPot) { careerStats.biggestPot = pot; saveStats(); }
 
         if (!bestNpc || pHand.score >= bestNpcScore) {
           bankroll += pot; playSound('win'); showFloatingText('seat-player-3', `+€${pot}`, '#f3ad22');
@@ -1035,23 +1077,28 @@
           if (winnerObj) { winnerObj.chips += pot; showFloatingText(`seat-npc-${winnerObj.id}`, `+€${pot}`, '#f3ad22'); }
           playSound('win'); showBanner(`${bestNpc.name.toUpperCase()} WINS WITH ${bestNpc.handName.toUpperCase()}! (€${pot})`);
         }
-        resetHand(); updateBankrollUI(); return;
+        
+        endHand(); return;
       }
+      
       renderCards('community-box', communityCards);
       document.getElementById('hand-strength-box').textContent = evaluateHand(playerHole, communityCards).name;
+      currentCallAmount = 0; updateActionButtons();
     }
 
     function executeCheckCall() {
       if (gameStage === 0 || gameStage === 4) return;
-      let callAmt = 0;
-      if (gameStage === 1) {
-        let sbIndex = (dealerIndex + 1) % 4, bbIndex = (dealerIndex + 2) % 4;
-        if (bbIndex === 3) callAmt = 0; else if (sbIndex === 3) callAmt = bbAmount - sbAmount; else callAmt = bbAmount;
-      }
+      
+      let callAmt = currentCallAmount;
       if (bankroll < callAmt) { showBanner("⚠️ NOT ENOUGH CHIPS!"); return; }
 
-      if (callAmt > 0) { bankroll -= callAmt; pot += callAmt; showFloatingText('seat-player-3', `-€${callAmt}`, '#ef5350'); playSound('chip'); } 
-      else { showFloatingText('seat-player-3', `Check ✊`, '#fff'); playSound('card'); }
+      if (callAmt > 0) { 
+          bankroll -= callAmt; pot += callAmt; showFloatingText('seat-player-3', `-€${callAmt}`, '#ef5350'); playSound('chip'); 
+      } else { 
+          showFloatingText('seat-player-3', `Check ✊`, '#fff'); playSound('card'); 
+      }
+      
+      currentCallAmount = 0; updateActionButtons();
       lockActionButtons(true); processNPCTurns(callAmt);
     }
 
@@ -1060,18 +1107,25 @@
       if (bankroll < amt) { showBanner("⚠️ NOT ENOUGH CHIPS!"); return; }
       playSound('chip');
       if (amt >= 5000) unlockAchievement('high_roller');
+      
       bankroll -= amt; pot += amt; showFloatingText('seat-player-3', `-€${amt}`, '#ef5350');
+      currentCallAmount = 0; updateActionButtons();
       lockActionButtons(true); processNPCTurns(amt);
     }
 
-    // ADVANCED AI BRAINS
     function processNPCTurns(playerBetAmt) {
       let actors = npcs.filter(n => n.active && n.chips > 0);
+      
+      // AUTO-DEAL ALL-IN LOGIC
       if (actors.length === 0) {
-         setTimeout(() => { if (gameStage > 0 && gameStage < 4) advanceRound(); if (gameStage > 0 && gameStage < 4) lockActionButtons(false); }, 800);
+         let autoDeal = setInterval(() => {
+           if (gameStage > 0 && gameStage <= 4) advanceRound();
+           else clearInterval(autoDeal);
+         }, 1200);
          return;
       }
-      let completed = 0, delayAcc = 0;
+
+      let completed = 0, delayAcc = 0, highestRaise = 0;
 
       actors.forEach((n, idx) => {
         const thinkTime = 600 + Math.random() * 500; delayAcc += 300;
@@ -1081,37 +1135,31 @@
           setTimeout(() => {
             seatEl.classList.remove('thinking');
             const handInfo = evaluateHand(n.hole, communityCards);
-            let action = 'call';
-            let isPreFlop = (gameStage === 1);
-            let handStrength = handInfo.score;
+            let action = 'call', isPreFlop = (gameStage === 1), handStrength = handInfo.score;
+            let amountToCall = Math.max(playerBetAmt, currentCallAmount);
 
+            // NPC AI
             if (n.style === 'Rock') {
-              if (isPreFlop) {
-                if (handStrength > 10) action = 'raise'; // Plays only high cards A,K,Q
-                else if (playerBetAmt > bbAmount * 3) action = 'fold';
-              } else {
-                if (playerBetAmt >= bbAmount * 8 && handStrength < 2000) action = 'fold';
-                else if (handStrength >= 2000 && Math.random() < 0.7) action = 'raise';
-              }
+              if (isPreFlop) { if (handStrength > 10) action = 'raise'; else if (amountToCall > bbAmount * 3) action = 'fold'; } 
+              else { if (amountToCall >= bbAmount * 8 && handStrength < 2000) action = 'fold'; else if (handStrength >= 2000 && Math.random() < 0.7) action = 'raise'; }
             } else if (n.style === 'Maniac') {
               let isBluffing = Math.random() < 0.4;
-              if (isBluffing) action = 'raise';
-              else if (playerBetAmt >= bbAmount * 15 && handStrength < 1000) action = 'fold';
-            } else { // Station
-              if (playerBetAmt >= bbAmount * 10 && handStrength < 1000) action = 'fold';
-              else if (handStrength >= 4000) action = 'raise';
+              if (isBluffing) action = 'raise'; else if (amountToCall >= bbAmount * 15 && handStrength < 1000) action = 'fold';
+            } else { 
+              if (amountToCall >= bbAmount * 10 && handStrength < 1000) action = 'fold'; else if (handStrength >= 4000) action = 'raise';
             }
 
+            // NPC ACTION EXECUTOR
             if (action === 'fold') {
               n.active = false; seatEl.classList.add('folded'); showNpcBubble(n.id, "Fold ❌");
             } else if (action === 'raise') {
-              let raiseAmt = playerBetAmt === 0 ? bbAmount * 3 : playerBetAmt * 2.5;
+              let raiseAmt = amountToCall === 0 ? bbAmount * 3 : amountToCall * 2.5;
               raiseAmt = Math.floor(Math.min(raiseAmt, n.chips));
-              n.chips -= raiseAmt; pot += raiseAmt;
+              n.chips -= raiseAmt; pot += raiseAmt; currentCallAmount = raiseAmt; highestRaise = raiseAmt;
               showNpcBubble(n.id, `Raise €${raiseAmt} 🚀`); showFloatingText(`seat-npc-${n.id}`, `-€${raiseAmt}`, '#ef5350');
             } else {
-              let callAmt = playerBetAmt;
-              if (gameStage === 1 && playerBetAmt === 0) callAmt = bbAmount;
+              let callAmt = amountToCall;
+              if (gameStage === 1 && amountToCall === 0) callAmt = bbAmount;
               callAmt = Math.floor(Math.min(callAmt, n.chips));
               if (callAmt > 0) { n.chips -= callAmt; pot += callAmt; showNpcBubble(n.id, `Call €${callAmt} 👍`); showFloatingText(`seat-npc-${n.id}`, `-€${callAmt}`, '#ef5350'); } 
               else { showNpcBubble(n.id, `Check ✊`); }
@@ -1119,13 +1167,28 @@
 
             updateBankrollUI(); document.getElementById('pot-val').textContent = pot; completed++;
 
+            // EVALUATE END OF ROUND
             if (completed === actors.length) {
               let stillActive = npcs.filter(x => x.active);
               if (stillActive.length === 0) {
                 bankroll += pot; playSound('win'); showFloatingText('seat-player-3', `+€${pot}`, '#f3ad22');
-                showBanner(`EVERYONE FOLDED! YOU WIN €${pot}!`); unlockAchievement('all_fold'); resetHand();
+                showBanner(`EVERYONE FOLDED! YOU WIN €${pot}!`); unlockAchievement('all_fold'); endHand();
               } else {
-                setTimeout(() => { if (gameStage > 0 && gameStage < 4) { advanceRound(); if (gameStage > 0 && gameStage < 4) { lockActionButtons(false); } } }, 800);
+                if (highestRaise > 0) {
+                    updateActionButtons(); lockActionButtons(false); // Stop auto-advancing if NPC raised!
+                } else {
+                    setTimeout(() => { 
+                      if (gameStage > 0 && gameStage <= 4) { 
+                        advanceRound(); 
+                        let activeNpcsWithChips = npcs.filter(x => x.active && x.chips > 0);
+                        if (bankroll === 0 || activeNpcsWithChips.length === 0) {
+                          let autoDeal = setInterval(() => {
+                            if (gameStage > 0 && gameStage <= 4) advanceRound(); else clearInterval(autoDeal);
+                          }, 1200);
+                        } else if (gameStage > 0 && gameStage < 4) { lockActionButtons(false); } 
+                      } 
+                    }, 800);
+                }
               }
             }
           }, thinkTime);
@@ -1140,19 +1203,7 @@
         showFloatingText(`seat-npc-${winner.id}`, `+€${pot}`, '#f3ad22');
         showBanner(`FOLDED! ${winner.name.toUpperCase()} WINS €${pot}`);
       }
-      resetHand();
-    }
-
-    function resetHand() {
-      gameStage = 0;
-      document.getElementById('btn-deal').disabled = false; document.getElementById('btn-next').disabled = true;
-      document.getElementById('btn-raise').disabled = true; document.getElementById('btn-fold').disabled = true;
-      document.getElementById('pot-val').textContent = '0';
-      npcs.forEach(n => {
-        if(n.chips > 0) document.getElementById(`seat-npc-${n.id}`).classList.remove('folded', 'thinking');
-        document.getElementById(`cards-npc-${n.id}`).innerHTML = '';
-      });
-      updateBankrollUI();
+      endHand();
     }
 
     // MILLEN SLOTS ENGINE
