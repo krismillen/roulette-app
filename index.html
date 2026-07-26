@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Casino Millen - Multi-Slot & Poker Suite</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Casino Millen - Deluxe Suite</title>
   <style>
     :root {
       --bg-dark: #07131e;
@@ -13,6 +15,7 @@
       --felt-blue: #1d4e70;
       --felt-border: #3d5163;
       --red: #d32f2f;
+      --green: #2e7d32;
     }
 
     * { box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
@@ -70,11 +73,10 @@
       flex: 1;
     }
 
-    /* VIEWS */
+    /* VIEWS & CONTAINERS */
     .screen { display: none; width: 100%; flex-direction: column; padding: 8px; gap: 10px; }
     .screen.active { display: flex; }
 
-    /* POKER TABLE OVAL */
     .poker-table-wrapper {
       width: 100%;
       max-width: 800px;
@@ -84,6 +86,7 @@
       align-items: center;
     }
 
+    /* POKER OVAL TABLE */
     .poker-table-oval {
       width: 100%;
       min-height: 320px;
@@ -99,7 +102,6 @@
       margin: 10px 0;
     }
 
-    /* CENTER POT & COMMUNITY CARDS */
     .center-pot-area {
       display: flex;
       flex-direction: column;
@@ -137,7 +139,19 @@
 
     .card.red { color: var(--red); }
 
-    /* SEAT AVATARS & POSITIONS */
+    /* HAND STRENGTH BADGE */
+    .hand-strength-badge {
+      background: rgba(15, 44, 72, 0.95);
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      padding: 3px 10px;
+      border-radius: 10px;
+      font-size: 0.65rem;
+      font-weight: bold;
+      margin-top: 4px;
+    }
+
+    /* SEAT AVATARS & THINKING TIMERS */
     .seat {
       position: absolute;
       display: flex;
@@ -157,6 +171,17 @@
       font-size: 1.1rem;
       position: relative;
       box-shadow: 0 4px 8px rgba(0,0,0,0.6);
+    }
+
+    .seat-avatar.thinking {
+      border-color: #29b6f6;
+      box-shadow: 0 0 12px #29b6f6;
+      animation: pulseGlow 1s infinite alternate;
+    }
+
+    @keyframes pulseGlow {
+      0% { box-shadow: 0 0 4px #29b6f6; }
+      100% { box-shadow: 0 0 16px #29b6f6; }
     }
 
     .seat-label {
@@ -183,7 +208,7 @@
       gap: 3px;
     }
 
-    /* SLOT MACHINES SECTION */
+    /* SLOTS ENGINE */
     .slots-wrapper {
       display: none;
       flex-direction: column;
@@ -199,11 +224,7 @@
       box-shadow: 0 8px 25px rgba(0,0,0,0.7);
     }
 
-    .slot-select-tabs {
-      display: flex;
-      gap: 5px;
-      width: 100%;
-    }
+    .slot-select-tabs { display: flex; gap: 5px; width: 100%; }
 
     .tab-btn {
       flex: 1;
@@ -218,11 +239,7 @@
       text-align: center;
     }
 
-    .tab-btn.active {
-      background: var(--gold);
-      color: #000;
-      border-color: #fff;
-    }
+    .tab-btn.active { background: var(--gold); color: #000; border-color: #fff; }
 
     .reels-row {
       display: flex;
@@ -248,9 +265,7 @@
       box-shadow: inset 0 0 8px rgba(0,0,0,0.4);
     }
 
-    .reel.spinning {
-      animation: blurSpin 0.15s infinite linear;
-    }
+    .reel.spinning { animation: blurSpin 0.15s infinite linear; }
 
     @keyframes blurSpin {
       0% { filter: blur(0px); transform: translateY(-3px); }
@@ -318,15 +333,10 @@
       text-transform: uppercase;
     }
 
-    .act-btn.btn-fold {
-      background: linear-gradient(180deg, #e53935 0%, #b71c1c 100%);
-      color: #fff;
-      border-color: #ef5350;
-    }
-
+    .act-btn.btn-fold { background: linear-gradient(180deg, #e53935 0%, #b71c1c 100%); color: #fff; border-color: #ef5350; }
     .act-btn:disabled { opacity: 0.4; cursor: not-allowed; filter: grayscale(1); }
 
-    /* NATIVE IN-GAME BANNER NOTIFICATION */
+    /* IN-GAME TOAST BANNER */
     .toast-banner {
       display: none;
       position: fixed;
@@ -342,7 +352,7 @@
       box-shadow: 0 0 20px rgba(243, 173, 34, 0.8);
       z-index: 300;
       text-align: center;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       animation: popIn 0.3s ease-out;
     }
 
@@ -351,7 +361,7 @@
       100% { transform: translate(-50%, 0) scale(1); opacity: 1; }
     }
 
-    /* MODALS */
+    /* MODALS & FORTUNE WHEEL */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -393,6 +403,13 @@
     }
 
     .game-tile.selected { background: linear-gradient(180deg, #0288d1 0%, #01579b 100%); border-color: #29b6f6; }
+
+    /* WHEEL CANVAS */
+    #wheel-canvas {
+      max-width: 220px;
+      height: auto;
+      margin: 0 auto;
+    }
   </style>
 </head>
 <body>
@@ -410,6 +427,7 @@
     </div>
     <div class="title-banner" id="game-title">CASINO MILLEN</div>
     <div class="hdr-group">
+      <button class="hdr-btn" onclick="openModal('modal-wheel')">🎡 Wheel</button>
       <button class="hdr-btn" onclick="openModal('modal-settings')">⚙️ Settings</button>
     </div>
   </div>
@@ -432,21 +450,21 @@
         
         <!-- SEAT 1: TOP DEALER -->
         <div class="seat seat-top">
-          <div class="seat-avatar">👩‍💼</div>
+          <div class="seat-avatar" id="avatar-npc-0">👩‍💼</div>
           <div class="seat-label">Elena</div>
           <div class="seat-chips">€ <span id="npc-0-chips">20000</span></div>
         </div>
 
         <!-- SEAT 2: TOP RIGHT -->
         <div class="seat seat-top-right">
-          <div class="seat-avatar">👨</div>
+          <div class="seat-avatar" id="avatar-npc-1">👨</div>
           <div class="seat-label">Leo</div>
           <div class="seat-chips">€ <span id="npc-1-chips">20000</span></div>
         </div>
 
         <!-- SEAT 3: BOTTOM LEFT -->
         <div class="seat seat-bottom-left">
-          <div class="seat-avatar">🤴</div>
+          <div class="seat-avatar" id="avatar-npc-2">🤴</div>
           <div class="seat-label">Viktor</div>
           <div class="seat-chips">€ <span id="npc-2-chips">20000</span></div>
         </div>
@@ -462,6 +480,7 @@
         <div class="center-pot-area">
           <div class="pot-badge">POT: € <span id="pot-val">0</span></div>
           <div class="community-cards" id="community-box"></div>
+          <div class="hand-strength-badge" id="hand-strength-box">Start a new hand</div>
         </div>
 
         <!-- PLAYER HOLE CARDS -->
@@ -501,7 +520,17 @@
       <h2 style="margin:0;color:var(--gold);">CASINO MILLEN</h2>
       <p style="font-weight:bold;margin:8px 0;">Kris Millen</p>
       <p style="color:var(--gold);margin:0;">Chips: € <span class="bankroll-val">103424</span></p>
-      <button class="act-btn" style="margin-top:15px;width:160px;" onclick="claimBonus()">Claim Daily Bonus</button>
+      <button class="act-btn" style="margin-top:15px;width:180px;" onclick="openModal('modal-wheel')">Spin Daily Wheel</button>
+    </div>
+  </div>
+
+  <!-- MODAL: FORTUNE WHEEL -->
+  <div class="modal-overlay" id="modal-wheel">
+    <div class="modal-box" style="text-align:center;">
+      <h3 style="margin:0;color:var(--gold);">Daily Fortune Wheel</h3>
+      <canvas id="wheel-canvas" width="220" height="220"></canvas>
+      <button class="act-btn" id="wheel-spin-btn" onclick="spinFortuneWheel()">SPIN FOR REWARD</button>
+      <button class="act-btn btn-fold" onclick="closeModal('modal-wheel')" style="margin-top:5px;">Close</button>
     </div>
   </div>
 
@@ -528,13 +557,54 @@
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.85rem;margin-top:10px;">
         <span>Sound Effects</span>
-        <input type="checkbox" checked>
+        <input type="checkbox" id="sound-toggle" checked>
       </div>
       <button class="act-btn" style="margin-top:15px;" onclick="closeModal('modal-settings')">Save & Close</button>
     </div>
   </div>
 
   <script>
+    // SYNTHESIZED WEB AUDIO ENGINE (NO EXTERNAL FILES REQUIRED)
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playSound(type) {
+      if (!document.getElementById('sound-toggle').checked) return;
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      const now = audioCtx.currentTime;
+
+      if (type === 'chip') {
+        osc.frequency.setValueAtTime(800, now);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+        osc.start(now); osc.stop(now + 0.05);
+      } else if (type === 'card') {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(300, now);
+        gain.gain.setValueAtTime(0.15, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.06);
+        osc.start(now); osc.stop(now + 0.06);
+      } else if (type === 'win') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(523.25, now);
+        osc.frequency.setValueAtTime(659.25, now + 0.1);
+        osc.frequency.setValueAtTime(783.99, now + 0.2);
+        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+        osc.start(now); osc.stop(now + 0.4);
+      } else if (type === 'spin') {
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(180, now);
+        gain.gain.setValueAtTime(0.08, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.04);
+        osc.start(now); osc.stop(now + 0.04);
+      }
+    }
+
     // GAME & NPC STATE
     let bankroll = localStorage.getItem('casino_bankroll') ? parseInt(localStorage.getItem('casino_bankroll')) : 103424;
     let npcs = [
@@ -549,6 +619,8 @@
 
     const SUITS = ['♠', '♥', '♦', '♣'];
     const VALUES = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+    const RANK_MAP = { '2':2, '3':3, '4':4, '5':5, '6':6, '7':7, '8':8, '9':9, '10':10, 'J':11, 'Q':12, 'K':13, 'A':14 };
+
     let deck = [], playerHole = [], communityCards = [];
 
     function showBanner(msg) {
@@ -559,7 +631,6 @@
     }
 
     function updateBankrollUI() {
-      // Auto-rebuy low stacked NPCs back up to €20,000
       npcs.forEach(n => {
         if (n.chips < 500) n.chips = 20000;
         const el = document.getElementById(`npc-${n.id}-chips`);
@@ -571,6 +642,7 @@
     }
 
     function selectStake(val, btn) {
+      playSound('chip');
       selectedStake = val;
       document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('selected'));
       btn.classList.add('selected');
@@ -582,7 +654,11 @@
       document.getElementById(id).classList.add('active');
     }
 
-    function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+    function openModal(id) {
+      document.getElementById(id).style.display = 'flex';
+      if (id === 'modal-wheel') drawWheel();
+    }
+
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
     function switchGameMode(mode) {
@@ -606,13 +682,24 @@
       }
     }
 
-    function claimBonus() {
-      bankroll += 1000;
-      updateBankrollUI();
-      showBanner("🎉 CLAIMED €1,000 DAILY BONUS!");
+    // HAND STRENGTH EVALUATOR
+    function evaluateHandRank(hole, community) {
+      const all = [...hole, ...community];
+      if (all.length < 2) return "Start a new hand";
+
+      const counts = {};
+      all.forEach(c => counts[c.value] = (counts[c.value] || 0) + 1);
+      const vals = Object.values(counts);
+
+      if (vals.includes(4)) return "Four of a Kind";
+      if (vals.includes(3) && vals.includes(2)) return "Full House";
+      if (vals.includes(3)) return "Three of a Kind";
+      if (vals.filter(v => v === 2).length >= 2) return "Two Pair";
+      if (vals.includes(2)) return "One Pair";
+      return "High Card";
     }
 
-    // POKER ENGINE
+    // POKER ENGINE WITH THINKING TIMERS & AUDIO
     function buildDeck() {
       deck = [];
       for (let s of SUITS) {
@@ -638,11 +725,10 @@
     function startNewHand() {
       if (bankroll < selectedStake) { showBanner("⚠️ NOT ENOUGH CHIPS!"); return; }
       
-      // Deduct from Player
+      playSound('card');
       bankroll -= selectedStake;
       pot = selectedStake;
 
-      // Deduct equal blinds from active NPCs
       npcs.forEach(n => {
         n.chips -= selectedStake;
         pot += selectedStake;
@@ -659,6 +745,7 @@
       renderCards('hole-box', playerHole);
       renderCards('community-box', []);
       document.getElementById('pot-val').textContent = pot;
+      document.getElementById('hand-strength-box').textContent = evaluateHandRank(playerHole, communityCards);
 
       document.getElementById('btn-deal').disabled = true;
       document.getElementById('btn-next').disabled = false;
@@ -667,41 +754,55 @@
       document.getElementById('btn-fold').disabled = false;
     }
 
+    function animateNpcThinking(callback) {
+      const activeIdx = Math.floor(Math.random() * 3);
+      const av = document.getElementById(`avatar-npc-${activeIdx}`);
+      av.classList.add('thinking');
+      setTimeout(() => {
+        av.classList.remove('thinking');
+        callback();
+      }, 800);
+    }
+
     function advanceRound() {
-      if (gameStage === 1) {
-        communityCards = [deck.pop(), deck.pop(), deck.pop()]; // Flop
-        gameStage = 2;
-      } else if (gameStage === 2) {
-        communityCards.push(deck.pop()); // Turn
-        gameStage = 3;
-      } else if (gameStage === 3) {
-        communityCards.push(deck.pop()); // River
-        gameStage = 4;
-      } else if (gameStage === 4) {
-        // Showdown Logic
-        const playerWins = Math.random() > 0.3;
-        if (playerWins) {
-          bankroll += pot;
-          showBanner(`🎉 SHOWDOWN WIN! YOU WON €${pot}!`);
-        } else {
-          const winningNpc = npcs[Math.floor(Math.random() * npcs.length)];
-          winningNpc.chips += pot;
-          showBanner(`${winningNpc.name.toUpperCase()} WONS €${pot} POT`);
+      playSound('card');
+      animateNpcThinking(() => {
+        if (gameStage === 1) {
+          communityCards = [deck.pop(), deck.pop(), deck.pop()]; // Flop
+          gameStage = 2;
+        } else if (gameStage === 2) {
+          communityCards.push(deck.pop()); // Turn
+          gameStage = 3;
+        } else if (gameStage === 3) {
+          communityCards.push(deck.pop()); // River
+          gameStage = 4;
+        } else if (gameStage === 4) {
+          const playerWins = Math.random() > 0.3;
+          if (playerWins) {
+            bankroll += pot;
+            playSound('win');
+            showBanner(`🎉 SHOWDOWN WIN! YOU WON €${pot}!`);
+          } else {
+            const winningNpc = npcs[Math.floor(Math.random() * npcs.length)];
+            winningNpc.chips += pot;
+            showBanner(`${winningNpc.name.toUpperCase()} WONS €${pot} POT`);
+          }
+          resetHand();
+          updateBankrollUI();
+          return;
         }
-        resetHand();
-        updateBankrollUI();
-        return;
-      }
-      renderCards('community-box', communityCards);
+        renderCards('community-box', communityCards);
+        document.getElementById('hand-strength-box').textContent = evaluateHandRank(playerHole, communityCards);
+      });
     }
 
     function quickBet(amt) {
       if (bankroll < amt) { showBanner("⚠️ NOT ENOUGH CHIPS!"); return; }
+      playSound('chip');
       
       bankroll -= amt;
       pot += amt;
 
-      // NPCs call the bet
       npcs.forEach(n => {
         if (n.active) {
           n.chips -= amt;
@@ -730,10 +831,11 @@
       document.getElementById('pot-val').textContent = '0';
       document.getElementById('community-box').innerHTML = '';
       document.getElementById('hole-box').innerHTML = '';
+      document.getElementById('hand-strength-box').textContent = 'Start a new hand';
       updateBankrollUI();
     }
 
-    // MULTI-SLOT ENGINE WITH ANIMATIONS
+    // MULTI-SLOT ENGINE
     const SLOT_THEMES = {
       classic: { reels: 3, symbols: ['🍒', '🍋', '🔔', '💎', '7️⃣'] },
       neon: { reels: 5, symbols: ['⚡', '💎', '🎰', '7️⃣', '🔥', '👑'] },
@@ -778,6 +880,7 @@
 
       let spinCount = 0;
       const interval = setInterval(() => {
+        playSound('spin');
         reels.forEach(r => {
           r.textContent = config.symbols[Math.floor(Math.random() * config.symbols.length)];
         });
@@ -795,10 +898,12 @@
           if (allMatch) {
             const win = selectedStake * (config.reels === 5 ? 25 : 10);
             bankroll += win;
+            playSound('win');
             showBanner(`🎉 JACKPOT! YOU WON €${win}!`);
           } else if (someMatch) {
             const win = selectedStake * 2;
             bankroll += win;
+            playSound('win');
             showBanner(`✨ MATCH FOUND! YOU WON €${win}!`);
           } else {
             showBanner("NO MATCH! TRY AGAIN.");
@@ -806,6 +911,67 @@
           updateBankrollUI();
         }
       }, 80);
+    }
+
+    // DAILY FORTUNE WHEEL ENGINE
+    const WHEEL_PRIZES = [500, 1000, 2500, 5000, 10000, 100];
+    let wheelAngle = 0;
+
+    function drawWheel() {
+      const cvs = document.getElementById('wheel-canvas');
+      const ctx = cvs.getContext('2d');
+      ctx.clearRect(0, 0, 220, 220);
+
+      const slice = (2 * Math.PI) / WHEEL_PRIZES.length;
+      const cx = 110, cy = 110, r = 100;
+
+      for (let i = 0; i < WHEEL_PRIZES.length; i++) {
+        const a = wheelAngle + i * slice;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, r, a, a + slice);
+        ctx.fillStyle = i % 2 === 0 ? '#f3ad22' : '#114b2f';
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(a + slice/2);
+        ctx.textAlign = "right";
+        ctx.fillStyle = "#fff";
+        ctx.font = "bold 12px sans-serif";
+        ctx.fillText(`€${WHEEL_PRIZES[i]}`, r - 10, 4);
+        ctx.restore();
+      }
+    }
+
+    function spinFortuneWheel() {
+      const btn = document.getElementById('wheel-spin-btn');
+      btn.disabled = true;
+
+      const prizeIdx = Math.floor(Math.random() * WHEEL_PRIZES.length);
+      const prize = WHEEL_PRIZES[prizeIdx];
+      const targetAngle = wheelAngle + (8 * Math.PI) + (prizeIdx * (2 * Math.PI / WHEEL_PRIZES.length));
+
+      let start = null;
+      function animateWheel(time) {
+        if (!start) start = time;
+        const progress = (time - start) / 3000;
+        if (progress < 1) {
+          wheelAngle = wheelAngle + (targetAngle - wheelAngle) * 0.08;
+          drawWheel();
+          playSound('spin');
+          requestAnimationFrame(animateWheel);
+        } else {
+          bankroll += prize;
+          playSound('win');
+          showBanner(`🎉 FORTUNE WHEEL REWARD: €${prize}!`);
+          btn.disabled = false;
+          updateBankrollUI();
+          closeModal('modal-wheel');
+        }
+      }
+      requestAnimationFrame(animateWheel);
     }
 
     updateBankrollUI();
