@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>Casino Millen - Advanced Betting Control</title>
+  <title>Casino Millen - Pro AI Suite</title>
   <style>
     :root {
       --bg-dark: #07131e;
@@ -224,7 +224,106 @@
     .player-hole-cards { position: absolute; bottom: 25px; display: flex; gap: 3px; z-index: 8; }
     .npc-hole-cards { position: absolute; display: flex; gap: 2px; top: 38px; }
 
-    /* ADVANCED ACTION CONTROLS & BET SLIDER */
+    /* SLOTS ENGINE */
+    .slots-wrapper {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      background: var(--panel-blue);
+      border: 3px solid var(--gold);
+      border-radius: 12px;
+      padding: 15px;
+      margin: 15px 0;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.7);
+    }
+
+    .slot-select-tabs { display: flex; gap: 5px; width: 100%; }
+
+    .tab-btn {
+      flex: 1;
+      background: #122b42;
+      border: 1px solid var(--panel-border);
+      color: #aaa;
+      padding: 6px;
+      font-size: 0.68rem;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .tab-btn.active { background: var(--gold); color: #000; border-color: #fff; }
+
+    .reels-row {
+      display: flex;
+      gap: 8px;
+      padding: 10px;
+      background: #07131e;
+      border-radius: 8px;
+      border: 1px solid var(--panel-border);
+      overflow: hidden;
+    }
+
+    .reel {
+      width: 55px;
+      height: 75px;
+      background: #ffffff;
+      color: #000;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      border: 2px solid #444;
+      box-shadow: inset 0 0 8px rgba(0,0,0,0.4);
+    }
+
+    .reel.spinning { animation: blurSpin 0.15s infinite linear; }
+
+    @keyframes blurSpin {
+      0% { filter: blur(0px); transform: translateY(-3px); }
+      50% { filter: blur(3px); transform: translateY(3px); }
+      100% { filter: blur(0px); transform: translateY(-3px); }
+    }
+
+    /* CHIP SELECTOR BAR */
+    .chip-selector-bar {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 6px;
+      background: rgba(0,0,0,0.5);
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.1);
+      margin-bottom: 6px;
+    }
+
+    .chip-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 2px dashed #000;
+      font-weight: 900;
+      font-size: 0.7rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .chip-btn.selected { transform: scale(1.15); border: 3px solid #fff !important; box-shadow: 0 0 10px var(--gold); }
+
+    .c-1 { background: #ffffff; color: #000; }
+    .c-5 { background: #e53935; color: #fff; }
+    .c-25 { background: #2e7d32; color: #fff; }
+    .c-500 { background: #212121; color: var(--gold); border-color: var(--gold); }
+
+    /* ACTION CONTROLS BAR */
     .table-controls {
       width: 100%;
       max-width: 800px;
@@ -237,11 +336,7 @@
       border-radius: 10px;
     }
 
-    .quick-bet-row {
-      display: flex;
-      gap: 4px;
-      width: 100%;
-    }
+    .quick-bet-row { display: flex; gap: 4px; width: 100%; }
 
     .quick-bet-btn {
       flex: 1;
@@ -258,26 +353,9 @@
 
     .quick-bet-btn:active { background: var(--gold); color: #000; }
 
-    .slider-container {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 0 4px;
-    }
-
-    .bet-slider {
-      flex: 1;
-      accent-color: var(--gold);
-      cursor: pointer;
-    }
-
-    .slider-val-label {
-      font-size: 0.75rem;
-      font-weight: 900;
-      color: var(--gold);
-      min-width: 60px;
-      text-align: right;
-    }
+    .slider-container { display: flex; align-items: center; gap: 8px; padding: 0 4px; }
+    .bet-slider { flex: 1; accent-color: var(--gold); cursor: pointer; }
+    .slider-val-label { font-size: 0.75rem; font-weight: 900; color: var(--gold); min-width: 60px; text-align: right; }
 
     .main-btn-row { display: flex; gap: 5px; width: 100%; }
 
@@ -388,10 +466,18 @@
   <div class="screen active" id="screen-table">
     <div class="poker-table-wrapper">
       
+      <!-- CHIP SELECTOR BAR -->
+      <div class="chip-selector-bar">
+        <span style="font-size:0.75rem;font-weight:bold;color:var(--gold);">STAKE:</span>
+        <div class="chip-btn c-1" onclick="selectStake(1, this)">€1</div>
+        <div class="chip-btn c-5 selected" onclick="selectStake(5, this)">€5</div>
+        <div class="chip-btn c-25" onclick="selectStake(25, this)">€25</div>
+        <div class="chip-btn c-500" onclick="selectStake(500, this)">€500</div>
+      </div>
+
       <!-- GAME VIEW 1: OVAL POKER TABLE -->
       <div class="poker-table-oval" id="poker-table-view">
         
-        <!-- TOAST BANNER -->
         <div class="toast-banner" id="toast-banner" onclick="this.style.display='none'">
           <span id="toast-msg">🎉 YOU WIN!</span>
         </div>
@@ -444,8 +530,6 @@
 
       <!-- ADVANCED POKER ACTION CONTROLS & BETTING SLIDER -->
       <div class="table-controls" id="poker-controls">
-        
-        <!-- QUICK BET SIZES -->
         <div class="quick-bet-row">
           <button class="quick-bet-btn" onclick="setBetFraction(0.1)">MIN</button>
           <button class="quick-bet-btn" onclick="setBetFraction(0.25)">2X BLIND</button>
@@ -454,21 +538,18 @@
           <button class="quick-bet-btn" style="color:#ef5350;" onclick="setBetAllIn()">ALL-IN 💥</button>
         </div>
 
-        <!-- BET SLIDER -->
         <div class="slider-container">
           <span style="font-size:0.65rem;color:#aaa;">Bet Amount:</span>
           <input type="range" class="bet-slider" id="bet-slider" min="5" max="1000" step="5" value="50" oninput="onSliderChange(this.value)">
           <span class="slider-val-label" id="slider-val-display">€50</span>
         </div>
 
-        <!-- MAIN ACTION BUTTONS -->
         <div class="main-btn-row">
           <button class="act-btn btn-fold" id="btn-fold" onclick="foldHand()" disabled>FOLD</button>
           <button class="act-btn" id="btn-deal" onclick="startNewHand()">DEAL</button>
           <button class="act-btn" id="btn-next" onclick="advanceRound()" disabled>CHECK / CALL</button>
-          <button class="act-btn" id="btn-raise" onclick="executeCustomBet()" disabled>RAISE €<span id="raise-btn-label">50</span></button>
+          <button class="act-btn" id="btn-raise" onclick="executeCustomBet()" disabled>BET €<span id="raise-btn-label">50</span></button>
         </div>
-
       </div>
 
     </div>
@@ -558,9 +639,10 @@
       }
     }
 
-    // GAME & AI MEMORY STATE
+    // GAME & AI STATE
     let bankroll = localStorage.getItem('casino_bankroll') ? parseInt(localStorage.getItem('casino_bankroll')) : 103424;
     let currentCustomBet = 50;
+    let currentHighestBet = 0;
 
     let npcs = [
       { id: 0, name: 'Elena', style: 'Rock', chips: 15000, active: true, hole: [], defaultAvatar: '👩‍💼', isTilt: false },
@@ -569,7 +651,7 @@
     ];
 
     let pot = 0;
-    let gameStage = 0;
+    let gameStage = 0; // 0: Idle, 1: Pre-Flop, 2: Flop, 3: Turn, 4: River
 
     const SUITS = ['♠', '♥', '♦', '♣'];
     const VALUES = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
@@ -610,12 +692,10 @@
       document.querySelectorAll('.bankroll-val').forEach(el => el.textContent = bankroll);
       localStorage.setItem('casino_bankroll', bankroll);
 
-      // Adjust Slider Max to Player Bankroll
       const slider = document.getElementById('bet-slider');
       slider.max = Math.min(bankroll, 25000);
     }
 
-    // DYNAMIC BET SLIDER FUNCTIONS
     function onSliderChange(val) {
       currentCustomBet = parseInt(val);
       document.getElementById('slider-val-display').textContent = `€${currentCustomBet}`;
@@ -650,7 +730,6 @@
 
     function openModal(id) {
       document.getElementById(id).style.display = 'flex';
-      if (id === 'modal-wheel') drawWheel();
     }
 
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
@@ -713,6 +792,7 @@
       playSound('card');
       bankroll -= 10;
       pot = 10;
+      currentHighestBet = 10;
 
       npcs.forEach(n => {
         const ante = Math.min(10, n.chips);
@@ -746,13 +826,13 @@
     function advanceRound() {
       playSound('card');
       if (gameStage === 1) {
-        communityCards = [deck.pop(), deck.pop(), deck.pop()];
+        communityCards = [deck.pop(), deck.pop(), deck.pop()]; // Flop
         gameStage = 2;
       } else if (gameStage === 2) {
-        communityCards.push(deck.pop());
+        communityCards.push(deck.pop()); // Turn
         gameStage = 3;
       } else if (gameStage === 3) {
-        communityCards.push(deck.pop());
+        communityCards.push(deck.pop()); // River
         gameStage = 4;
       } else if (gameStage === 4) {
         // SHOWDOWN LOGIC
@@ -788,7 +868,7 @@
       document.getElementById('hand-strength-box').textContent = evaluateHand(playerHole, communityCards).name;
     }
 
-    // CUSTOM BETTING ENGINE WITH ADVANCED ALL-IN & POT ODDS
+    // STRICT SINGLE-BET & POT-CAPPED ENGINE
     function executeCustomBet() {
       const amt = currentCustomBet;
       if (bankroll < amt) { showBanner("⚠️ NOT ENOUGH CHIPS!"); return; }
@@ -796,6 +876,7 @@
       
       bankroll -= amt;
       pot += amt;
+      currentHighestBet = amt;
 
       let remainingActive = 0;
       let delayAcc = 0;
@@ -803,8 +884,8 @@
       npcs.forEach((n, idx) => {
         if (!n.active || n.chips <= 0) return;
 
-        const thinkTime = amt >= 1000 ? (1500 + Math.random() * 1200) : (800 + Math.random() * 500);
-        delayAcc += 350;
+        const thinkTime = 800 + Math.random() * 600;
+        delayAcc += 250;
 
         setTimeout(() => {
           const seatEl = document.getElementById(`seat-npc-${n.id}`);
@@ -815,16 +896,8 @@
             const handInfo = evaluateHand(n.hole, communityCards);
             let action = 'call';
 
-            // COMPLEX ALL-IN & HIGH BET REACTION ENGINE
-            if (amt >= 5000) {
-              // Facing huge All-In
-              if (n.style === 'Rock' && handInfo.score < 4000) action = 'fold'; // Needs Straight+
-              else if (n.style === 'Station' && handInfo.score < 2000) action = 'fold'; // Needs Two Pair+
-              else if (n.style === 'Maniac' && Math.random() < 0.5) action = 'call';
-            } else if (amt >= 500) {
-              if (n.style === 'Rock' && handInfo.score < 2000) action = 'fold';
-              else if (n.style === 'Station' && handInfo.score < 1000 && Math.random() < 0.5) action = 'fold';
-            }
+            if (amt >= 1000 && n.style === 'Rock' && handInfo.score < 2000) action = 'fold';
+            else if (amt >= 5000 && handInfo.score < 3000) action = 'fold';
 
             if (action === 'fold') {
               n.active = false;
@@ -850,6 +923,13 @@
           }, thinkTime);
         }, delayAcc);
       });
+
+      // Automatically advance round after player custom bet
+      setTimeout(() => {
+        if (gameStage > 0 && gameStage < 4) {
+          advanceRound();
+        }
+      }, delayAcc + 1200);
     }
 
     function foldHand() {
